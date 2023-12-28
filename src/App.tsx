@@ -2,17 +2,9 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Routes/Home";
-
-const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<Home />} />)
-);
+import TabBar from "./components/TabBar";
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
@@ -20,7 +12,13 @@ function App() {
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-        <RouterProvider router={router} />
+
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+          <TabBar />
+        </BrowserRouter>
       </ThemeProvider>
     </>
   );
