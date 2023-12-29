@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Conti from "../components/Conti";
 
 const Container = styled.div`
   display: flex;
@@ -30,6 +31,9 @@ const Keyword = styled.div`
 `;
 const MyContiContainer = styled.div``;
 const MyContiHeader = styled.div``;
+const MyContiBody = styled.div`
+  display: grid;
+`;
 const CCMContainer = styled.div``;
 const CCMHeader = styled.div``;
 
@@ -43,18 +47,19 @@ function Home() {
           <Menu>쩜쩜쩜</Menu>
         </section>
       </Header>
-      <KeywordContainer>
-        <Keyword>사랑</Keyword>
-        <Keyword>사랑</Keyword>
-        <Keyword>사랑</Keyword>
-        <Keyword>사랑</Keyword>
-        <Keyword>사랑</Keyword>
-      </KeywordContainer>
+      <KeywordContainer></KeywordContainer>
       <MyContiContainer>
         <MyContiHeader>
           <h1>My Conti</h1>
           <div>더보기</div>
         </MyContiHeader>
+        <MyContiBody>
+          <Conti></Conti>
+          <Conti></Conti>
+          <Conti></Conti>
+          <Conti></Conti>
+          <Conti></Conti>
+        </MyContiBody>
       </MyContiContainer>
       <CCMContainer>
         <CCMHeader>
