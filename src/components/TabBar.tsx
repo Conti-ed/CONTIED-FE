@@ -25,6 +25,9 @@ function TabBar() {
       <Link to={"/feed"}>
         <Tab>피드</Tab>
       </Link>
+      <Link to={"/upload"}>
+        <Tab>업로드</Tab>
+      </Link>
       <Link to={"/settings"}>
         <Tab>설정</Tab>
       </Link>

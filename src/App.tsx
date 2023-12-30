@@ -5,6 +5,9 @@ import { isDarkAtom } from "./atoms";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Routes/Home";
 import TabBar from "./components/TabBar";
+import Feed from "./Routes/Feed";
+import Upload from "./Routes/Upload";
+import Settings from "./Routes/Settings";
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
@@ -16,6 +19,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
           <TabBar />
         </BrowserRouter>
