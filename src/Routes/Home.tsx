@@ -1,30 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import Conti from "../components/Conti";
-import { CiSearch, CiMenuKebab } from "react-icons/ci";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 20px;
-`;
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-`;
-const LogoContainer = styled.div``;
-const Logo = styled.img`
-  width: 132px;
-`;
-const HeaderRight = styled.div`
-  display: flex;
-  gap: 15px;
-`;
-const HeaderRightIcons = styled.div`
-  font-size: 20px;
-  cursor: pointer;
 `;
 const KeywordContainer = styled.div`
   display: flex;
@@ -91,19 +72,6 @@ const CCMHeader = styled.div``;
 function Home() {
   return (
     <Container>
-      <Header>
-        <LogoContainer>
-          <Logo src="images/logo1.png" alt="왜안뜨노" />
-        </LogoContainer>
-        <HeaderRight>
-          <HeaderRightIcons>
-            <CiSearch />
-          </HeaderRightIcons>
-          <HeaderRightIcons>
-            <CiMenuKebab />
-          </HeaderRightIcons>
-        </HeaderRight>
-      </Header>
       <KeywordContainer>
         <Keyword>사랑</Keyword>
         <Keyword>시편</Keyword>

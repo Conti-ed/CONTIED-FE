@@ -8,6 +8,7 @@ import TabBar from "./components/TabBar";
 import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";
 import Settings from "./Routes/Settings";
+import Header from "./components/Header";
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
@@ -17,6 +18,7 @@ function App() {
         <GlobalStyle />
 
         <BrowserRouter>
+          <Header />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/feed" element={<Feed />} />
