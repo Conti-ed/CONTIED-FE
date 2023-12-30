@@ -33,8 +33,8 @@ const KeywordContainer = styled.div`
   margin-bottom: 20px;
 
   &::-webkit-scrollbar {
-  display: none;
-}
+    display: none;
+  }
 `;
 const Keyword = styled.div`
   background-color: ${(props) => props.theme.keywordColor};
@@ -82,12 +82,11 @@ const MyContiBody = styled.div`
   margin-bottom: 15px;
 
   &::-webkit-scrollbar {
-  display: none;
-}
+    display: none;
+  }
 `;
 const CCMContainer = styled.div``;
 const CCMHeader = styled.div``;
-
 
 function Home() {
   return (
@@ -97,8 +96,12 @@ function Home() {
           <Logo src="images/logo1.png" alt="왜안뜨노" />
         </LogoContainer>
         <HeaderRight>
-          <HeaderRightIcons><CiSearch /></HeaderRightIcons>
-          <HeaderRightIcons><CiMenuKebab /></HeaderRightIcons>
+          <HeaderRightIcons>
+            <CiSearch />
+          </HeaderRightIcons>
+          <HeaderRightIcons>
+            <CiMenuKebab />
+          </HeaderRightIcons>
         </HeaderRight>
       </Header>
       <KeywordContainer>
@@ -118,7 +121,7 @@ function Home() {
           <MyContiHeaderMore>더보기</MyContiHeaderMore>
         </MyContiHeader>
         <MyContiBody>
-          {Array.from({length: 20}).map((_, index) => (
+          {Array.from({ length: 20 }).map((_, index) => (
             <Conti key={index}></Conti>
           ))}
         </MyContiBody>
