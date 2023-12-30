@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { CiHome, CiGrid41, CiSquarePlus, CiSettings } from "react-icons/ci";
 
 const Container = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   display: flex;
   justify-content: center;
@@ -10,26 +11,39 @@ const Container = styled.div`
   gap: 50px;
   width: 100%;
   height: 60px;
+  background: ${(props) => props.theme.tabBgColor};
 `;
 
-const Tab = styled.div`
+const Tab = styled.div<{ isActive: Boolean }>`
+  font-size: 24px;
+  color: ${(props) => (props.isActive ? "white" : "gray")};
   cursor: pointer;
 `;
 
 function TabBar() {
+  const { pathname } = useLocation();
+
   return (
     <Container>
       <Link to={"/"}>
-        <Tab>홈</Tab>
+        <Tab isActive={pathname === "/"}>
+          <CiHome />
+        </Tab>
       </Link>
       <Link to={"/feed"}>
-        <Tab>피드</Tab>
+        <Tab isActive={pathname === "/feed"}>
+          <CiGrid41 />
+        </Tab>
       </Link>
       <Link to={"/upload"}>
-        <Tab>업로드</Tab>
+        <Tab isActive={pathname === "/upload"}>
+          <CiSquarePlus />
+        </Tab>
       </Link>
       <Link to={"/settings"}>
-        <Tab>설정</Tab>
+        <Tab isActive={pathname === "/settings"}>
+          <CiSettings />
+        </Tab>
       </Link>
     </Container>
   );

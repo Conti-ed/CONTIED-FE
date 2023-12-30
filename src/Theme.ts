@@ -4,7 +4,8 @@ export const darkTheme: DefaultTheme = {
   bgColor: "#292929",
   textColor: "whitesmoke",
   accentColor: "#ff7979a9",
-  tabBgColor: "rgb(170, 180, 210, 1)",
+  tabBgColor:
+    "linear-gradient(0deg, rgba(0,0,0,1) 40%, rgba(0,0,0, 0.5) 70%, rgba(255,255,255,0) 100%)",
   keywordColor: "#404040",
 };
 
