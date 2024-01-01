@@ -14,9 +14,9 @@ const Container = styled.div`
   background: ${(props) => props.theme.tabBgColor};
 `;
 
-const Tab = styled.div<{ isActive: Boolean }>`
+const Tab = styled.div<{ $isActive: Boolean }>`
   font-size: 24px;
-  color: ${(props) => (props.isActive ? "white" : "gray")};
+  color: ${(props) => (props.$isActive ? "white" : "gray")};
   cursor: pointer;
 `;
 
@@ -26,22 +26,22 @@ function TabBar() {
   return (
     <Container>
       <Link to={"/"}>
-        <Tab isActive={pathname === "/"}>
+        <Tab $isActive={pathname === "/"}>
           <CiHome />
         </Tab>
       </Link>
       <Link to={"/feed"}>
-        <Tab isActive={pathname === "/feed"}>
+        <Tab $isActive={pathname === "/feed"}>
           <CiGrid41 />
         </Tab>
       </Link>
       <Link to={"/upload"}>
-        <Tab isActive={pathname === "/upload"}>
+        <Tab $isActive={pathname === "/upload"}>
           <CiSquarePlus />
         </Tab>
       </Link>
       <Link to={"/settings"}>
-        <Tab isActive={pathname === "/settings"}>
+        <Tab $isActive={pathname === "/settings"}>
           <CiSettings />
         </Tab>
       </Link>
