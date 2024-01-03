@@ -30,9 +30,23 @@ const Contikeyword = styled.div`
 `;
 
 function Conti() {
+  const onclick = async () => {
+    const token = localStorage.getItem("accessToken");
+
+    const res = await fetch(`http://127.0.0.1:8000/api/conti/1`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    console.log(res, data);
+  };
+
   return (
-    <Container>
-      <ContiImage src="https://www.wolflair.com/wp-content/uploads/2017/01/placeholder.jpg"/>
+    <Container onClick={onclick}>
+      <ContiImage src="https://www.wolflair.com/wp-content/uploads/2017/01/placeholder.jpg" />
       <ContiTitle>타이틀</ContiTitle>
       <Contikeyword>키워드</Contikeyword>
     </Container>
