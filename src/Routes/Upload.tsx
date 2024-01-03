@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
-import Autocomplete from "@mui/joy/Autocomplete";
-import { KeywordType } from "../types";
-import KeyboardCommandKeyIcon from "@mui/icons-material/KeyboardCommandKey";
+import {
+  Autocomplete,
+  List,
+  ListItem,
+  ListItemButton,
+  IconButton,
+} from "@mui/joy";
+import { Delete, KeyboardCommandKey } from "@mui/icons-material";
 import { useQuery } from "react-query";
+import { useRecoilValue } from "recoil";
 import { getKeywords } from "../api";
+import { KeywordType } from "../types";
+import { songsAtom } from "../atom";
+import SongRegister from "../components/SongRegister";
 
 const Container = styled.div`
   padding: 20px;
@@ -26,6 +35,8 @@ const SubmitButton = styled.input`
   width: 100px;
 `;
 
+const SongContainer = styled.div``;
+
 type FormValues = {
   image_url: string;
   keywords: string[];
@@ -34,7 +45,7 @@ type FormValues = {
 function Upload() {
   const { register, handleSubmit, control } = useForm<FormValues>();
   const [keywords, setKeywords] = useState<KeywordType[]>([]);
-  const [songs, setSongs] = useState([]);
+  const songs = useRecoilValue(songsAtom);
 
   const { data: allKeywords, isLoading } = useQuery<KeywordType[]>({
     queryKey: ["keywords"],
@@ -42,7 +53,7 @@ function Upload() {
   });
 
   const onHandleSubmit = (data: FormValues) => {
-    console.log(data);
+    console.log({ ...data, songs });
   };
 
   return (
@@ -50,38 +61,69 @@ function Upload() {
       {isLoading ? (
         <div>Loading</div>
       ) : (
-        <Form onSubmit={handleSubmit(onHandleSubmit)}>
-          <Controller
-            name={"keywords"}
-            control={control}
-            render={({ field }) => {
-              const { onChange, value } = field;
-              return (
-                <Autocomplete
-                  multiple
-                  startDecorator={<KeyboardCommandKeyIcon />}
-                  loading={isLoading}
-                  options={allKeywords!}
-                  getOptionLabel={(keyword) => keyword.name}
-                  limitTags={2}
-                  size="sm"
-                  placeholder="Keywords"
-                  onChange={(_, data) => {
-                    onChange(data);
-                    setKeywords(data);
-                    return data;
-                  }}
-                />
-              );
-            }}
-          />
-          <Input
-            type="tel"
-            placeholder="image url"
-            {...register("image_url", { required: false })}
-          />
-          <SubmitButton type="submit" value={"Save"} />
-        </Form>
+        <>
+          <SongContainer>
+            <List sx={{ maxWidth: 300 }} variant={"soft"}>
+              <ListItem>
+                <ListItemButton>
+                  <SongRegister />
+                </ListItemButton>
+              </ListItem>
+              {songs.map((song, i) => {
+                return (
+                  <ListItem
+                    key={i}
+                    endAction={
+                      <IconButton
+                        aria-label="Delete"
+                        size="sm"
+                        color={"danger"}
+                      >
+                        <Delete />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemButton>{song.title}</ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </SongContainer>
+          <Form onSubmit={handleSubmit(onHandleSubmit)}>
+            <Controller
+              name={"keywords"}
+              control={control}
+              render={({ field }) => {
+                const { onChange } = field;
+                return (
+                  <>
+                    <Autocomplete
+                      multiple
+                      startDecorator={<KeyboardCommandKey />}
+                      loading={isLoading}
+                      options={allKeywords!}
+                      getOptionLabel={(keyword) => keyword.name}
+                      limitTags={2}
+                      size="sm"
+                      placeholder="Keywords"
+                      onChange={(_, data) => {
+                        onChange(data);
+                        setKeywords(data);
+                        return data;
+                      }}
+                    />
+                  </>
+                );
+              }}
+            />
+            <Input
+              type="tel"
+              placeholder="image url"
+              {...register("image_url", { required: false })}
+            />
+            <SubmitButton type="submit" value={"Save"} />
+          </Form>
+        </>
       )}
     </Container>
   );
