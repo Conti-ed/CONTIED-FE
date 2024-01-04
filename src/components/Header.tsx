@@ -1,5 +1,5 @@
-import { CiMenuKebab, CiSearch } from "react-icons/ci";
-import { styled } from "styled-components";
+import { CiMenuKebab, CiSearch } from 'react-icons/ci';
+import { styled } from 'styled-components';
 
 const Container = styled.div`
   display: flex;

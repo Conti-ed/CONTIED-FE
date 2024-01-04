@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import { styled } from 'styled-components';
 
 const Container = styled.div`
   width: 115px;
@@ -30,19 +30,7 @@ const Contikeyword = styled.div`
 `;
 
 function Conti() {
-  const onclick = async () => {
-    const token = localStorage.getItem("accessToken");
-
-    const res = await fetch(`http://127.0.0.1:8000/api/conti/1`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await res.json();
-    console.log(res, data);
-  };
+  const onclick = async () => {};
 
   return (
     <Container onClick={onclick}>

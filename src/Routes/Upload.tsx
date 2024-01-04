@@ -1,20 +1,20 @@
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import styled from "styled-components";
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import styled from 'styled-components';
 import {
   Autocomplete,
   List,
   ListItem,
   ListItemButton,
   IconButton,
-} from "@mui/joy";
-import { Delete, KeyboardCommandKey } from "@mui/icons-material";
-import { useQuery } from "react-query";
-import { useRecoilValue } from "recoil";
-import { SERVER_URL, getKeywords } from "../api";
-import { KeywordType } from "../types";
-import { songsAtom } from "../atoms";
-import SongRegister from "../components/SongRegister";
+} from '@mui/joy';
+import { Delete, KeyboardCommandKey } from '@mui/icons-material';
+import { useQuery } from 'react-query';
+import { useRecoilValue } from 'recoil';
+import { SERVER_URL, getKeywords } from '../api';
+import { KeywordType } from '../types';
+import { songsAtom } from '../atoms';
+import SongRegister from '../components/SongRegister';
 
 const Container = styled.div`
   padding: 20px;
@@ -49,21 +49,21 @@ function Upload() {
   const songs = useRecoilValue(songsAtom);
 
   const { data: allKeywords, isLoading } = useQuery<KeywordType[]>({
-    queryKey: ["keywords"],
+    queryKey: ['keywords'],
     queryFn: getKeywords,
   });
 
   const onHandleSubmit = async (formData: FormValues) => {
     const res = await fetch(`${SERVER_URL}/api/conti`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json, text/plain",
-        "Content-Type": "application/json;charset=UTF-8",
+        Accept: 'application/json, text/plain',
+        'Content-Type': 'application/json;charset=UTF-8',
       },
       body: JSON.stringify({
         ...formData,
         songs,
-        user_info: JSON.parse(localStorage["user_info"]),
+        user_info: JSON.parse(localStorage['user_info']),
       }),
     });
     const resData = await res.json();
@@ -77,7 +77,7 @@ function Upload() {
       ) : (
         <>
           <SongContainer>
-            <List sx={{ maxWidth: 300 }} variant={"soft"}>
+            <List sx={{ maxWidth: 300 }} variant={'soft'}>
               <ListItem>
                 <ListItemButton>
                   <SongRegister />
@@ -91,7 +91,7 @@ function Upload() {
                       <IconButton
                         aria-label="Delete"
                         size="sm"
-                        color={"danger"}
+                        color={'danger'}
                       >
                         <Delete />
                       </IconButton>
@@ -105,9 +105,9 @@ function Upload() {
           </SongContainer>
           <Form onSubmit={handleSubmit(onHandleSubmit)}>
             <Controller
-              name={"keywords"}
+              name={'keywords'}
               control={control}
-              render={({ field }) => {
+              render={({ field }: any) => {
                 const { onChange } = field;
                 return (
                   <>
@@ -136,14 +136,14 @@ function Upload() {
             <Input
               type="tel"
               placeholder="Descriptionl"
-              {...register("description", { required: false })}
+              {...register('description', { required: false })}
             />
             <Input
               type="tel"
               placeholder="image url"
-              {...register("image_url", { required: false })}
+              {...register('image_url', { required: false })}
             />
-            <SubmitButton type="submit" value={"Save"} />
+            <SubmitButton type="submit" value={'Save'} />
           </Form>
         </>
       )}
