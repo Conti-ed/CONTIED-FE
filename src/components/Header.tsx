@@ -1,38 +1,25 @@
-import { CiMenuKebab, CiSearch } from 'react-icons/ci';
-import { styled } from 'styled-components';
-
-const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-  padding: 0 20px;
-`;
-const LogoContainer = styled.div``;
-const Logo = styled.img`
-  width: 132px;
-`;
-const HeaderRight = styled.div`
-  display: flex;
-  gap: 15px;
-`;
-const HeaderRightIcons = styled.div`
-  font-size: 20px;
-  cursor: pointer;
-`;
+import SearchIcon from '@mui/icons-material/Search';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  Container,
+  LogoContainer,
+  Logo,
+  HeaderRight,
+  HeaderRightIcons,
+} from '../styles/Header.styles';
 
 function Header() {
   return (
     <Container>
       <LogoContainer>
-        <Logo src="images/logo1.png" alt="왜안뜨노" />
+        <Logo src="images/fulllogo_dark.png" alt="Conti:ed" />
       </LogoContainer>
       <HeaderRight>
         <HeaderRightIcons>
-          <CiSearch />
+          <SearchIcon />
         </HeaderRightIcons>
         <HeaderRightIcons>
-          <CiMenuKebab />
+          <MoreVertIcon />
         </HeaderRightIcons>
       </HeaderRight>
     </Container>

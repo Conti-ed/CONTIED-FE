@@ -1,73 +1,14 @@
-import React from 'react';
-import styled from 'styled-components';
 import Conti from '../components/Conti';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 20px;
-`;
-const KeywordContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  overflow: auto;
-  margin-bottom: 20px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const Keyword = styled.div`
-  background-color: ${(props) => props.theme.keywordColor};
-  padding: 6px 16px;
-  display: grid;
-  place-content: center;
-  height: 32px;
-  font-size: 14px;
-  font-weight: 400;
-  border-radius: 8px;
-  white-space: nowrap;
-  cursor: pointer;
-  letter-spacing: 1px;
-`;
-const MyContiContainer = styled.div``;
-const MyContiHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 10px;
-`;
-const MyContiHeaderTitle = styled.span`
-  font-size: 30px;
-`;
-const MyContiHeaderMore = styled.div`
-  background-color: ${(props) => props.theme.keywordColor};
-  display: grid;
-  place-content: center;
-  width: 48px;
-  height: 18px;
-  font-size: 9px;
-  font-weight: 400;
-  border-radius: 8px;
-  white-space: nowrap;
-  cursor: pointer;
-  letter-spacing: 1px;
-`;
-
-const MyContiBody = styled.div`
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: 1fr 1fr;
-  grid-gap: 15px;
-  overflow: auto;
-  margin-bottom: 15px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const CCMContainer = styled.div``;
-const CCMHeader = styled.div``;
+import {
+  Container,
+  KeywordContainer,
+  Keyword,
+  SectionContainer,
+  SectionHeader,
+  SectionTitle,
+  SectionMore,
+  SectionBody,
+} from '../styles/Home.styles';
 
 function Home() {
   return (
@@ -83,23 +24,28 @@ function Home() {
         <Keyword>감사</Keyword>
         <Keyword>찬양</Keyword>
       </KeywordContainer>
-      <MyContiContainer>
-        <MyContiHeader>
-          <MyContiHeaderTitle>My Conti</MyContiHeaderTitle>
-          <MyContiHeaderMore>더보기</MyContiHeaderMore>
-        </MyContiHeader>
-        <MyContiBody>
+      <SectionContainer>
+        <SectionHeader>
+          <SectionTitle>My Conti</SectionTitle>
+          <SectionMore>더보기</SectionMore>
+        </SectionHeader>
+        <SectionBody>
           {Array.from({ length: 20 }).map((_, index) => (
             <Conti key={index}></Conti>
           ))}
-        </MyContiBody>
-      </MyContiContainer>
-      <CCMContainer>
-        <CCMHeader>
-          <h1>최신 CCM</h1>
-          <div>더보기</div>
-        </CCMHeader>
-      </CCMContainer>
+        </SectionBody>
+      </SectionContainer>
+      <SectionContainer>
+        <SectionHeader>
+          <SectionTitle>최신 CCM</SectionTitle>
+          <SectionMore>더보기</SectionMore>
+        </SectionHeader>
+        <SectionBody>
+          {Array.from({ length: 20 }).map((_, index) => (
+            <Conti key={index}></Conti>
+          ))}
+        </SectionBody>
+      </SectionContainer>
     </Container>
   );
 }

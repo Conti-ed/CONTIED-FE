@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import styled from 'styled-components';
+import {
+  Container,
+  Form,
+  Input,
+  SubmitButton,
+  SongContainer,
+} from '../styles/Upload.styles';
 import {
   Autocomplete,
   List,
@@ -15,27 +21,6 @@ import { SERVER_URL, getKeywords } from '../api';
 import { KeywordType } from '../types';
 import { songsAtom } from '../atoms';
 import SongRegister from '../components/SongRegister';
-
-const Container = styled.div`
-  padding: 20px;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-`;
-
-const Input = styled.input`
-  width: 200px;
-`;
-
-const SubmitButton = styled.input`
-  width: 100px;
-`;
-
-const SongContainer = styled.div``;
 
 type FormValues = {
   description: string;

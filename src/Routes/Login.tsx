@@ -1,12 +1,6 @@
 import KakaoLogin from 'react-kakao-login';
 import { useNavigate } from 'react-router-dom';
-import { styled } from 'styled-components';
-
-const Container = styled.div`
-  display: grid;
-  place-content: center;
-  height: 80vh;
-`;
+import { Container } from '../styles/Login.styles';
 
 function Login() {
   const navigate = useNavigate();
