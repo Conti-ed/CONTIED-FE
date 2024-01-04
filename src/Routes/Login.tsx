@@ -22,8 +22,9 @@ function Login() {
       }
     );
     let data = await res.json();
-    localStorage.setItem("accessToken", data.access_token);
-    localStorage.setItem("refreshToken", data.refresh_token);
+    localStorage.setItem("accessToken", data.kakao_data.access_token);
+    localStorage.setItem("refreshToken", data.kakao_data.refresh_token);
+    localStorage.setItem("user_info", JSON.stringify(data.user_info));
     console.log(res, data);
 
     navigate("/");

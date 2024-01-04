@@ -11,9 +11,9 @@ import {
 import { Delete, KeyboardCommandKey } from "@mui/icons-material";
 import { useQuery } from "react-query";
 import { useRecoilValue } from "recoil";
-import { getKeywords } from "../api";
+import { SERVER_URL, getKeywords } from "../api";
 import { KeywordType } from "../types";
-import { songsAtom } from "../atom";
+import { songsAtom } from "../atoms";
 import SongRegister from "../components/SongRegister";
 
 const Container = styled.div`
@@ -38,6 +38,7 @@ const SubmitButton = styled.input`
 const SongContainer = styled.div``;
 
 type FormValues = {
+  description: string;
   image_url: string;
   keywords: string[];
 };
@@ -52,8 +53,21 @@ function Upload() {
     queryFn: getKeywords,
   });
 
-  const onHandleSubmit = (data: FormValues) => {
-    console.log({ ...data, songs });
+  const onHandleSubmit = async (formData: FormValues) => {
+    const res = await fetch(`${SERVER_URL}/api/conti`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain",
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      body: JSON.stringify({
+        ...formData,
+        songs,
+        user_info: JSON.parse(localStorage["user_info"]),
+      }),
+    });
+    const resData = await res.json();
+    console.log(res.status, resData);
   };
 
   return (
@@ -103,6 +117,9 @@ function Upload() {
                       loading={isLoading}
                       options={allKeywords!}
                       getOptionLabel={(keyword) => keyword.name}
+                      isOptionEqualToValue={(option, value) =>
+                        option.name === value.name
+                      }
                       limitTags={2}
                       size="sm"
                       placeholder="Keywords"
@@ -115,6 +132,11 @@ function Upload() {
                   </>
                 );
               }}
+            />
+            <Input
+              type="tel"
+              placeholder="Descriptionl"
+              {...register("description", { required: false })}
             />
             <Input
               type="tel"

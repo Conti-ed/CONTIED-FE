@@ -3,15 +3,37 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SongType } from "../types";
 import { useSetRecoilState } from "recoil";
-import { songsAtom } from "../atom";
+import { songsAtom } from "../atoms";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+type FormValues = {
+  title: string;
+  artist: string;
+  youtubeUrl?: string;
+  lyrics?: string;
+};
 
 function SongRegister() {
   const { register, handleSubmit } = useForm<SongType>();
   const setSongs = useSetRecoilState(songsAtom);
   const [open, setOpen] = useState(false);
+  const [releaseDate, setReleaseDate] = useState<Date | null>(null);
 
-  const onSubmit = (data: SongType) => {
-    setSongs((prev) => [...prev, data]);
+  const onSubmit = (data: FormValues) => {
+    const newSong: SongType = {
+      title: data.title,
+      artist: data.artist,
+      releaseDate: releaseDate?.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+      youtubeUrl: data.youtubeUrl,
+      lyrics: data.lyrics,
+    };
+    setSongs((prev) => [...prev, newSong]);
     setOpen(false);
   };
 
@@ -55,15 +77,26 @@ function SongRegister() {
               </ListItem>
               <ListItem>
                 <input
-                  placeholder="가수"
-                  {...register("singer", { required: true })}
+                  placeholder="아티스트"
+                  {...register("artist", { required: true })}
                 />
               </ListItem>
             </List>
             <Divider />
             <List>
               <ListItem>
-                <input placeholder="출시일" {...register("releaseDate")} />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DemoItem>
+                      <DatePicker
+                        label="발매일"
+                        onChange={(newDate: any) =>
+                          setReleaseDate(new Date(newDate.$d))
+                        }
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
               </ListItem>
               <ListItem>
                 <input placeholder="가사" {...register("lyrics")} />

@@ -6,9 +6,8 @@ export type KeywordType = {
 export type SongType = {
   id?: number;
   title: string;
-  singer: string;
-  releaseDate?: Date;
+  artist: string;
+  releaseDate?: string;
   youtubeUrl?: string;
   lyrics?: string;
-  conti_id?: number;
 };
