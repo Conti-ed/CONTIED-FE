@@ -31,7 +31,10 @@ export const Keyword = styled.div`
   letter-spacing: 1px;
 `;
 
-export const SectionContainer = styled.div``;
+export const SectionContainer = styled.div`
+  margin-bottom: 30px;
+`;
+
 export const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;

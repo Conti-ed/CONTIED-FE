@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { CiGrid41 } from 'react-icons/ci';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HomeIcon from '@mui/icons-material/Home';
 import Box from '@mui/joy/Box';
@@ -11,6 +10,7 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useState } from 'react';
 import { Tab, Container } from '../styles/TabBar.styles';
+import { HiMiniRectangleGroup } from 'react-icons/hi2';
 
 const TabIcon = ({
   icon,
@@ -51,7 +51,11 @@ function TabBar() {
           <CloudUploadIcon />
         </Tab>
       ) : (
-        <TabIcon icon={<CiGrid41 />} to="/feed" active={pathname === '/feed'} />
+        <TabIcon
+          icon={<HiMiniRectangleGroup />}
+          to="/feed"
+          active={pathname === '/feed'}
+        />
       )}
 
       <Drawer anchor="bottom" open={open} onClose={handleToggleDrawer(false)}>
