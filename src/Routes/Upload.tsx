@@ -47,6 +47,7 @@ function Upload() {
       },
       body: JSON.stringify({
         ...formData,
+        keywords,
         songs,
         user_info: JSON.parse(localStorage['user_info']),
       }),
@@ -107,7 +108,7 @@ function Upload() {
                       }
                       limitTags={2}
                       size="sm"
-                      placeholder="Keywords"
+                      placeholder={'Keywords'}
                       onChange={(_, data) => {
                         onChange(data);
                         setKeywords(data);
