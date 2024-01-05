@@ -135,6 +135,43 @@ export const DarkModeSwitch = styled.label`
   }
 `;
 
+export const ToggleContainer = styled.div<{
+  $isdarkmode: boolean;
+  $moonbackimg: string;
+  $sunbackimg: string;
+}>`
+  position: relative;
+  display: inline-block;
+  width: 60px; // Width of the switch
+  height: 34px; // Height of the switch
+  background-image: ${({ $isdarkmode, $moonbackimg, $sunbackimg }) =>
+    $isdarkmode ? `url(${$moonbackimg})` : `url(${$sunbackimg})`};
+  background-size: cover;
+  border-radius: 34px; // Rounded corners for the switch
+  transition: background-color 0.4s;
+`;
+
+export const ToggleCircle = styled.span<{
+  $isdarkmode: boolean;
+  $moonimg: string;
+  $sunimg: string;
+}>`
+  position: absolute;
+  content: '';
+  height: 26px; // Circle size
+  width: 26px;
+  left: ${({ $isdarkmode }) =>
+    $isdarkmode ? '30px' : '4px'}; // Position changes with mode
+  bottom: 4px;
+  background-color: white; // Circle color
+  transition: left 0.4s;
+  border-radius: 50%; // Circular shape for the circle
+  box-shadow: 0 0 1px #2b4485; // Shadow effect
+  background-image: ${({ $isdarkmode, $moonimg, $sunimg }) =>
+    $isdarkmode ? `url(${$moonimg})` : `url(${$sunimg})`};
+  background-size: cover;
+`;
+
 export const BottomNav = styled.nav`
   position: absolute;
   bottom: 0;

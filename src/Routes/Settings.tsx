@@ -6,7 +6,8 @@ import {
   MenuItem,
   MenuTitle,
   ToggleSwitch,
-  DarkModeSwitch,
+  ToggleContainer,
+  ToggleCircle,
 } from '../styles/Settings.styles';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { HiUserCircle, HiBell } from 'react-icons/hi';
@@ -15,6 +16,13 @@ import { useState } from 'react';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const toggleMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+  const moonImage = '/images/moon.png';
+  const sunImage = '/images/sun.png';
+  const moonBackImage = '/images/moon_back.png';
+  const sunBackImage = '/images/sun_back.png';
   return (
     <SettingsContainer>
       <Section>
@@ -70,15 +78,20 @@ const Settings = () => {
         </SectionTitle>
         <MenuItem>
           <MenuTitle>다크 모드</MenuTitle>
-          <DarkModeSwitch>
-            <input
-              type="checkbox"
-              id="dark-mode-toggle"
-              checked={isDarkMode}
-              onChange={(event) => setIsDarkMode(event.target.checked)}
-            />
-            <span className="slider"></span>
-          </DarkModeSwitch>
+          <div className="darkmode_button">
+            <ToggleContainer
+              $isdarkmode={isDarkMode}
+              onClick={toggleMode}
+              $moonbackimg={moonBackImage}
+              $sunbackimg={sunBackImage}
+            >
+              <ToggleCircle
+                $isdarkmode={isDarkMode}
+                $moonimg={moonImage}
+                $sunimg={sunImage}
+              />
+            </ToggleContainer>
+          </div>
         </MenuItem>
         <MenuItem>
           <MenuTitle>문의 및 건의사항</MenuTitle>
