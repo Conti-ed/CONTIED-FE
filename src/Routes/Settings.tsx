@@ -80,13 +80,13 @@ const Settings = () => {
           <MenuTitle>다크 모드</MenuTitle>
           <div className="darkmode_button">
             <ToggleContainer
-              $isdarkmode={isDarkMode}
+              isdarkmode={isDarkMode}
               onClick={toggleMode}
               $moonbackimg={moonBackImage}
               $sunbackimg={sunBackImage}
             >
               <ToggleCircle
-                $isdarkmode={isDarkMode}
+                isdarkmode={isDarkMode}
                 $moonimg={moonImage}
                 $sunimg={sunImage}
               />
