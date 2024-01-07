@@ -1,16 +1,16 @@
-import { Link, useLocation } from 'react-router-dom';
-import SettingsIcon from '@mui/icons-material/Settings';
-import HomeIcon from '@mui/icons-material/Home';
-import Box from '@mui/joy/Box';
-import Drawer from '@mui/joy/Drawer';
-import List from '@mui/joy/List';
-import Divider from '@mui/joy/Divider';
-import ListItem from '@mui/joy/ListItem';
-import ListItemButton from '@mui/joy/ListItemButton';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useState } from 'react';
-import { Tab, Container } from '../styles/TabBar.styles';
-import { HiMiniRectangleGroup } from 'react-icons/hi2';
+import { Link, useLocation } from "react-router-dom";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HomeIcon from "@mui/icons-material/Home";
+import Box from "@mui/joy/Box";
+import Drawer from "@mui/joy/Drawer";
+import List from "@mui/joy/List";
+import Divider from "@mui/joy/Divider";
+import ListItem from "@mui/joy/ListItem";
+import ListItemButton from "@mui/joy/ListItemButton";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useState } from "react";
+import { Tab, Container } from "../styles/TabBar.styles";
+import { HiMiniRectangleGroup } from "react-icons/hi2";
 
 const TabIcon = ({
   icon,
@@ -33,9 +33,9 @@ function TabBar() {
   const handleToggleDrawer =
     (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
       ) {
         return;
       }
@@ -44,9 +44,9 @@ function TabBar() {
 
   return (
     <Container>
-      <TabIcon icon={<HomeIcon />} to="/" active={pathname === '/'} />
+      <TabIcon icon={<HomeIcon />} to="/" active={pathname === "/"} />
 
-      {pathname === '/feed' ? (
+      {pathname === "/feed" ? (
         <Tab $isActive={true} onClick={handleToggleDrawer(true)}>
           <CloudUploadIcon />
         </Tab>
@@ -54,7 +54,7 @@ function TabBar() {
         <TabIcon
           icon={<HiMiniRectangleGroup />}
           to="/feed"
-          active={pathname === '/feed'}
+          active={pathname === "/feed"}
         />
       )}
 
@@ -65,7 +65,7 @@ function TabBar() {
           onKeyDown={handleToggleDrawer(false)}
         >
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text) => (
+            {["Inbox", "Starred", "Send email", "Drafts"].map((text) => (
               <ListItem key={text}>
                 <ListItemButton>{text}</ListItemButton>
               </ListItem>
@@ -73,7 +73,7 @@ function TabBar() {
           </List>
           <Divider />
           <List>
-            {['All mail', 'Trash', 'Spam'].map((text) => (
+            {["All mail", "Trash", "Spam"].map((text) => (
               <ListItem key={text}>
                 <ListItemButton>{text}</ListItemButton>
               </ListItem>
@@ -85,7 +85,7 @@ function TabBar() {
       <TabIcon
         icon={<SettingsIcon />}
         to="/settings"
-        active={pathname === '/settings'}
+        active={pathname === "/settings"}
       />
     </Container>
   );
