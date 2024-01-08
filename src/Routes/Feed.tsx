@@ -1,12 +1,30 @@
-import { Container } from '../styles/Feed.styles';
-import Conti from '../components/Conti';
+import { Container } from "../styles/Feed.styles";
+import Conti from "../components/Conti";
+import { useQuery } from "react-query";
+import { ContiType } from "../types";
+import { getConties } from "../api";
+import { contiesAtom } from "../atoms";
+import { useRecoilState } from "recoil";
+import { useEffect } from "react";
 
 function Feed() {
+  const { data, isLoading } = useQuery<ContiType[]>({
+    queryKey: ["conties"],
+    queryFn: getConties,
+  });
+  const [conties, setConties] = useRecoilState(contiesAtom);
+
+  useEffect(() => {
+    data && setConties(data);
+  }, [data, setConties]);
+
   return (
     <Container>
-      {Array.from({ length: 100 }).map((_, index) => (
-        <Conti key={index} />
-      ))}
+      {isLoading ? (
+        <div>loading</div>
+      ) : (
+        conties?.map((conti, i) => <Conti key={i} contiData={conti} />)
+      )}
     </Container>
   );
 }

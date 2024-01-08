@@ -1,4 +1,4 @@
-import Conti from '../components/Conti';
+import Conti from "../components/Conti";
 import {
   Container,
   KeywordContainer,
@@ -8,7 +8,7 @@ import {
   SectionTitle,
   SectionMore,
   SectionBody,
-} from '../styles/Home.styles';
+} from "../styles/Home.styles";
 
 function Home() {
   return (
@@ -31,7 +31,7 @@ function Home() {
         </SectionHeader>
         <SectionBody>
           {Array.from({ length: 20 }).map((_, index) => (
-            <Conti key={index}></Conti>
+            <Conti key={index} contiData={null}></Conti>
           ))}
         </SectionBody>
       </SectionContainer>
@@ -42,7 +42,7 @@ function Home() {
         </SectionHeader>
         <SectionBody>
           {Array.from({ length: 20 }).map((_, index) => (
-            <Conti key={index}></Conti>
+            <Conti key={index} contiData={null}></Conti>
           ))}
         </SectionBody>
       </SectionContainer>

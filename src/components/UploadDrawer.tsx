@@ -9,11 +9,12 @@ import {
   Button,
 } from "@mui/joy";
 import InputFileUpload from "./InputFileUpload";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { fileUploadAtom, isDrawerOpenAtom } from "../atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { SERVER_URL } from "../api";
+import { ContiType } from "../types";
 
 type FormValues = {
   playlist_url: string;
@@ -26,6 +27,7 @@ function UploadDrawer() {
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
   const [isFetching, setIsFetching] = useState(false);
   const file = useRecoilValue(fileUploadAtom);
+  const setConties = useSetRecoilState(contiesAtom);
 
   const resetFields = () => {
     resetField("description");
@@ -46,10 +48,16 @@ function UploadDrawer() {
         method: "POST",
         body: formData,
       });
-      const resData = await res.json();
+      const resData: ContiType = await res.json();
       console.log(res.ok, resData);
 
-      if (res.ok) setOpen(false);
+      if (res.ok) {
+        setConties((prev) => {
+          if (prev != null) return [...prev, resData];
+          return [resData];
+        });
+        setOpen(false);
+      }
     } catch (error) {
       console.error("Error during upload:", error);
     } finally {

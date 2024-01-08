@@ -11,3 +11,17 @@ export type SongType = {
   youtubeUrl?: string;
   lyrics?: string;
 };
+
+export type ContiType = null | {
+  description: string;
+  duration: number;
+  id: number;
+  keywords: string[];
+  owner: number;
+  sheet?: number;
+  songs: number[];
+  thumbnail: string;
+  updated_at: string;
+  created_at: string;
+  youtube_url: string;
+};

@@ -1,18 +1,22 @@
-import {
-  Container,
-  ContiImage,
-  ContiTitle,
-  Contikeyword,
-} from '../styles/Conti.styles';
+import { Container, ContiImage, Contikeyword } from "../styles/Conti.styles";
 
-function Conti() {
+interface IConti {
+  contiData: {
+    thumbnail: string;
+    keywords: string[];
+    id: number;
+  } | null;
+}
+
+function Conti({ contiData }: IConti) {
   const onclick = async () => {};
 
   return (
     <Container onClick={onclick}>
-      <ContiImage src="/images/placeholder.jpg" />
-      <ContiTitle>타이틀</ContiTitle>
-      <Contikeyword>키워드</Contikeyword>
+      <ContiImage src={contiData?.thumbnail} />
+      {contiData?.keywords.map((keyword, i) => (
+        <Contikeyword key={i}>{keyword}</Contikeyword>
+      ))}
     </Container>
   );
 }
