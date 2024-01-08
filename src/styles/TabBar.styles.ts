@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Container = styled.div`
   position: fixed;
@@ -13,7 +13,7 @@ export const Container = styled.div`
 
 export const Tab = styled.div<{ $isActive: boolean }>`
   font-size: 24px;
-  color: ${(props) => (props.$isActive ? 'white' : 'gray')};
+  color: ${(props) => (props.$isActive ? "white" : "gray")};
   cursor: pointer;
   margin: 0 35px;
 `;

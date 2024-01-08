@@ -1,16 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import SettingsIcon from "@mui/icons-material/Settings";
-import HomeIcon from "@mui/icons-material/Home";
-import Box from "@mui/joy/Box";
-import Drawer from "@mui/joy/Drawer";
-import List from "@mui/joy/List";
-import Divider from "@mui/joy/Divider";
-import ListItem from "@mui/joy/ListItem";
-import ListItemButton from "@mui/joy/ListItemButton";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useState } from "react";
+import { Settings, Home, CloudUpload } from "@mui/icons-material";
 import { Tab, Container } from "../styles/TabBar.styles";
 import { HiMiniRectangleGroup } from "react-icons/hi2";
+import { useSetRecoilState } from "recoil";
+import { isDrawerOpenAtom } from "../atoms";
+import UploadDrawer from "./UploadDrawer";
 
 const TabIcon = ({
   icon,
@@ -28,27 +22,15 @@ const TabIcon = ({
 
 function TabBar() {
   const { pathname } = useLocation();
-  const [open, setOpen] = useState(false);
-
-  const handleToggleDrawer =
-    (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-      setOpen(inOpen);
-    };
+  const setOpen = useSetRecoilState(isDrawerOpenAtom);
 
   return (
     <Container>
-      <TabIcon icon={<HomeIcon />} to="/" active={pathname === "/"} />
+      <TabIcon icon={<Home />} to="/" active={pathname === "/"} />
 
       {pathname === "/feed" ? (
-        <Tab $isActive={true} onClick={handleToggleDrawer(true)}>
-          <CloudUploadIcon />
+        <Tab $isActive={true} onClick={() => setOpen(true)}>
+          <CloudUpload />
         </Tab>
       ) : (
         <TabIcon
@@ -57,33 +39,9 @@ function TabBar() {
           active={pathname === "/feed"}
         />
       )}
-
-      <Drawer anchor="bottom" open={open} onClose={handleToggleDrawer(false)}>
-        <Box
-          role="presentation"
-          onClick={handleToggleDrawer(false)}
-          onKeyDown={handleToggleDrawer(false)}
-        >
-          <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text) => (
-              <ListItem key={text}>
-                <ListItemButton>{text}</ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text) => (
-              <ListItem key={text}>
-                <ListItemButton>{text}</ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-
+      <UploadDrawer />
       <TabIcon
-        icon={<SettingsIcon />}
+        icon={<Settings />}
         to="/settings"
         active={pathname === "/settings"}
       />
