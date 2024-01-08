@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Container, ContiImage, Contikeyword } from "../styles/Conti.styles";
 
 interface IConti {
@@ -9,7 +10,11 @@ interface IConti {
 }
 
 function Conti({ contiData }: IConti) {
-  const onclick = async () => {};
+  const navigate = useNavigate();
+
+  const onclick = async () => {
+    navigate(`/conti/${contiData?.id}`);
+  };
 
   return (
     <Container onClick={onclick}>
