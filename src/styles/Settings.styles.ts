@@ -1,9 +1,8 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const SettingsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  color: white;
   height: 100%;
 `;
 
@@ -63,7 +62,7 @@ export const ToggleSwitch = styled.label`
 
   .slider:before {
     position: absolute;
-    content: '';
+    content: "";
     height: 26px;
     width: 26px;
     left: 4px;
@@ -87,7 +86,7 @@ export const ToggleSwitch = styled.label`
 `;
 
 export const ToggleContainer = styled.div<{
-  isdarkmode: boolean;
+  $isdark: boolean;
   $moonbackimg: string;
   $sunbackimg: string;
 }>`
@@ -96,30 +95,28 @@ export const ToggleContainer = styled.div<{
   width: 60px; // Width of the switch
   height: 34px; // Height of the switch
   background-image: ${(props) =>
-    props.isdarkmode
-      ? `url(${props.$moonbackimg})`
-      : `url(${props.$sunbackimg})`};
+    props.$isdark ? `url(${props.$moonbackimg})` : `url(${props.$sunbackimg})`};
   background-size: cover;
   border-radius: 34px; // Rounded corners for the switch
   transition: background-color 0.4s;
 `;
 
 export const ToggleCircle = styled.span<{
-  isdarkmode: boolean;
+  $isdark: boolean;
   $moonimg: string;
   $sunimg: string;
 }>`
   position: absolute;
-  content: '';
+  content: "";
   height: 26px; // Circle size
   width: 26px;
-  left: ${(props) => (props.isdarkmode ? '30px' : '4px')};
+  left: ${(props) => (props.$isdark ? "30px" : "4px")};
   bottom: 4px;
   background-color: white; // Circle color
   transition: left 0.4s;
   border-radius: 50%; // Circular shape for the circle
   box-shadow: 0 0 1px #2b4485; // Shadow effect
   background-image: ${(props) =>
-    props.isdarkmode ? `url(${props.$moonimg})` : `url(${props.$sunimg})`};
+    props.$isdark ? `url(${props.$moonimg})` : `url(${props.$sunimg})`};
   background-size: cover;
 `;

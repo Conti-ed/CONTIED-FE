@@ -7,12 +7,19 @@ import {
   HeaderRight,
   HeaderRightIcons,
 } from "../styles/Header.styles";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 function Header() {
+  const isDark = useRecoilValue(isDarkAtom);
+
   return (
     <Container>
       <LogoContainer>
-        <Logo src="/images/fulllogo_dark.png" alt="Conti:ed" />
+        <Logo
+          src={isDark ? "/images/fulllogo_dark.png" : "/images/logo.png"}
+          alt="Conti:ed"
+        />
       </LogoContainer>
       <HeaderRight>
         <HeaderRightIcons>

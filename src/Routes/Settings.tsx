@@ -8,21 +8,24 @@ import {
   ToggleSwitch,
   ToggleContainer,
   ToggleCircle,
-} from '../styles/Settings.styles';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { HiUserCircle, HiBell } from 'react-icons/hi';
-import { FaGuitar } from 'react-icons/fa6';
-import { useState } from 'react';
+} from "../styles/Settings.styles";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { HiUserCircle, HiBell } from "react-icons/hi";
+import { FaGuitar } from "react-icons/fa6";
+import { useRecoilState } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 const Settings = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+  const moonImage = "/images/moon.png";
+  const sunImage = "/images/sun.png";
+  const moonBackImage = "/images/moon_back.png";
+  const sunBackImage = "/images/sun_back.png";
+
   const toggleMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDark(!isDark);
   };
-  const moonImage = '/images/moon.png';
-  const sunImage = '/images/sun.png';
-  const moonBackImage = '/images/moon_back.png';
-  const sunBackImage = '/images/sun_back.png';
+
   return (
     <SettingsContainer>
       <Section>
@@ -80,13 +83,13 @@ const Settings = () => {
           <MenuTitle>다크 모드</MenuTitle>
           <div className="darkmode_button">
             <ToggleContainer
-              isdarkmode={isDarkMode}
+              $isdark={isDark}
               onClick={toggleMode}
               $moonbackimg={moonBackImage}
               $sunbackimg={sunBackImage}
             >
               <ToggleCircle
-                isdarkmode={isDarkMode}
+                $isdark={isDark}
                 $moonimg={moonImage}
                 $sunimg={sunImage}
               />
