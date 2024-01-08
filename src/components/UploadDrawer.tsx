@@ -49,11 +49,12 @@ function UploadDrawer() {
       const resData = await res.json();
       console.log(res.ok, resData);
 
-      if (res.ok) setOpen(true);
+      if (res.ok) setOpen(false);
     } catch (error) {
       console.error("Error during upload:", error);
     } finally {
       setIsFetching(false);
+      resetFields();
     }
   };
 
