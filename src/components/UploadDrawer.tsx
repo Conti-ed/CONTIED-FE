@@ -49,7 +49,7 @@ function UploadDrawer() {
         body: formData,
       });
       const resData: ContiType = await res.json();
-      console.log(res.ok, resData);
+      console.log(resData);
 
       if (res.ok) {
         setConties((prev) => {
