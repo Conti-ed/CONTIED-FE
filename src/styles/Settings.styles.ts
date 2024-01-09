@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const SettingsContainer = styled.div`
   display: flex;
@@ -7,7 +7,7 @@ export const SettingsContainer = styled.div`
 `;
 
 export const Section = styled.section`
-  margin-top: 50px;
+  margin: 40px 0px 0px 0px;
 `;
 
 export const SectionTitle = styled.span`
@@ -62,7 +62,7 @@ export const ToggleSwitch = styled.label`
 
   .slider:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 26px;
     width: 26px;
     left: 4px;
@@ -107,10 +107,10 @@ export const ToggleCircle = styled.span<{
   $sunimg: string;
 }>`
   position: absolute;
-  content: "";
+  content: '';
   height: 26px; // Circle size
   width: 26px;
-  left: ${(props) => (props.$isdark ? "30px" : "4px")};
+  left: ${(props) => (props.$isdark ? '30px' : '4px')};
   bottom: 4px;
   background-color: white; // Circle color
   transition: left 0.4s;
