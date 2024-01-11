@@ -7,14 +7,14 @@ import {
   Input,
   ListSubheader,
   Button,
-} from '@mui/joy';
-import InputFileUpload from './InputFileUpload';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from '../atoms';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { SERVER_URL } from '../api';
-import { ContiType } from '../types';
+} from "@mui/joy";
+import InputFileUpload from "./InputFileUpload";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { SERVER_URL } from "../api";
+import { ContiType } from "../types";
 
 type FormValues = {
   playlist_url: string;
@@ -26,7 +26,7 @@ function UploadDrawer() {
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
   const [isFetching, setIsFetching] = useState(false);
   const [hashtags, setHashtags] = useState<string[]>([]);
-  const [hashtagInput, setHashtagInput] = useState('');
+  const [hashtagInput, setHashtagInput] = useState("");
   const file = useRecoilValue(fileUploadAtom);
   const setConties = useSetRecoilState(contiesAtom);
   const setFontStyle = {
@@ -37,13 +37,13 @@ function UploadDrawer() {
     if (event.keyCode === 13) {
       event.preventDefault();
       const newHashtag = hashtagInput.trim();
-      if (newHashtag !== '' && !hashtags.includes(newHashtag)) {
+      if (newHashtag !== "" && !hashtags.includes(newHashtag)) {
         if (hashtags.length > 2) {
-          alert('너무 많음!');
+          alert("너무 많음!");
           return;
         }
         setHashtags([...hashtags, newHashtag]);
-        setHashtagInput('');
+        setHashtagInput("");
       }
     }
   };
@@ -53,22 +53,22 @@ function UploadDrawer() {
   };
 
   const resetFields = () => {
-    resetField('description');
-    resetField('playlist_url');
+    resetField("description");
+    resetField("playlist_url");
   };
 
   const onSubmit = async (data: FormValues) => {
     try {
       setIsFetching(true);
       const formData = new FormData();
-      formData.append('file', file!);
-      formData.append('user_id', JSON.parse(localStorage['user_info']).id);
-      formData.append('conti_info', JSON.stringify(data));
-      formData.append('enctype', 'multipart/form-data');
-      formData.append('keywords', JSON.stringify(hashtags));
+      formData.append("file", file!);
+      formData.append("user_id", JSON.parse(localStorage["user_info"]).id);
+      formData.append("conti_info", JSON.stringify(data));
+      formData.append("enctype", "multipart/form-data");
+      formData.append("keywords", JSON.stringify(hashtags));
 
       const res = await fetch(`${SERVER_URL}/api/conti`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
       const resData: ContiType = await res.json();
@@ -82,7 +82,7 @@ function UploadDrawer() {
         setOpen(false);
       }
     } catch (error) {
-      console.error('Error during upload:', error);
+      console.error("Error during upload:", error);
     } finally {
       setIsFetching(false);
       resetFields();
@@ -100,25 +100,25 @@ function UploadDrawer() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <List>
             <ListSubheader sx={setFontStyle}>
-              Youtube 플레이리스트 <span style={{ color: 'red' }}>(필수)</span>
+              Youtube 플레이리스트 <span style={{ color: "red" }}>(필수)</span>
             </ListSubheader>
             <ListItem>
               <Input
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   ...setFontStyle,
                 }}
-                {...register('playlist_url', { required: true })}
+                {...register("playlist_url", { required: true })}
                 placeholder="https://www.youtube.com/playlist?list=..."
               />
             </ListItem>
             <ListSubheader sx={setFontStyle}>
-              키워드 <span style={{ color: 'red' }}>(필수)</span>
+              키워드 <span style={{ color: "red" }}>(필수)</span>
             </ListSubheader>
             <ListItem>
               <Input
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   ...setFontStyle,
                 }}
                 value={hashtagInput}
@@ -141,7 +141,7 @@ function UploadDrawer() {
               <InputFileUpload />
               <span
                 style={{
-                  fontSize: 'small',
+                  fontSize: "small",
                   ...setFontStyle,
                 }}
               >
@@ -152,10 +152,10 @@ function UploadDrawer() {
             <ListItem>
               <Input
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   ...setFontStyle,
                 }}
-                {...register('description')}
+                {...register("description")}
                 placeholder="설명을 입력해주세요."
               />
             </ListItem>
