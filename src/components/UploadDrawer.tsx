@@ -18,7 +18,6 @@ import { ContiType } from '../types';
 
 type FormValues = {
   playlist_url: string;
-  keywords: string;
   description?: string;
 };
 
@@ -34,6 +33,7 @@ function UploadDrawer() {
     fontFamily: "'Nunito Sans', 'Noto Sans KR', sans-serif",
   };
 
+  console.log(hashtags);
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && hashtagInput.trim() !== '') {
       if (!hashtags.includes(hashtagInput)) {
@@ -49,7 +49,6 @@ function UploadDrawer() {
 
   const resetFields = () => {
     resetField('description');
-    resetField('keywords');
     resetField('playlist_url');
   };
 
@@ -61,6 +60,7 @@ function UploadDrawer() {
       formData.append('user_id', JSON.parse(localStorage['user_info']).id);
       formData.append('conti_info', JSON.stringify(data));
       formData.append('enctype', 'multipart/form-data');
+      formData.append('keywords', JSON.stringify(hashtags));
 
       const res = await fetch(`${SERVER_URL}/api/conti`, {
         method: 'POST',
