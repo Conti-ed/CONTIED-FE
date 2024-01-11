@@ -1,12 +1,14 @@
 import * as React from "react";
 import Button from "@mui/joy/Button";
 import SvgIcon from "@mui/joy/SvgIcon";
-import { styled } from "@mui/joy";
-import { ChangeEvent } from "react";
+
+import { ChangeEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { fileUploadAtom } from "../atoms";
+import { styled as muistyled } from "@mui/joy";
+import styled from "styled-components";
 
-const VisuallyHiddenInput = styled("input")`
+const VisuallyHiddenInput = muistyled("input")`
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   height: 1px;
@@ -18,17 +20,41 @@ const VisuallyHiddenInput = styled("input")`
   width: 1px;
 `;
 
+const DeleteButton = styled.button`
+  background-color: #007bff;
+  border: none;
+  padding: 0 4px;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  justify-content: center;
+`;
+
 export default function InputFileUpload() {
   const setFile = useSetRecoilState(fileUploadAtom);
+  const [fileName, setFileName] = useState("악보가 있으면 더 좋아요!");
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files && e.target.files[0];
     if (selectedFile && selectedFile.type === "application/pdf") {
       setFile(selectedFile);
+      setFileName(selectedFile.name);
     } else {
       alert("Please select a PDF file.");
       e.target.value = "";
+      setFileName("악보가 있으면 더 좋아요!");
     }
+  };
+
+  const handleDeleteFile = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setFile(null);
+    setFileName("악보가 있으면 더 좋아요!");
+  };
+
+  const handleUploadClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // 이벤트 전파 중지
   };
 
   return (
@@ -37,7 +63,11 @@ export default function InputFileUpload() {
       role={undefined}
       tabIndex={-1}
       variant="outlined"
-      color="neutral"
+      sx={{
+        fontFamily: "Nunito Sans",
+        color: "text.disabled",
+        bgcolor: "white",
+      }}
       startDecorator={
         <SvgIcon>
           <svg
@@ -56,12 +86,21 @@ export default function InputFileUpload() {
         </SvgIcon>
       }
     >
-      Upload a file
-      <VisuallyHiddenInput
-        type="file"
-        accept=".pdf"
-        onChange={handleFileChange}
-      />
+      {fileName !== "악보가 있으면 더 좋아요!" ? (
+        <>
+          {fileName}
+          <DeleteButton onClick={handleDeleteFile}>X</DeleteButton>
+        </>
+      ) : (
+        <>
+          {fileName}
+          <VisuallyHiddenInput
+            type="file"
+            accept=".pdf"
+            onChange={handleFileChange}
+          />
+        </>
+      )}
     </Button>
   );
 }
