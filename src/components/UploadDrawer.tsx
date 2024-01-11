@@ -35,9 +35,11 @@ function UploadDrawer() {
 
   console.log(hashtags);
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && hashtagInput.trim() !== '') {
-      if (!hashtags.includes(hashtagInput)) {
-        setHashtags([...hashtags, hashtagInput]);
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const newHashtag = event.currentTarget.value.trim();
+      if (newHashtag !== '' && !hashtags.includes(newHashtag)) {
+        setHashtags([...hashtags, newHashtag]);
       }
       setHashtagInput('');
     }
