@@ -34,10 +34,14 @@ function UploadDrawer() {
   };
 
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.keyCode === 13) {
       event.preventDefault();
       const newHashtag = hashtagInput.trim();
       if (newHashtag !== '' && !hashtags.includes(newHashtag)) {
+        if (hashtags.length > 2) {
+          alert('너무 많음!');
+          return;
+        }
         setHashtags([...hashtags, newHashtag]);
         setHashtagInput('');
       }
