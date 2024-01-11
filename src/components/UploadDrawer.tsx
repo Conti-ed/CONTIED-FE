@@ -33,15 +33,14 @@ function UploadDrawer() {
     fontFamily: "'Nunito Sans', 'Noto Sans KR', sans-serif",
   };
 
-  console.log(hashtags);
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       const newHashtag = hashtagInput.trim();
       if (newHashtag !== '' && !hashtags.includes(newHashtag)) {
         setHashtags([...hashtags, newHashtag]);
+        setHashtagInput('');
       }
-      setHashtagInput('');
     }
   };
 
