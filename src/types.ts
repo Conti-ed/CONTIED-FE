@@ -1,3 +1,12 @@
+export type UserType = {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type KeywordType = {
   id?: number;
   name: string;
@@ -13,15 +22,15 @@ export type SongType = {
 };
 
 export type ContiType = null | {
+  id: number;
+  owner: UserType;
+  keywords: string[];
+  songs: SongType[];
+  sheet?: number;
+  thumbnail: string;
   description: string;
   duration: number;
-  id: number;
-  keywords: string[];
-  owner: number;
-  sheet?: number;
-  songs: number[];
-  thumbnail: string;
+  youtube_url: string;
   updated_at: string;
   created_at: string;
-  youtube_url: string;
 };

@@ -10,3 +10,7 @@ export async function getKeywords() {
 export async function getConties() {
   return (await fetch(`${SERVER_URL}/api/conti`)).json();
 }
+
+export async function getConti(cid: number) {
+  return (await fetch(`${SERVER_URL}/api/conti/${cid}`)).json();
+}
