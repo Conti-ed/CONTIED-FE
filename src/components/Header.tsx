@@ -1,7 +1,7 @@
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { FaWifi, FaSignal } from "react-icons/fa";
-import { FaBatteryFull } from "react-icons/fa6";
+import { IoIosBatteryFull } from "react-icons/io";
 import {
   TopIconsContainer,
   Icon,
@@ -11,6 +11,7 @@ import {
   Logo,
   HeaderRight,
   HeaderRightIcons,
+  Clock,
 } from "../styles/Header.styles";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "../atoms";
@@ -21,16 +22,16 @@ function Header() {
   return (
     <>
       <TopIconsContainer>
-        <div>19:41</div>
+        <Clock>19:41</Clock>
         <RightIconGroup>
           <Icon>
-            <FaSignal />
+            <FaSignal size="20" />
           </Icon>
           <Icon>
-            <FaWifi />
+            <FaWifi size="20" />
           </Icon>
           <Icon>
-            <FaBatteryFull />
+            <IoIosBatteryFull size="30" />
           </Icon>
         </RightIconGroup>
       </TopIconsContainer>

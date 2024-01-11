@@ -3,19 +3,24 @@ import { styled } from "styled-components";
 export const TopIconsContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 20px 20px 0px 20px;
+  padding: 13px 20px 0px 20px;
   margin-left: 30px;
   margin-bottom: 30px;
   align-items: center;
 `;
 
+export const Clock = styled.div`
+  font-size: 18px;
+`;
+
 export const Icon = styled.div`
-  margin-right: 10px;
+  margin-right: 8px;
 `;
 
 export const RightIconGroup = styled.div`
-  margin-right: 15px;
+  margin-right: 3px;
   display: flex;
+  align-items: center;
 `;
 
 export const Container = styled.div`
