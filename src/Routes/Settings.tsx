@@ -36,7 +36,7 @@ const Settings = () => {
           프로필
         </SectionTitle>
         <MenuItem>
-          <MenuTitle>내 콘티</MenuTitle>
+          <MenuTitle>내 콘티의 모든 것</MenuTitle>
           <ChevronRightIcon />
         </MenuItem>
         <MenuItem>

@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Container, ContiImage, Contikeyword } from "../styles/Conti.styles";
+import {
+  Container,
+  ContiImage,
+  Contikeyword,
+  KeywordsContainer,
+} from "../styles/Conti.styles";
 
 interface IConti {
   contiData: {
@@ -19,9 +24,11 @@ function Conti({ contiData }: IConti) {
   return (
     <Container onClick={onclick}>
       <ContiImage src={contiData?.thumbnail} />
-      {contiData?.keywords.map((keyword, i) => (
-        <Contikeyword key={i}>{keyword}</Contikeyword>
-      ))}
+      <KeywordsContainer>
+        {contiData?.keywords.map((keyword, i) => (
+          <Contikeyword key={i}>#{keyword}</Contikeyword>
+        ))}
+      </KeywordsContainer>
     </Container>
   );
 }

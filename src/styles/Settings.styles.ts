@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const SettingsContainer = styled.div`
   display: flex;
@@ -62,7 +62,7 @@ export const ToggleSwitch = styled.label`
 
   .slider:before {
     position: absolute;
-    content: '';
+    content: "";
     height: 26px;
     width: 26px;
     left: 4px;
@@ -92,8 +92,8 @@ export const ToggleContainer = styled.div<{
 }>`
   position: relative;
   display: inline-block;
-  width: 60px; // Width of the switch
-  height: 34px; // Height of the switch
+  width: 60px;
+  height: 34px;
   background-image: ${(props) =>
     props.$isdark ? `url(${props.$moonbackimg})` : `url(${props.$sunbackimg})`};
   background-size: cover;
@@ -107,10 +107,10 @@ export const ToggleCircle = styled.span<{
   $sunimg: string;
 }>`
   position: absolute;
-  content: '';
+  content: "";
   height: 26px; // Circle size
   width: 26px;
-  left: ${(props) => (props.$isdark ? '30px' : '4px')};
+  left: ${(props) => (props.$isdark ? "30px" : "4px")};
   bottom: 4px;
   background-color: white; // Circle color
   transition: left 0.4s;

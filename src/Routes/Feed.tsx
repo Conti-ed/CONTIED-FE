@@ -1,4 +1,4 @@
-import { Container } from "../styles/Feed.styles";
+import { CenteredContainer, Container, Spinner } from "../styles/Feed.styles";
 import Conti from "../components/Conti";
 import { useQuery } from "react-query";
 import { ContiType } from "../types";
@@ -21,7 +21,10 @@ function Feed() {
   return (
     <Container>
       {isLoading ? (
-        <div>loading</div>
+        <CenteredContainer>
+          <div>잠시만요...</div>
+          <Spinner />
+        </CenteredContainer>
       ) : (
         conties?.map((conti, i) => <Conti key={i} contiData={conti} />)
       )}
