@@ -1,10 +1,10 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Drawer = styled.div`
   position: fixed;
   bottom: 0;
   width: 100%;
-  max-width: 400px; // 이 값을 조절하여 Drawer의 크기를 설정하세요
+  max-width: 400px;
   background-color: white;
   border-top: 1px solid #ddd;
   padding: 16px;

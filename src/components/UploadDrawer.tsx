@@ -8,6 +8,7 @@
 //   ListSubheader,
 //   Button,
 // } from "@mui/joy";
+import { TiDelete } from "react-icons/ti";
 import InputFileUpload from "./InputFileUpload";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
@@ -109,7 +110,7 @@ const Button = styled.button`
 const HashtagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 `;
 
@@ -117,33 +118,32 @@ const Hashtag = styled.span`
   ${setFontStyle}
   background-color: #e1ecf4;
   color: #3178c6;
-  padding: 4px 8px;
+  padding: 4px 0px 4px 8px;
   border-radius: 15px;
   display: flex;
   align-items: center;
-  margin-top: 0;
-  margin-bottom: 0;
   cursor: pointer;
+  gap: 0px;
 
-  & > span {
-    margin-right: 4px;
+  & > *:last-child {
+    margin-left: 0;
   }
 `;
 
 const DeleteButton = styled.button`
-  background-color: #007bff;
+  padding: 0px 4px 0px 2px;
+  background-color: transparent;
   border: none;
-  padding: 0 4px;
   color: white;
-  margin-left: 5px;
   cursor: pointer;
-  border-radius: 5px;
+  display: flex;
+  align-items: center;
 `;
 
 const Divider = styled.hr`
   border: none;
   height: 1px;
-  background-color: #d1d5db; // 여기서 선의 색상을 조정할 수 있습니다.
+  background-color: #d1d5db;
   margin-top: 17px;
 `;
 
@@ -300,7 +300,7 @@ function UploadDrawer() {
                 <Hashtag key={index}>
                   #{hashtag}
                   <DeleteButton onClick={() => handleDeleteHashtag(index)}>
-                    X
+                    <TiDelete size="20" color="#8ab1e8" />
                   </DeleteButton>
                 </Hashtag>
               ))}

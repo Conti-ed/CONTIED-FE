@@ -1,12 +1,12 @@
-import { Box, Button, Drawer, List, ListItem, Divider } from '@mui/joy';
-import { useState } from 'react';
-import { SongType } from '../types';
-import { useSetRecoilState } from 'recoil';
-import { songsAtom } from '../atoms';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useForm } from 'react-hook-form';
+import { Box, Button, Drawer, List, ListItem, Divider } from "@mui/joy";
+import { useState } from "react";
+import { SongType } from "../types";
+import { useSetRecoilState } from "recoil";
+import { songsAtom } from "../atoms";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useForm } from "react-hook-form";
 
 type FormValues = {
   title: string;
@@ -25,10 +25,10 @@ function SongRegister() {
     const newSong: SongType = {
       title: data.title,
       artist: data.artist,
-      releaseDate: releaseDate?.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
+      releaseDate: releaseDate?.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
       }),
       youtubeUrl: data.youtubeUrl,
       lyrics: data.lyrics,
@@ -40,9 +40,9 @@ function SongRegister() {
   const toggleDrawer =
     (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
-        event.type === 'keydown' &&
-        ((event as React.KeyboardEvent).key === 'Tab' ||
-          (event as React.KeyboardEvent).key === 'Shift')
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
       ) {
         return;
       }
@@ -51,20 +51,20 @@ function SongRegister() {
     };
 
   return (
-    <Box sx={{ display: 'flex', width: '100%' }}>
+    <Box sx={{ display: "flex", width: "100%" }}>
       <Button
-        variant={'plain'}
+        variant={"plain"}
         color="neutral"
         onClick={toggleDrawer(true)}
-        style={{ width: '100%', textAlign: 'left' }}
+        style={{ width: "100%", textAlign: "left" }}
       >
         찬양 추가하기
       </Button>
       <Drawer
         open={open}
         onClose={toggleDrawer(false)}
-        anchor={'bottom'}
-        color={'primary'}
+        anchor={"bottom"}
+        color={"primary"}
       >
         <Box role="presentation">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -72,13 +72,13 @@ function SongRegister() {
               <ListItem>
                 <input
                   placeholder="제목"
-                  {...register('title', { required: true })}
+                  {...register("title", { required: true })}
                 />
               </ListItem>
               <ListItem>
                 <input
                   placeholder="아티스트"
-                  {...register('artist', { required: true })}
+                  {...register("artist", { required: true })}
                 />
               </ListItem>
             </List>
@@ -86,7 +86,7 @@ function SongRegister() {
             <List>
               <ListItem>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={['DatePicker']}>
+                  <DemoContainer components={["DatePicker"]}>
                     <DemoItem>
                       <DatePicker
                         label="발매일"
@@ -99,10 +99,10 @@ function SongRegister() {
                 </LocalizationProvider>
               </ListItem>
               <ListItem>
-                <input placeholder="가사" {...register('lyrics')} />
+                <input placeholder="가사" {...register("lyrics")} />
               </ListItem>
               <ListItem>
-                <input placeholder="링크" {...register('youtubeUrl')} />
+                <input placeholder="링크" {...register("youtubeUrl")} />
               </ListItem>
               <ListItem>
                 <input type="submit" />
