@@ -10,7 +10,7 @@ import Upload from "./Routes/Upload";
 import Settings from "./Routes/Settings";
 import Header from "./components/Header";
 import Login from "./Routes/Login";
-import ContiDetail from "./Routes/ContiDatail";
+import ContiDetail from "./Routes/ContiDetail";
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
