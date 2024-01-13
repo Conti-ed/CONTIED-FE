@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Container = styled.div`
   display: flex;
@@ -65,6 +65,7 @@ export const SectionBody = styled.div`
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: 1fr 1fr;
   grid-gap: 15px;
+  grid-auto-flow: column;
   overflow: auto;
   margin-bottom: 30px;
 

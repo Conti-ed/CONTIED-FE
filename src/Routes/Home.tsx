@@ -1,3 +1,4 @@
+import { useQuery } from "react-query";
 import Conti from "../components/Conti";
 import {
   Container,
@@ -9,8 +10,16 @@ import {
   SectionMore,
   SectionBody,
 } from "../styles/Home.styles";
+import { getMyConties } from "../api";
+import ContiPlaceholder from "../components/ContiPlaceholder";
+import { ContiType } from "../types";
 
 function Home() {
+  const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
+    ["myConti"],
+    { queryFn: getMyConties }
+  );
+
   return (
     <Container>
       <KeywordContainer>
@@ -30,9 +39,13 @@ function Home() {
           <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
-          {Array.from({ length: 20 }).map((_, index) => (
-            <Conti key={index} contiData={null}></Conti>
-          ))}
+          {myContiIsLoading
+            ? Array.from({ length: 20 })
+                .slice(20)
+                .map((_, index) => <ContiPlaceholder key={index} size={115} />)
+            : myConti!.map((conti, index) => (
+                <Conti key={index} contiData={conti} />
+              ))}
         </SectionBody>
       </SectionContainer>
       <SectionContainer>
