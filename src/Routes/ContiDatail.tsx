@@ -1,8 +1,9 @@
 import { useQuery } from "react-query";
-import { getConti } from "../api";
+import { SERVER_URL, getConti } from "../api";
 import { ContiType } from "../types";
 import { Link, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import { Button } from "../styles/UploadDrawer.styles";
 
 const Container = styled.div`
   padding-top: 35px;
@@ -56,6 +57,8 @@ function ContiDetail() {
     queryFn: () => getConti(Number(cid)),
   });
 
+  console.log(data);
+
   return (
     <Container>
       {isLoading ? (
@@ -78,6 +81,15 @@ function ContiDetail() {
               <div key={i}>{k}</div>
             ))}
           </div>
+          {data?.sheet && (
+            <Link
+              target="_blank"
+              rel="noreferrer"
+              to={`${SERVER_URL}/api/sheet/${data.sheet}`}
+            >
+              <Button>악보 보기</Button>
+            </Link>
+          )}
         </div>
       )}
     </Container>
