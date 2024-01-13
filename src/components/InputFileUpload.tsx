@@ -3,7 +3,7 @@ import Button from "@mui/joy/Button";
 import SvgIcon from "@mui/joy/SvgIcon";
 import { LuDelete } from "react-icons/lu";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, forwardRef, useImperativeHandle, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { fileUploadAtom } from "../atoms";
 import { styled as muistyled } from "@mui/joy";
@@ -33,7 +33,7 @@ const DeleteButton = styled.button`
   align-items: center;
 `;
 
-export default function InputFileUpload() {
+const InputFileUpload = forwardRef((props, ref) => {
   const setFile = useSetRecoilState(fileUploadAtom);
   const [fileName, setFileName] = useState("악보가 있으면 더 좋아요!");
 
@@ -54,6 +54,15 @@ export default function InputFileUpload() {
     setFile(null);
     setFileName("악보가 있으면 더 좋아요!");
   };
+
+  const resetUpload = () => {
+    setFile(null);
+    setFileName("악보가 있으면 더 좋아요!");
+  };
+
+  useImperativeHandle(ref, () => ({
+    resetUpload,
+  }));
 
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
@@ -101,4 +110,6 @@ export default function InputFileUpload() {
       )}
     </div>
   );
-}
+});
+
+export default InputFileUpload;
