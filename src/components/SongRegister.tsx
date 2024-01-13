@@ -13,6 +13,7 @@ type FormValues = {
   artist: string;
   youtubeUrl?: string;
   lyrics?: string;
+  duration: number;
 };
 
 function SongRegister() {
@@ -32,6 +33,7 @@ function SongRegister() {
       }),
       youtubeUrl: data.youtubeUrl,
       lyrics: data.lyrics,
+      duration: data.duration,
     };
     setSongs((prev) => [...prev, newSong]);
     setOpen(false);
