@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { getConti } from "../api";
+import { SERVER_URL, getConti } from "../api";
 import { ContiType } from "../types";
 import { Link, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
@@ -176,6 +176,15 @@ function ContiDetail() {
             ))}
           </Keywords>
         </div>
+      )}
+      {data?.sheet && (
+        <Link
+          target="_blank"
+          rel="noreferrer"
+          to={`${SERVER_URL}/api/sheet/${data.sheet}`}
+        >
+          <button>악보 보기</button>
+        </Link>
       )}
     </Container>
   );
