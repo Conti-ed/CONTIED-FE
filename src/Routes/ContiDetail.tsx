@@ -118,9 +118,45 @@ function ContiDetail() {
   console.log(data);
 
   const formatDuration = (duration: number) => {
-    const minutes = Math.floor(duration / 60);
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
     const seconds = duration % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    const formattedSeconds = seconds.toString().padStart(2, "0");
+
+    if (hours > 0) {
+      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
+    } else {
+      return `${minutes}:${formattedSeconds}`;
+    }
+  };
+
+  const parseLocalDateString = (dateString: string): string => {
+    const [datePart, timePart] = dateString.split(" ");
+    const [month, day, year] = datePart.split("/").map(Number);
+    const [hourString, minuteString] = timePart.slice(0, -2).split(":");
+    const ampm = timePart.slice(-2).toLowerCase();
+
+    let hour = parseInt(hourString);
+    const minute = parseInt(minuteString);
+
+    if (ampm === "pm" && hour !== 12) {
+      hour += 12;
+    } else if (ampm === "am" && hour === 12) {
+      hour = 0;
+    }
+
+    const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+    return utcDate.toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -168,7 +204,15 @@ function ContiDetail() {
             ))}
           </SongList>
           <div>{data?.owner.name}</div>
-          <div>{data?.created_at}</div>
+          <div>
+            <div>
+              <div>
+                {data?.created_at
+                  ? parseLocalDateString(data.created_at).toLocaleString()
+                  : "Loading..."}
+              </div>
+            </div>
+          </div>
           <div>{data?.duration ? formatDuration(data.duration) : "0분"}</div>
           <Keywords>
             {data?.keywords.map((k, i) => (
@@ -178,11 +222,7 @@ function ContiDetail() {
         </div>
       )}
       {data?.sheet && (
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          to={`${SERVER_URL}/api/sheet/${data.sheet}`}
-        >
+        <Link to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
           <button>악보 보기</button>
         </Link>
       )}
