@@ -3,6 +3,8 @@ import { getConti } from "../api";
 import { ContiType } from "../types";
 import { Link, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import { MdKeyboardArrowLeft } from "react-icons/md";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Container = styled.div`
   padding-top: 35px;
@@ -38,15 +40,73 @@ const CenteredContainer = styled.div`
 `;
 
 const BackButton = styled(Link)`
-  display: inline-block;
-  padding: 8px 12px;
-  background-color: #f0f0f0;
-  color: #333;
-  text-decoration: none;
-  border-radius: 4px;
-  top: 70px;
-  left: 10px;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
   margin-bottom: 20px;
+  gap: 5px;
+`;
+
+const SongList = styled.div`
+  text-align: left;
+  font-size: 15px;
+  margin-left: 10px;
+`;
+
+const SongItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 10px 20px 0px;
+`;
+
+const SongNumber = styled.span`
+  min-width: 20px;
+  margin-right: 8px;
+`;
+
+const SongInfo = styled.span`
+  padding: 0px 30px 0px 0px;
+`;
+
+const SongTitle = styled.span`
+  font-weight: 700;
+  flex: 1;
+`;
+
+const SongArtist = styled.span``;
+
+const SongDuration = styled.span``;
+
+const SongDetails = styled.div`
+  color: #6c757d;
+  font-size: 13px;
+  margin-top: 5px;
+`;
+
+const ArtistAndDuration = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+const IconContainer = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`;
+
+const Keywords = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+`;
+
+const KeywordItem = styled.div`
+  background-color: #e1ecf4;
+  color: #3178c6;
+  padding: 5px;
+  border-radius: 10px;
 `;
 
 function ContiDetail() {
@@ -55,6 +115,13 @@ function ContiDetail() {
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
   });
+  console.log(data);
+
+  const formatDuration = (duration: number) => {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   return (
     <Container>
@@ -65,19 +132,49 @@ function ContiDetail() {
         </CenteredContainer>
       ) : (
         <div>
-          <BackButton to="/feed">뒤로 가기</BackButton>
-          <div>
+          <BackButton to="/feed">
+            <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
+            <span
+              style={{
+                textDecoration: "underline",
+                fontWeight: "bold",
+                color: "#8ab1e8",
+                fontSize: "18px",
+              }}
+            >
+              피드
+            </span>
+          </BackButton>
+          <SongList>
             {data?.songs.map((s, i) => (
-              <div key={i}>{s.title}</div>
+              <SongItem key={i}>
+                <SongNumber>{i + 1}.</SongNumber>
+                <SongInfo>
+                  <SongTitle>{s.title}</SongTitle>
+                  <SongDetails>
+                    <ArtistAndDuration>
+                      <SongArtist>{s.artist}</SongArtist>
+                      <span>•</span>
+                      <SongDuration>
+                        {s?.duration ? formatDuration(s.duration) : "0:00"}
+                      </SongDuration>
+                    </ArtistAndDuration>
+                  </SongDetails>
+                </SongInfo>
+                <IconContainer>
+                  <MoreVertIcon />
+                </IconContainer>
+              </SongItem>
             ))}
-          </div>
+          </SongList>
           <div>{data?.owner.name}</div>
           <div>{data?.created_at}</div>
-          <div>
+          <div>{data?.duration ? formatDuration(data.duration) : "0분"}</div>
+          <Keywords>
             {data?.keywords.map((k, i) => (
-              <div key={i}>{k}</div>
+              <KeywordItem key={i}>#{k}</KeywordItem>
             ))}
-          </div>
+          </Keywords>
         </div>
       )}
     </Container>

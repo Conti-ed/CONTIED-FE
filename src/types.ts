@@ -19,6 +19,7 @@ export type SongType = {
   releaseDate?: string;
   youtubeUrl?: string;
   lyrics?: string;
+  duration: number;
 };
 
 export type ContiType = null | {
