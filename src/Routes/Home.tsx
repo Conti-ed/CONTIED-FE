@@ -40,12 +40,12 @@ function Home() {
         </SectionHeader>
         <SectionBody>
           {myContiIsLoading
-            ? Array.from({ length: 20 })
-                .slice(20)
-                .map((_, index) => <ContiPlaceholder key={index} size={115} />)
-            : myConti!.map((conti, index) => (
-                <Conti key={index} contiData={conti} />
-              ))}
+            ? Array.from({ length: 20 }).map((_, index) => (
+                <ContiPlaceholder key={index} size={115} />
+              ))
+            : myConti!
+                .slice(0, 20)
+                .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
       <SectionContainer>
@@ -55,7 +55,7 @@ function Home() {
         </SectionHeader>
         <SectionBody>
           {Array.from({ length: 20 }).map((_, index) => (
-            <Conti key={index} contiData={null}></Conti>
+            <ContiPlaceholder key={index} size={115} />
           ))}
         </SectionBody>
       </SectionContainer>
