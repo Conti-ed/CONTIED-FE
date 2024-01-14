@@ -1,11 +1,11 @@
-import { TiDelete } from "react-icons/ti";
-import InputFileUpload from "./InputFileUpload";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useForm } from "react-hook-form";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
-import { useForm } from "react-hook-form";
-import { useState, useRef, useEffect } from "react";
 import { SERVER_URL } from "../api";
 import { ContiType } from "../types";
+import InputFileUpload from "./InputFileUpload";
+import { TiDelete } from "react-icons/ti";
 import {
   Button,
   DeleteButton,
@@ -28,38 +28,37 @@ type FormValues = {
   description?: string;
 };
 
+interface InputFileUploadRef {
+  resetUpload: () => void;
+}
+
 function UploadDrawer() {
   const { handleSubmit, register, resetField } = useForm<FormValues>();
+
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
   const [isExceeding, setIsExceeding] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const [isFetching, setIsFetching] = useState(false);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState("");
   const [isHashtagEmpty, setIsHashtagEmpty] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+
   const file = useRecoilValue(fileUploadAtom);
   const setConties = useSetRecoilState(contiesAtom);
-  const inputFileUploadRef = useRef<{ resetUpload: () => void }>();
-
-  const handleClose = (e: MouseEvent) => {
-    if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
-      setOpen(false);
-    }
-  };
+  const inputFileUploadRef = useRef<InputFileUploadRef>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClose);
-    return () => {
-      document.removeEventListener("mousedown", handleClose);
+    const handleBodyClick = (e: MouseEvent) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
     };
-  }, []);
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClose);
+    document.body.addEventListener("mousedown", handleBodyClick);
     return () => {
-      document.removeEventListener("mousedown", handleClose);
+      document.body.removeEventListener("mousedown", handleBodyClick);
     };
-  }, []);
+  }, [setOpen]);
 
   const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
@@ -92,65 +91,63 @@ function UploadDrawer() {
     }
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.keyCode === 13) {
       event.preventDefault();
     }
-  };
+  }, []);
 
-  const resetFields = () => {
+  const resetAllFields = useCallback(() => {
     resetField("description");
     resetField("playlist_url");
     setHashtags([]);
-    if (inputFileUploadRef.current) {
-      inputFileUploadRef.current?.resetUpload();
-    }
-  };
+    inputFileUploadRef.current?.resetUpload();
+  }, [resetField]);
 
-  const onSubmit = async (data: FormValues) => {
-    if (hashtags.length === 0) {
-      setIsHashtagEmpty(true);
-      return;
-    } else {
-      setIsHashtagEmpty(false);
-    }
-    try {
-      setIsFetching(true);
-      const formData = new FormData();
-      formData.append("file", file!);
-      formData.append("user_id", JSON.parse(localStorage["user_info"]).id);
-      formData.append("conti_info", JSON.stringify(data));
-      formData.append("enctype", "multipart/form-data");
-      formData.append("keywords", JSON.stringify(hashtags));
-      formData.append("description", data.description || "");
-
-      const res = await fetch(`${SERVER_URL}/api/conti`, {
-        method: "POST",
-        body: formData,
-      });
-      const resData: ContiType = await res.json();
-      console.log(resData);
-
-      if (res.ok) {
-        setConties((prev) => {
-          if (prev != null) return [...prev, resData];
-          return [resData];
-        });
-        setOpen(false);
+  const handleFormSubmit = useCallback(
+    async (data: FormValues) => {
+      if (hashtags.length === 0) {
+        setIsHashtagEmpty(true);
+        return;
       }
-    } catch (error) {
-      console.error("Error during upload:", error);
-    } finally {
-      setIsFetching(false);
-      resetFields();
-    }
-  };
+      setIsHashtagEmpty(false);
+      setIsFetching(true);
+      try {
+        setIsFetching(true);
+        const formData = new FormData();
+        formData.append("file", file!);
+        formData.append("user_id", JSON.parse(localStorage["user_info"]).id);
+        formData.append("conti_info", JSON.stringify(data));
+        formData.append("enctype", "multipart/form-data");
+        formData.append("keywords", JSON.stringify(hashtags));
+        formData.append("description", data.description || "");
+
+        const res = await fetch(`${SERVER_URL}/api/conti`, {
+          method: "POST",
+          body: formData,
+        });
+        const resData: ContiType = await res.json();
+        console.log(resData);
+
+        if (res.ok) {
+          setConties((prev) => [...(prev || []), resData]);
+          setOpen(false);
+        }
+      } catch (error) {
+        console.error("Error during upload:", error);
+      } finally {
+        setIsFetching(false);
+        resetAllFields();
+      }
+    },
+    [hashtags, resetAllFields, setOpen, setIsFetching, setConties, file]
+  );
 
   return (
     <>
       <DrawerBackdrop open={open} onClick={() => setOpen(false)} />
       <StyledDrawer ref={drawerRef} open={open}>
-        <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(handleFormSubmit)}>
           <List>
             <ListItem>
               <ListSubheader>
