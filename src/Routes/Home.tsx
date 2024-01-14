@@ -10,14 +10,14 @@ import {
   SectionMore,
   SectionBody,
 } from "../styles/Home.styles";
-import { getMyConties } from "../api";
+import { getConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { ContiType } from "../types";
 
 function Home() {
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
-    { queryFn: getMyConties }
+    { queryFn: getConties }
   );
 
   return (

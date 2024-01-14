@@ -39,12 +39,42 @@ const CenteredContainer = styled.div`
   bottom: 0;
 `;
 
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
 const BackButton = styled(Link)`
   display: flex;
   align-items: center;
   background-color: transparent;
-  margin-bottom: 20px;
   gap: 5px;
+`;
+
+const OwnerInfoContainer = styled.div`
+  text-align: right;
+  margin-right: 10px;
+`;
+
+const OwnerName = styled.div`
+  font-weight: bold;
+  margin-bottom: 4px;
+`;
+
+const CreatedAt = styled.div`
+  font-size: 0.8rem;
+  color: #6c757d;
+  line-height: 1;
+`;
+
+const DetailItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #6c757d;
 `;
 
 const SongList = styled.div`
@@ -83,10 +113,18 @@ const SongDetails = styled.div`
   margin-top: 5px;
 `;
 
-const ArtistAndDuration = styled.span`
+const ArtistAndDuration = styled(DetailItem)`
   display: flex;
   align-items: center;
   gap: 5px;
+`;
+
+const TotalDurationContainer = styled(DetailItem)`
+  justify-content: center;
+  margin-top: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #c1c8ce;
 `;
 
 const IconContainer = styled.div`
@@ -115,7 +153,6 @@ function ContiDetail() {
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
   });
-  console.log(data);
 
   const formatDuration = (duration: number) => {
     const hours = Math.floor(duration / 3600);
@@ -129,6 +166,17 @@ function ContiDetail() {
       return `${hours}:${formattedMinutes}:${formattedSeconds}`;
     } else {
       return `${minutes}:${formattedSeconds}`;
+    }
+  };
+
+  const formatTotalDuration = (duration: number) => {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}시간 ${minutes}분`;
+    } else {
+      return `${minutes}분`;
     }
   };
 
@@ -168,19 +216,29 @@ function ContiDetail() {
         </CenteredContainer>
       ) : (
         <div>
-          <BackButton to="/feed">
-            <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
-            <span
-              style={{
-                textDecoration: "underline",
-                fontWeight: "bold",
-                color: "#8ab1e8",
-                fontSize: "18px",
-              }}
-            >
-              피드
-            </span>
-          </BackButton>
+          <HeaderContainer>
+            <BackButton to="/feed">
+              <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
+              <span
+                style={{
+                  textDecoration: "underline",
+                  fontWeight: "bold",
+                  color: "#8ab1e8",
+                  fontSize: "18px",
+                }}
+              >
+                피드
+              </span>
+            </BackButton>
+            <OwnerInfoContainer>
+              <OwnerName>{data?.owner.name}</OwnerName>
+              <CreatedAt>
+                {data?.created_at
+                  ? parseLocalDateString(data.created_at)
+                  : "Loading..."}
+              </CreatedAt>
+            </OwnerInfoContainer>
+          </HeaderContainer>
           <SongList>
             {data?.songs.map((s, i) => (
               <SongItem key={i}>
@@ -203,17 +261,13 @@ function ContiDetail() {
               </SongItem>
             ))}
           </SongList>
-          <div>{data?.owner.name}</div>
-          <div>
-            <div>
-              <div>
-                {data?.created_at
-                  ? parseLocalDateString(data.created_at).toLocaleString()
-                  : "Loading..."}
-              </div>
-            </div>
-          </div>
-          <div>{data?.duration ? formatDuration(data.duration) : "0분"}</div>
+          <TotalDurationContainer>
+            <span>총 {data?.songs.length}개의 곡</span>
+            <span>•</span>
+            <span>
+              {data?.duration ? formatTotalDuration(data.duration) : "0분"}
+            </span>
+          </TotalDurationContainer>
           <Keywords>
             {data?.keywords.map((k, i) => (
               <KeywordItem key={i}>#{k}</KeywordItem>
