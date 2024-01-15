@@ -22,12 +22,18 @@ export type SongType = {
   duration: number;
 };
 
+export type SheetType = {
+  id: number;
+  filename: string;
+  size: number;
+};
+
 export type ContiType = null | {
   id: number;
   owner: UserType;
   keywords: string[];
   songs: SongType[];
-  sheet?: number;
+  sheet: SheetType;
   thumbnail: string;
   description: string;
   duration: number;

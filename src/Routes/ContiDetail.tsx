@@ -155,6 +155,7 @@ function ContiDetail() {
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
   });
+  console.log(data);
 
   const navigate = useNavigate();
 
@@ -281,7 +282,9 @@ function ContiDetail() {
       )}
       {data?.sheet && (
         <Link to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
-          <button>악보 보기</button>
+          <button>
+            {data.sheet.filename} {data.sheet.size / 1024}
+          </button>
         </Link>
       )}
     </Container>
