@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { SERVER_URL, getConti } from "../api";
 import { ContiType } from "../types";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -46,11 +46,13 @@ const HeaderContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const BackButton = styled(Link)`
+const BackButton = styled.button`
   display: flex;
   align-items: center;
   background-color: transparent;
   gap: 5px;
+  border-radius: 10px;
+  border: none;
 `;
 
 const OwnerInfoContainer = styled.div`
@@ -154,6 +156,8 @@ function ContiDetail() {
     queryFn: () => getConti(Number(cid)),
   });
 
+  const navigate = useNavigate();
+
   const formatDuration = (duration: number) => {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
@@ -217,7 +221,7 @@ function ContiDetail() {
       ) : (
         <div>
           <HeaderContainer>
-            <BackButton to="/feed">
+            <BackButton onClick={() => navigate(-1)}>
               <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
               <span
                 style={{
@@ -227,7 +231,7 @@ function ContiDetail() {
                   fontSize: "18px",
                 }}
               >
-                피드
+                이전
               </span>
             </BackButton>
             <OwnerInfoContainer>
