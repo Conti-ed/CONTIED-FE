@@ -7,7 +7,7 @@ export const SettingsContainer = styled.div`
 `;
 
 export const Section = styled.section`
-  margin: 40px 0px 0px 0px;
+  margin: 30px 0px 0px 0px;
 `;
 
 export const SectionTitle = styled.span`
