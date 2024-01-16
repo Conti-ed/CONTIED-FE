@@ -9,6 +9,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 const Container = styled.div`
   padding-top: 35px;
   padding: 10px;
+  padding-bottom: 60px;
 `;
 
 const Spin = keyframes`
