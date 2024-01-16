@@ -1,5 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { ImEqualizer2 } from "react-icons/im";
 import { FaWifi, FaSignal } from "react-icons/fa";
 import { IoIosBatteryFull } from "react-icons/io";
 import {
@@ -51,7 +51,7 @@ function Header() {
             <SearchIcon />
           </HeaderRightIcons>
           <HeaderRightIcons>
-            <MoreVertIcon />
+            <ImEqualizer2 />
           </HeaderRightIcons>
         </HeaderRight>
       </Container>
