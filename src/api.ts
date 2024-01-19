@@ -18,3 +18,7 @@ export async function getMyConties() {
   const my_id = JSON.parse(localStorage["user_info"]).id;
   return (await fetch(`${SERVER_URL}/api/conti?user=${my_id}`)).json();
 }
+
+export async function getContiesByKeyword(keyword: string) {
+  return (await fetch(`${SERVER_URL}/api/conti?keyword=${keyword}`)).json();
+}
