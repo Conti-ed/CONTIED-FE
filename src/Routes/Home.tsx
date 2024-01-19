@@ -10,28 +10,41 @@ import {
   SectionMore,
   SectionBody,
 } from "../styles/Home.styles";
-import { getMyConties } from "../api";
+import { SERVER_URL, getKeywords, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
-import { ContiType } from "../types";
+import { ContiType, KeywordType } from "../types";
+import { useState } from "react";
 
 function Home() {
+  const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
     { queryFn: getMyConties }
   );
 
+  const { data: keywords, isLoading: keywordsLoading } = useQuery<
+    KeywordType[]
+  >(["keywords"], {
+    queryFn: getKeywords,
+    onSuccess: async (data) => {
+      const randomIndex = Math.floor(Math.random() * data.length);
+      const kid = data[randomIndex].id;
+      console.log(kid);
+      const res = await fetch(`${SERVER_URL}/api/conti?keyword=${kid}`);
+      const conties = await res.json();
+      console.log(res.status, conties);
+      if (res.ok) {
+        setContiesByKey(conties);
+      }
+    },
+  });
+
   return (
     <Container>
       <KeywordContainer>
-        <Keyword>사랑</Keyword>
-        <Keyword>시편</Keyword>
-        <Keyword>구원</Keyword>
-        <Keyword>희망</Keyword>
-        <Keyword>고난</Keyword>
-        <Keyword>성탄절</Keyword>
-        <Keyword>기쁘다 구주 오셨네</Keyword>
-        <Keyword>감사</Keyword>
-        <Keyword>찬양</Keyword>
+        {keywords?.slice(0, 10).map((k) => (
+          <Keyword key={k.id}>{k.name}</Keyword>
+        ))}
       </KeywordContainer>
       <SectionContainer>
         <SectionHeader>
@@ -54,8 +67,8 @@ function Home() {
           <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
-          {Array.from({ length: 20 }).map((_, index) => (
-            <ContiPlaceholder key={index} size={115} />
+          {contiesByKey.slice(0, 20).map((conti, index) => (
+            <Conti key={index} contiData={conti} />
           ))}
         </SectionBody>
       </SectionContainer>
