@@ -17,6 +17,7 @@ import { useState } from "react";
 
 function Home() {
   const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
+  const [randomKeyword, setRandomKeyword] = useState("");
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
     { queryFn: getMyConties }
@@ -35,6 +36,7 @@ function Home() {
       console.log(res.status, conties);
       if (res.ok) {
         setContiesByKey(conties);
+        setRandomKeyword(data[randomIndex].name);
       }
     },
   });
@@ -63,7 +65,7 @@ function Home() {
       </SectionContainer>
       <SectionContainer>
         <SectionHeader>
-          <SectionTitle>최신 CCM</SectionTitle>
+          <SectionTitle>{randomKeyword}</SectionTitle>
           <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
