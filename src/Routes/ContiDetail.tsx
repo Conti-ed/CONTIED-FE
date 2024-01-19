@@ -80,49 +80,49 @@ const DetailItem = styled.div`
   color: #6c757d;
 `;
 
-const SongList = styled.div`
+export const SongList = styled.div`
   text-align: left;
   font-size: 15px;
   margin-left: 10px;
 `;
 
-const SongItem = styled.div`
+export const SongItem = styled.div`
   display: flex;
   align-items: center;
   margin: 20px 10px 20px 0px;
 `;
 
-const SongNumber = styled.span`
+export const SongNumber = styled.span`
   min-width: 20px;
   margin-right: 8px;
 `;
 
-const SongInfo = styled.span`
+export const SongInfo = styled.span`
   padding: 0px 30px 0px 0px;
 `;
 
-const SongTitle = styled.span`
+export const SongTitle = styled.span`
   font-weight: 700;
   flex: 1;
 `;
 
-const SongArtist = styled.span``;
+export const SongArtist = styled.span``;
 
-const SongDuration = styled.span``;
+export const SongDuration = styled.span``;
 
-const SongDetails = styled.div`
+export const SongDetails = styled.div`
   color: #6c757d;
   font-size: 13px;
   margin-top: 5px;
 `;
 
-const ArtistAndDuration = styled(DetailItem)`
+export const ArtistAndDuration = styled(DetailItem)`
   display: flex;
   align-items: center;
   gap: 5px;
 `;
 
-const TotalDurationContainer = styled(DetailItem)`
+export const TotalDurationContainer = styled(DetailItem)`
   justify-content: center;
   margin-top: 20px;
   font-weight: bold;
@@ -130,7 +130,7 @@ const TotalDurationContainer = styled(DetailItem)`
   color: #c1c8ce;
 `;
 
-const IconContainer = styled.div`
+export const IconContainer = styled.div`
   margin-left: auto;
   display: flex;
   align-items: center;

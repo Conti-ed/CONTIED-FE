@@ -1,35 +1,104 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { ContiType } from "../types";
-import { getContiesByKeyword } from "../api";
+import { ContiType, SongType } from "../types";
+import { getContiesByKeyword, getSongsByKeyword } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import Conti from "../components/Conti";
+import {
+  Container,
+  SectionContainer,
+  SectionHeader,
+  SectionTitle,
+  SectionMore,
+  SectionBody,
+} from "../styles/Home.styles";
+import {
+  ArtistAndDuration,
+  SongArtist,
+  SongDetails,
+  SongDuration,
+  SongInfo,
+  SongItem,
+  SongList,
+  SongNumber,
+  SongTitle,
+  IconContainer,
+} from "./ContiDetail";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 function Search() {
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("query");
 
-  const { data, isLoading } = useQuery<ContiType[]>(["conties", query], {
-    queryFn: () => getContiesByKeyword(query!),
-  });
+  const { data: conties, isLoading: contiesLoading } = useQuery<ContiType[]>(
+    ["conties", query],
+    {
+      queryFn: () => getContiesByKeyword(query!),
+    }
+  );
+  const { data: songs, isLoading: songsLoading } = useQuery<SongType[]>(
+    ["songs", query],
+    {
+      queryFn: () => getSongsByKeyword(query!),
+    }
+  );
 
-  console.log(data);
+  const formatDuration = (duration: number) => {
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    const seconds = duration % 60;
+
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    const formattedSeconds = seconds.toString().padStart(2, "0");
+
+    if (hours > 0) {
+      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
+    } else {
+      return `${minutes}:${formattedSeconds}`;
+    }
+  };
 
   return (
-    <div>
-      검색어: {query}
-      <div>
-        {isLoading
-          ? Array.from({ length: 20 }).map((_, index) => (
-              <ContiPlaceholder key={index} size={115} />
-            ))
-          : data!
-              .slice(0, 20)
-              .map((conti, index) => <Conti key={index} contiData={conti} />)}
-      </div>
-    </div>
+    <Container>
+      <SectionContainer>
+        <SectionHeader>
+          <SectionTitle>검색어: {query}</SectionTitle>
+          <SectionMore>더보기</SectionMore>
+        </SectionHeader>
+        <SectionBody>
+          {contiesLoading
+            ? Array.from({ length: 20 }).map((_, index) => (
+                <ContiPlaceholder key={index} size={115} />
+              ))
+            : conties!
+                .slice(0, 20)
+                .map((conti, index) => <Conti key={index} contiData={conti} />)}
+        </SectionBody>
+      </SectionContainer>
+      <SongList>
+        {songs &&
+          songs.map((s, i) => (
+            <SongItem key={i}>
+              <SongNumber>{i + 1}.</SongNumber>
+              <SongInfo>
+                <SongTitle>{s.title}</SongTitle>
+                <SongDetails>
+                  <ArtistAndDuration>
+                    <SongArtist>{s.artist}</SongArtist>
+                    <span>•</span>
+                    <SongDuration>
+                      {s?.duration ? formatDuration(s.duration) : "0:00"}
+                    </SongDuration>
+                  </ArtistAndDuration>
+                </SongDetails>
+              </SongInfo>
+              <IconContainer>
+                <MoreVertIcon />
+              </IconContainer>
+            </SongItem>
+          ))}
+      </SongList>
+    </Container>
   );
 }
 

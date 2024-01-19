@@ -22,3 +22,7 @@ export async function getMyConties() {
 export async function getContiesByKeyword(keyword: string) {
   return (await fetch(`${SERVER_URL}/api/conti?keyword=${keyword}`)).json();
 }
+
+export async function getSongsByKeyword(keyword: string) {
+  return (await fetch(`${SERVER_URL}/api/song?keyword=${keyword}`)).json();
+}
