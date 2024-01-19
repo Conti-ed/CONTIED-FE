@@ -22,6 +22,7 @@ import {
   StyledDrawer,
   WarningMessage,
 } from "../styles/UploadDrawer.styles";
+import { Spinner } from "../styles/Feed.styles";
 
 type FormValues = {
   playlist_url: string;
@@ -215,7 +216,7 @@ function UploadDrawer() {
           <List>
             <ListItem>
               <Button type="submit" disabled={isFetching}>
-                콘티 공유하기
+                {isFetching ? <Spinner /> : <>콘티 공유하기</>}
               </Button>
             </ListItem>
           </List>
