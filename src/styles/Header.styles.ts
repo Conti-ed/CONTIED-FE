@@ -53,3 +53,7 @@ export const HeaderRightIcons = styled.div`
   font-size: 20px;
   cursor: pointer;
 `;
+
+export const SearchInput = styled.input`
+  border-radius: 10px;
+`;

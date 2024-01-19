@@ -12,12 +12,38 @@ import {
   HeaderRight,
   HeaderRightIcons,
   Clock,
+  SearchInput,
 } from "../styles/Header.styles";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "../atoms";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Header() {
+  const [showInput, setShowInput] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const isDark = useRecoilValue(isDarkAtom);
+
+  const handleSearchIconClick = () => {
+    setShowInput(true); // 입력창 표시
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    setShowInput(false);
+    setSearchQuery("");
+  };
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   return (
     <>
@@ -48,7 +74,21 @@ function Header() {
         </LogoContainer>
         <HeaderRight>
           <HeaderRightIcons>
-            <SearchIcon />
+            <Link to="/search">
+              {showInput ? (
+                <SearchInput
+                  type="text"
+                  placeholder="키워드 검색"
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                  onKeyDown={handleSearch}
+                  onBlur={handleInputBlur}
+                  autoFocus
+                />
+              ) : (
+                <SearchIcon onClick={handleSearchIconClick} />
+              )}
+            </Link>
           </HeaderRightIcons>
           <HeaderRightIcons>
             <ImEqualizer2 />

@@ -9,6 +9,7 @@ import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";
 import Settings from "./Routes/Settings";
 import Header from "./components/Header";
+import Search from "./Routes/Search";
 import Login from "./Routes/Login";
 import ContiDetail from "./Routes/ContiDetail";
 
@@ -23,6 +24,7 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/settings" element={<Settings />} />
