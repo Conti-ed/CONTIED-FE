@@ -29,14 +29,14 @@ function Home() {
     queryFn: getKeywords,
     onSuccess: async (data) => {
       const randomIndex = Math.floor(Math.random() * data.length);
-      const kid = data[randomIndex].id;
-      console.log(kid);
-      const res = await fetch(`${SERVER_URL}/api/conti?keyword=${kid}`);
+      const randomKeyword = data[randomIndex].name;
+      const res = await fetch(
+        `${SERVER_URL}/api/conti?keyword=${randomKeyword}`
+      );
       const conties = await res.json();
-      console.log(res.status, conties);
       if (res.ok) {
         setContiesByKey(conties);
-        setRandomKeyword(data[randomIndex].name);
+        setRandomKeyword(randomKeyword);
       }
     },
   });
