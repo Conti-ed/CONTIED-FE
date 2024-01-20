@@ -5,15 +5,13 @@ import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
 import { SERVER_URL } from "../api";
 import { ContiType } from "../types";
 import InputFileUpload from "./InputFileUpload";
-import { TiDelete } from "react-icons/ti";
+import HashtagComponent from "./HashtagComponent";
+import useHashtags from "../useHashtags";
 import {
   Button,
-  DeleteButton,
   Divider,
   DrawerBackdrop,
   Form,
-  Hashtag,
-  HashtagContainer,
   Input,
   KeywordInput,
   List,
@@ -23,29 +21,43 @@ import {
   WarningMessage,
 } from "../styles/UploadDrawer.styles";
 import { Spinner } from "../styles/Feed.styles";
+import useFormReset from "../useFormReset";
 
-type FormValues = {
+export type FormValues = {
   playlist_url: string;
   description?: string;
 };
 
-interface InputFileUploadRef {
+export interface InputFileUploadRef {
   resetUpload: () => void;
 }
 
 function UploadDrawer() {
-  const { handleSubmit, register, resetField } = useForm<FormValues>();
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>();
+  const {
+    hashtags,
+    setHashtags,
+    deleteHashtag,
+    isExceeding,
+    hashtagInput,
+    handleInputChange,
+    handleAddHashtag,
+  } = useHashtags();
+
+  const inputFileUploadRef = useRef<InputFileUploadRef>(null);
+  const resetAllFields = useFormReset(reset, setHashtags, inputFileUploadRef);
 
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
-  const [isExceeding, setIsExceeding] = useState(false);
-  const [hashtags, setHashtags] = useState<string[]>([]);
-  const [hashtagInput, setHashtagInput] = useState("");
   const [isHashtagEmpty, setIsHashtagEmpty] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
   const file = useRecoilValue(fileUploadAtom);
   const setConties = useSetRecoilState(contiesAtom);
-  const inputFileUploadRef = useRef<InputFileUploadRef>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,49 +73,11 @@ function UploadDrawer() {
     };
   }, [setOpen]);
 
-  const handleAddHashtag = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-      const newHashtag = hashtagInput.trim();
-      if (newHashtag && !hashtags.includes(newHashtag) && hashtags.length < 3) {
-        setHashtags([...hashtags, newHashtag]);
-        setHashtagInput("");
-        setIsHashtagEmpty(false);
-      } else if (hashtags.length >= 3) {
-        setIsExceeding(true);
-      }
-    }
-  };
-
-  const handleDeleteHashtag = (indexToRemove: number) => {
-    const newHashtags = hashtags.filter((_, index) => index !== indexToRemove);
-    setHashtags(newHashtags);
-
-    if (newHashtags.length < 3) {
-      setIsExceeding(false);
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setHashtagInput(value);
-    if (!value.trim() || hashtags.length < 3) {
-      setIsExceeding(false);
-    }
-  };
-
   const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.keyCode === 13) {
       event.preventDefault();
     }
   }, []);
-
-  const resetAllFields = useCallback(() => {
-    resetField("description");
-    resetField("playlist_url");
-    setHashtags([]);
-    inputFileUploadRef.current?.resetUpload();
-  }, [resetField]);
 
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
@@ -156,10 +130,15 @@ function UploadDrawer() {
                 <span style={{ color: "red" }}>(필수)</span>
               </ListSubheader>
               <Input
-                {...register("playlist_url", { required: true })}
+                {...register("playlist_url", {
+                  required: "Playlist URL은 필수입니다!",
+                })}
                 placeholder="https://www.youtube.com/playlist?list=..."
                 onKeyDown={handleKeyPress}
               />
+              {errors.playlist_url && (
+                <WarningMessage>{errors.playlist_url.message}</WarningMessage>
+              )}
             </ListItem>
             <ListItem>
               <ListSubheader>
@@ -174,24 +153,18 @@ function UploadDrawer() {
               />
               {isHashtagEmpty && (
                 <WarningMessage>
-                  최소 한 개의 해시태그를 추가해야 합니다.
+                  최소 한 개의 해시태그를 추가해야 합니다!
                 </WarningMessage>
               )}
               {isExceeding && (
                 <WarningMessage>
-                  최대 3개의 해시태그만 추가할 수 있습니다.
+                  최대 3개의 해시태그만 추가할 수 있습니다!
                 </WarningMessage>
               )}
-              <HashtagContainer $hashTags={hashtags.length > 0}>
-                {hashtags.map((hashtag, index) => (
-                  <Hashtag key={index}>
-                    #{hashtag}
-                    <DeleteButton onClick={() => handleDeleteHashtag(index)}>
-                      <TiDelete size="20" color="#8ab1e8" />
-                    </DeleteButton>
-                  </Hashtag>
-                ))}
-              </HashtagContainer>
+              <HashtagComponent
+                hashtags={hashtags}
+                onDeleteHashtag={deleteHashtag}
+              />
             </ListItem>
             <Divider />
           </List>
