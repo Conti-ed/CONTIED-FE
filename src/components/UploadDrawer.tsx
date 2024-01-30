@@ -39,6 +39,7 @@ function UploadDrawer() {
     reset,
     formState: { errors },
   } = useForm<FormValues>();
+
   const {
     hashtags,
     setHashtags,
@@ -182,6 +183,11 @@ function UploadDrawer() {
               <Input
                 {...register("description")}
                 placeholder="콘티에 대한 설명을 입력해주세요!"
+                onKeyDown={(event) => {
+                  if (event.keyCode === 13) {
+                    event.preventDefault();
+                  }
+                }}
               />
             </ListItem>
             <Divider />
