@@ -25,7 +25,7 @@ const AppContainer = styled.div`
 const FormContainer = styled.div`
   background: rgba(${colors.formBg}, 0.9);
   padding: 40px;
-  max-width: 600px;
+  width: 100%;
   border-radius: 4px;
   margin: 0 auto;
   box-shadow: 0 4px 10px 4px rgba(${colors.formBg}, 0.3);
@@ -91,7 +91,7 @@ const TabButton = styled.button`
   }
 `;
 
-const LoginTitle = styled.h1`
+const Title = styled.h1`
   margin-bottom: 10px;
 `;
 
@@ -124,32 +124,27 @@ const Button = styled.button`
   }
 `;
 
-const StyledLink = styled(Link)`
-  ${setFontStyle};
-  color: #96c9ed;
-  text-decoration: none;
-  margin-top: 10px;
-  margin-bottom: 20px;
-`;
-
-const LoginFormContainer = styled.form`
+const Form = styled.form`
   display: flex;
   flex-direction: column;
 `;
 
-type formValues = {
+type FormValues = {
   email: string;
   password: string;
+  name?: string;
+  passwordConfirm?: string;
 };
 
 function Login() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const switchTab = (tabName: "login" | "signup") => {
     setActiveTab(tabName);
   };
-  const navigate = useNavigate();
-  const { register, handleSubmit } = useForm<formValues>();
-  const handleSignup = (data: formValues) => {
+
+  const { register, handleSubmit } = useForm<FormValues>();
+  const onSubmit = (data: FormValues) => {
     console.log(data);
   };
 
@@ -186,13 +181,12 @@ function Login() {
         </TabGroup>
         {activeTab === "login" ? (
           <>
-            <LoginTitle>로그인</LoginTitle>
-            <LoginFormContainer onSubmit={handleSubmit(handleSignup)}>
-              <Input {...register("email")} placeholder="Email" />
-              <Input {...register("password")} placeholder="Password" />
+            <Title>로그인</Title>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Input {...register("email")} placeholder="이메일" />
+              <Input {...register("password")} placeholder="비밀번호" />
               <Button type="submit">로그인</Button>
-              <StyledLink to={"/signup"}>회원가입하러 가쉴?</StyledLink>
-            </LoginFormContainer>
+            </Form>
             <KakaoLogin
               token={"ca220974886e2ef4eb4a37d21b258d7c"}
               onSuccess={kakaoResponse}
@@ -201,7 +195,24 @@ function Login() {
             />
           </>
         ) : (
-          <div></div>
+          <>
+            <Title>회원가입</Title>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Input {...register("email")} placeholder="이메일" />
+              <Input {...register("name")} placeholder="이름" />
+              <Input
+                {...register("password")}
+                placeholder="비밀번호"
+                type="password"
+              />
+              <Input
+                {...register("passwordConfirm")}
+                placeholder="비밀번호 확인"
+                type="password"
+              />
+              <Button type="submit">회원가입</Button>
+            </Form>
+          </>
         )}
       </FormContainer>
     </AppContainer>

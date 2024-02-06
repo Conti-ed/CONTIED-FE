@@ -12,7 +12,6 @@ import Header from "./components/Header";
 import Search from "./Routes/Search";
 import Login from "./Routes/Login";
 import ContiDetail from "./Routes/ContiDetail";
-import Signup from "./Routes/Signup";
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
@@ -30,7 +29,6 @@ function App() {
             <Route path="/upload" element={<Upload />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
             <Route path="/conti/:id" element={<ContiDetail />} />
           </Routes>
           <TabBar />
