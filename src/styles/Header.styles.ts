@@ -56,4 +56,5 @@ export const HeaderRightIcons = styled.div`
 
 export const SearchInput = styled.input`
   border-radius: 10px;
+  padding-left: 7px;
 `;
