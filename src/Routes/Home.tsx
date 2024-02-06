@@ -14,25 +14,14 @@ import { SERVER_URL, getKeywords, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { ContiType, KeywordType } from "../types";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 function Home() {
-  const navigate = useNavigate();
   const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
   const [randomKeyword, setRandomKeyword] = useState("");
-  const [authorized, setAuthorized] = useState(false);
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
     {
       queryFn: getMyConties,
-      onSuccess: (data) => {
-        if ("detail" in data) {
-          setAuthorized(false);
-          navigate("login");
-        } else {
-          setAuthorized(true);
-        }
-      },
     }
   );
 
@@ -41,27 +30,16 @@ function Home() {
   >(["keywords"], {
     queryFn: getKeywords,
     onSuccess: async (data) => {
-      if ("detail" in data) {
-        setAuthorized(false);
-        navigate("login");
-      } else {
-        setAuthorized(true);
-        if (data.length === 0) return;
-        const randomIndex = Math.floor(Math.random() * data.length);
-        const randomKeyword = data[randomIndex].name;
-        const res = await fetch(
-          `${SERVER_URL}/api/conti?keyword=${randomKeyword}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        const conties = await res.json();
-        if (res.ok) {
-          setContiesByKey(conties);
-          setRandomKeyword(randomKeyword);
-        }
+      if (data.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * data.length);
+      const randomKeyword = data[randomIndex].name;
+      const res = await fetch(
+        `${SERVER_URL}/api/conti?keyword=${randomKeyword}`
+      );
+      const conties = await res.json();
+      if (res.ok) {
+        setContiesByKey(conties);
+        setRandomKeyword(randomKeyword);
       }
     },
   });
@@ -70,7 +48,6 @@ function Home() {
     <Container>
       <KeywordContainer>
         {!keywordsLoading &&
-          authorized &&
           keywords
             ?.slice(0, 10)
             .map((k) => <Keyword key={k.id}>{k.name}</Keyword>)}
@@ -81,7 +58,7 @@ function Home() {
           <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
-          {myContiIsLoading || !authorized
+          {myContiIsLoading
             ? Array.from({ length: 20 }).map((_, index) => (
                 <ContiPlaceholder key={index} size={115} />
               ))
@@ -96,7 +73,7 @@ function Home() {
           <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
-          {keywordsLoading || !authorized
+          {keywordsLoading
             ? Array.from({ length: 20 }).map((_, index) => (
                 <ContiPlaceholder key={index} size={115} />
               ))
