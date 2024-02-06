@@ -12,6 +12,7 @@ export const KeywordContainer = styled.div`
   display: flex;
   gap: 10px;
   overflow: auto;
+  margin-top: 5px;
   margin-bottom: 20px;
 
   &::-webkit-scrollbar {
