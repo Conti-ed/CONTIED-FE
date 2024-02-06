@@ -5,31 +5,136 @@ import { useForm } from "react-hook-form";
 import { styled } from "styled-components";
 import KakaoLogin from "react-kakao-login";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
+import { useState } from "react";
 
-const LoginForm = styled.form`
+const colors = {
+  main: "#96c9ed",
+  mainDark: "#113e7a",
+  white: "#ffffff",
+  formBg: "#13232f",
+  grayLight: "#a0b3b0",
+};
+
+const AppContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+`;
+
+const FormContainer = styled.div`
+  background: rgba(${colors.formBg}, 0.9);
+  padding: 40px;
+  max-width: 600px;
+  border-radius: 4px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px 4px rgba(${colors.formBg}, 0.3);
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  justify-content: center;
+`;
+
+const TabGroup = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  li button {
+    border-radius: 10px;
+    display: block;
+    text-decoration: none;
+    padding: 15px;
+    background: rgba(${colors.grayLight}, 0.25);
+    color: ${colors.grayLight};
+    font-size: 17px;
+    float: left;
+    width: 50%;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.5s ease;
+    &:hover {
+      background: ${colors.mainDark};
+      color: ${colors.white};
+    }
+  }
+  .active a {
+    background: ${colors.main};
+    color: ${colors.white};
+  }
+`;
+
+const TabButton = styled.button`
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: ${colors.grayLight};
+  font-size: 17px;
+  padding: 15px;
+  transition: 0.5s ease;
+  width: 50%;
+  text-align: center;
+
+  &:hover,
+  &:focus {
+    background: ${colors.mainDark};
+    color: ${colors.white};
+    outline: none;
+  }
+
+  &.active {
+    background: ${colors.main};
+    color: ${colors.white};
+  }
 `;
 
 const LoginTitle = styled.h1`
   margin-bottom: 10px;
 `;
 
-const customInput = styled.input`
+const Input = styled.input`
+  ${setFontStyle};
   border-radius: 5px;
   padding: 5px;
-`;
-
-const IDInput = styled(customInput)``;
-
-const PWInput = styled(customInput)`
-  margin-bottom: 5px;
-`;
-
-const SubmitInput = styled(customInput)`
   margin-bottom: 10px;
-  ${setFontStyle}
+  border: 1px solid #a0b3b0;
+  background: transparent;
+  color: #ffffff;
+
+  &:focus {
+    outline: none;
+    border-color: #113e7a;
+  }
+`;
+
+const Button = styled.button`
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #113e7a;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: darken(#113e7a, 5%);
+  }
+`;
+
+const StyledLink = styled(Link)`
+  ${setFontStyle};
+  color: #96c9ed;
+  text-decoration: none;
+  margin-top: 10px;
+  margin-bottom: 20px;
+`;
+
+const LoginFormContainer = styled.form`
+  display: flex;
+  flex-direction: column;
 `;
 
 type formValues = {
@@ -38,6 +143,10 @@ type formValues = {
 };
 
 function Login() {
+  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const switchTab = (tabName: "login" | "signup") => {
+    setActiveTab(tabName);
+  };
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<formValues>();
   const handleSignup = (data: formValues) => {
@@ -65,21 +174,37 @@ function Login() {
   };
 
   return (
-    <Container>
-      <LoginTitle>로그인</LoginTitle>
-      <LoginForm onSubmit={handleSubmit(handleSignup)}>
-        <IDInput {...register("email")} />
-        <PWInput {...register("password")} />
-        <SubmitInput type="submit" value="로그인" />
-        <Link to={"/signup"}>회원가입하러 가쉴?</Link>
-      </LoginForm>
-      <KakaoLogin
-        token={"ca220974886e2ef4eb4a37d21b258d7c"}
-        onSuccess={kakaoResponse}
-        onFail={console.error}
-        onLogout={console.info}
-      />
-    </Container>
+    <AppContainer>
+      <FormContainer>
+        <TabGroup>
+          <li className={activeTab === "login" ? "active" : ""}>
+            <TabButton onClick={() => switchTab("login")}>로그인</TabButton>
+          </li>
+          <li className={activeTab === "signup" ? "active" : ""}>
+            <TabButton onClick={() => switchTab("signup")}>회원가입</TabButton>
+          </li>
+        </TabGroup>
+        {activeTab === "login" ? (
+          <>
+            <LoginTitle>로그인</LoginTitle>
+            <LoginFormContainer onSubmit={handleSubmit(handleSignup)}>
+              <Input {...register("email")} placeholder="Email" />
+              <Input {...register("password")} placeholder="Password" />
+              <Button type="submit">로그인</Button>
+              <StyledLink to={"/signup"}>회원가입하러 가쉴?</StyledLink>
+            </LoginFormContainer>
+            <KakaoLogin
+              token={"ca220974886e2ef4eb4a37d21b258d7c"}
+              onSuccess={kakaoResponse}
+              onFail={console.error}
+              onLogout={console.info}
+            />
+          </>
+        ) : (
+          <div></div>
+        )}
+      </FormContainer>
+    </AppContainer>
   );
 }
 
