@@ -4,11 +4,32 @@ import { SERVER_URL } from "../api";
 import { useForm } from "react-hook-form";
 import { styled } from "styled-components";
 import KakaoLogin from "react-kakao-login";
+import { setFontStyle } from "../styles/UploadDrawer.styles";
 
 const LoginForm = styled.form`
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+`;
+
+const LoginTitle = styled.h1`
+  margin-bottom: 10px;
+`;
+
+const customInput = styled.input`
+  border-radius: 5px;
+  padding: 5px;
+`;
+
+const IDInput = styled(customInput)``;
+
+const PWInput = styled(customInput)`
+  margin-bottom: 5px;
+`;
+
+const SubmitInput = styled(customInput)`
+  margin-bottom: 10px;
+  ${setFontStyle}
 `;
 
 type formValues = {
@@ -45,12 +66,12 @@ function Login() {
 
   return (
     <Container>
-      <h1>로그인</h1>
+      <LoginTitle>로그인</LoginTitle>
       <LoginForm onSubmit={handleSubmit(handleSignup)}>
-        <input {...register("email")} />
-        <input {...register("password")} />
-        <input type="submit" value="로그인" />
-        <Link to={"/signup"}>회원가입하러 가실?</Link>
+        <IDInput {...register("email")} />
+        <PWInput {...register("password")} />
+        <SubmitInput type="submit" value="로그인" />
+        <Link to={"/signup"}>회원가입하러 가쉴?</Link>
       </LoginForm>
       <KakaoLogin
         token={"ca220974886e2ef4eb4a37d21b258d7c"}

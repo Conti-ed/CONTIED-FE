@@ -2,11 +2,32 @@ import { Link } from "react-router-dom";
 import { Container } from "../styles/Login.styles";
 import { useForm } from "react-hook-form";
 import { styled } from "styled-components";
+import { setFontStyle } from "../styles/UploadDrawer.styles";
 
 const SignupForm = styled.form`
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+`;
+
+const SignupTitle = styled.h1`
+  margin-bottom: 10px;
+`;
+
+const customInput = styled.input`
+  border-radius: 5px;
+  padding: 5px;
+`;
+
+const SignupInput = styled(customInput)``;
+
+const ConfirmInput = styled(customInput)`
+  margin-bottom: 5px;
+`;
+
+const SubmitInput = styled(customInput)`
+  margin-bottom: 10px;
+  ${setFontStyle}
 `;
 
 type formValues = {
@@ -23,15 +44,15 @@ function Signup() {
   };
   return (
     <Container>
-      <h1>회원가입</h1>
+      <SignupTitle>회원가입</SignupTitle>
       <SignupForm onSubmit={handleSubmit(handleLogin)}>
-        <input {...register("email")} />
-        <input {...register("name")} />
-        <input {...register("password")} />
-        <input {...register("passwordConfirm")} />
-        <input type="submit" value="회원가입" />
+        <SignupInput {...register("email")} />
+        <SignupInput {...register("name")} />
+        <SignupInput {...register("password")} />
+        <ConfirmInput {...register("passwordConfirm")} />
+        <SubmitInput type="submit" value="회원가입" />
       </SignupForm>
-      <Link to={"/login"}>로그인하러 가실?</Link>
+      <Link to={"/login"}>로그인하러 가쉴?</Link>
     </Container>
   );
 }

@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { setFontStyle } from "../styles/UploadDrawer.styles";
 
 const Container = styled.div`
   padding-top: 35px;
@@ -152,6 +153,16 @@ const KeywordItem = styled.div`
   font-weight: 500;
 `;
 
+const SheetButton = styled.button`
+  ${setFontStyle}
+  font-weight: 500;
+  border-radius: 10px;
+  background-color: #e1ecf4;
+  padding: 5px;
+  color: #3178c6;
+  margin: 0 auto;
+`;
+
 function ContiDetail() {
   const { id: cid } = useParams();
   const { data, isLoading } = useQuery<ContiType>({
@@ -284,9 +295,10 @@ function ContiDetail() {
       )}
       {data?.sheet && (
         <Link to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
-          <button>
-            {data.sheet.filename} {data.sheet.size / 1024}
-          </button>
+          <SheetButton>
+            {data.sheet.filename}{" "}
+            {Math.floor((data.sheet.size / 1024 / 1024) * 10) / 10}MB
+          </SheetButton>
         </Link>
       )}
     </Container>
