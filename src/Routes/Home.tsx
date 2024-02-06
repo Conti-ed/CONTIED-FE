@@ -62,7 +62,8 @@ function Home() {
             ? Array.from({ length: 20 }).map((_, index) => (
                 <ContiPlaceholder key={index} size={115} />
               ))
-            : myConti!
+            : myConti &&
+              myConti
                 .slice(0, 20)
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>

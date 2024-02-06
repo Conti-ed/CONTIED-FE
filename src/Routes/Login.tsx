@@ -153,6 +153,9 @@ function Login() {
     const data = await res.json();
     console.log(data, res.status);
     if (res.ok) {
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+      localStorage.setItem("user_info", JSON.stringify(data.user_data));
       navigate("/");
     }
   };
