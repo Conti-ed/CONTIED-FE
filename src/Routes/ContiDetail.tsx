@@ -124,9 +124,9 @@ export const ArtistAndDuration = styled(DetailItem)`
 
 export const TotalDurationContainer = styled(DetailItem)`
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 25px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #c1c8ce;
 `;
 
@@ -139,15 +139,17 @@ export const IconContainer = styled.div`
 const Keywords = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const KeywordItem = styled.div`
   background-color: #e1ecf4;
   color: #3178c6;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: 5px;
+  font-weight: 500;
 `;
 
 function ContiDetail() {

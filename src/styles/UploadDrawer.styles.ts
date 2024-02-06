@@ -112,6 +112,7 @@ export const Hashtag = styled.span`
   align-items: center;
   cursor: pointer;
   gap: 0px;
+  font-weight: 700;
 
   & > *:last-child {
     margin-left: 0;
