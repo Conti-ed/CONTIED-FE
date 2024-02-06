@@ -5,6 +5,7 @@ export const Container = styled.div`
   flex-direction: column;
   padding: 0 20px;
   margin-bottom: 70px;
+  font-family: "'Nunito Sans', 'Noto Sans KR', sans-serif";
 `;
 
 export const KeywordContainer = styled.div`
@@ -42,7 +43,6 @@ export const SectionHeader = styled.div`
 `;
 
 export const SectionTitle = styled.span`
-  font-family: "'Nunito Sans', 'Noto Sans KR', sans-serif";
   font-size: 25px;
   margin-top: 5px;
   margin-bottom: 10px;
