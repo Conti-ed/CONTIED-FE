@@ -102,6 +102,9 @@ function UploadDrawer() {
 
         const res = await fetch(`${SERVER_URL}/api/conti`, {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
           body: formData,
         });
         const resData: ContiType = await res.json();

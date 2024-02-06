@@ -50,7 +50,12 @@ function Home() {
         const randomIndex = Math.floor(Math.random() * data.length);
         const randomKeyword = data[randomIndex].name;
         const res = await fetch(
-          `${SERVER_URL}/api/conti?keyword=${randomKeyword}`
+          `${SERVER_URL}/api/conti?keyword=${randomKeyword}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
         );
         const conties = await res.json();
         if (res.ok) {
