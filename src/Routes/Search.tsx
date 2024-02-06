@@ -63,7 +63,6 @@ function Search() {
       <SectionContainer>
         <SectionHeader>
           <SectionTitle>검색어: {query}</SectionTitle>
-          <SectionMore>더보기</SectionMore>
         </SectionHeader>
         <SectionBody>
           {contiesLoading

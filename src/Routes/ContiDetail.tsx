@@ -158,7 +158,6 @@ function ContiDetail() {
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
   });
-  console.log(data);
 
   const navigate = useNavigate();
 
