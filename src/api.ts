@@ -1,6 +1,6 @@
-// export const SERVER_URL =
-//   "https://vscode-adakm.run-us-west2.goorm.site/proxy/8000";
-export const SERVER_URL = "http://127.0.0.1:8000";
+export const SERVER_URL =
+  "https://vscode-adakm.run-us-west2.goorm.site/proxy/8000";
+// export const SERVER_URL = "http://127.0.0.1:8000";
 const access_token = localStorage["accessToken"];
 
 export async function getKeywords() {
