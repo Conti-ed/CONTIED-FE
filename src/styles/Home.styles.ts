@@ -4,6 +4,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 20px;
+  margin-bottom: 70px;
 `;
 
 export const KeywordContainer = styled.div`
@@ -31,9 +32,7 @@ export const Keyword = styled.div`
   letter-spacing: 1px;
 `;
 
-export const SectionContainer = styled.div`
-  margin-bottom: 30px;
-`;
+export const SectionContainer = styled.div``;
 
 export const SectionHeader = styled.div`
   display: flex;
@@ -43,7 +42,11 @@ export const SectionHeader = styled.div`
 `;
 
 export const SectionTitle = styled.span`
-  font-size: 28px;
+  font-family: "'Nunito Sans', 'Noto Sans KR', sans-serif";
+  font-size: 25px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-weight: 600;
 `;
 
 export const SectionMore = styled.div`
