@@ -9,7 +9,6 @@ import {
   SectionContainer,
   SectionHeader,
   SectionTitle,
-  SectionMore,
   SectionBody,
 } from "../styles/Home.styles";
 import {

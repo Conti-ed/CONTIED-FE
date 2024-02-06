@@ -1,11 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Container } from "../styles/Login.styles";
 import { SERVER_URL } from "../api";
 import { useForm } from "react-hook-form";
 import { styled } from "styled-components";
 import KakaoLogin from "react-kakao-login";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const colors = {
   main: "#96c9ed",
@@ -132,7 +131,7 @@ const Form = styled.form`
 type FormValues = {
   email: string;
   password: string;
-  name?: string;
+  name: string;
   passwordConfirm?: string;
 };
 
@@ -143,9 +142,32 @@ function Login() {
     setActiveTab(tabName);
   };
 
-  const { register, handleSubmit } = useForm<FormValues>();
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
+  const { register, handleSubmit, watch } = useForm<FormValues>();
+
+  const handleLogin = async (formValues: FormValues) => {
+    const res = await fetch(`${SERVER_URL}/api/login/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formValues),
+    });
+    const data = await res.json();
+    console.log(data, res.status);
+    if (res.ok) {
+      navigate("/");
+    }
+  };
+
+  const handleSignup = async (formValues: FormValues) => {
+    const res = await fetch(`${SERVER_URL}/api/user`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formValues),
+    });
+    const data = await res.json();
+    console.log(data, res.status);
+    if (res.ok) {
+      switchTab("login");
+    }
   };
 
   const kakaoResponse = async (response: {
@@ -182,9 +204,16 @@ function Login() {
         {activeTab === "login" ? (
           <>
             <Title>로그인</Title>
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <Input {...register("email")} placeholder="이메일" />
-              <Input {...register("password")} placeholder="비밀번호" />
+            <Form onSubmit={handleSubmit(handleLogin)}>
+              <Input
+                {...register("email", { required: true })}
+                placeholder="이메일"
+              />
+              <Input
+                {...register("password", { required: true })}
+                placeholder="비밀번호"
+                type="password"
+              />
               <Button type="submit">로그인</Button>
             </Form>
             <KakaoLogin
@@ -197,16 +226,30 @@ function Login() {
         ) : (
           <>
             <Title>회원가입</Title>
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <Input {...register("email")} placeholder="이메일" />
-              <Input {...register("name")} placeholder="이름" />
+            <Form onSubmit={handleSubmit(handleSignup)}>
               <Input
-                {...register("password")}
+                {...register("email", { required: true })}
+                placeholder="이메일"
+              />
+              <Input
+                {...register("name", { required: true })}
+                placeholder="이름"
+              />
+              <Input
+                {...register("password", { required: true })}
                 placeholder="비밀번호"
                 type="password"
               />
               <Input
-                {...register("passwordConfirm")}
+                {...register("passwordConfirm", {
+                  required: true,
+                  validate: (val: string | undefined) => {
+                    if (watch("password") !== val) {
+                      console.log("Your passwords do no match");
+                      return "Your passwords do no match";
+                    }
+                  },
+                })}
                 placeholder="비밀번호 확인"
                 type="password"
               />
