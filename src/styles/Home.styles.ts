@@ -5,13 +5,14 @@ export const Container = styled.div`
   flex-direction: column;
   padding: 0 20px;
   margin-bottom: 70px;
-  font-family: "'Nunito Sans', 'Noto Sans KR', sans-serif";
+  font-family: "Nunito Sans", "Noto Sans KR", sans-serif;
 `;
 
 export const KeywordContainer = styled.div`
   display: flex;
   gap: 10px;
   overflow: auto;
+  margin-top: 5px;
   margin-bottom: 20px;
 
   &::-webkit-scrollbar {
