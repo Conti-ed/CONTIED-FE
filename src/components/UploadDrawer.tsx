@@ -22,6 +22,7 @@ import {
 } from "../styles/UploadDrawer.styles";
 import { Spinner } from "../styles/Feed.styles";
 import useFormReset from "../useFormReset";
+import { useNavigate } from "react-router-dom";
 
 export type FormValues = {
   playlist_url: string;
@@ -33,6 +34,7 @@ export interface InputFileUploadRef {
 }
 
 function UploadDrawer() {
+  const navigate = useNavigate();
   const {
     handleSubmit,
     register,
@@ -108,6 +110,9 @@ function UploadDrawer() {
         if (res.ok) {
           setConties((prev) => [...(prev || []), resData]);
           setOpen(false);
+        } else if (res.status === 401) {
+          setOpen(false);
+          navigate("login");
         }
       } catch (error) {
         console.error("Error during upload:", error);
@@ -116,7 +121,7 @@ function UploadDrawer() {
         resetAllFields();
       }
     },
-    [hashtags, resetAllFields, setOpen, setIsFetching, setConties, file]
+    [hashtags, file, setConties, setOpen, navigate, resetAllFields]
   );
 
   return (
