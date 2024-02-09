@@ -1,14 +1,3 @@
-// import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import Home from "./Routes/Home";
-// import TabBar from "./components/TabBar";
-// import Feed from "./Routes/Feed";
-// import Upload from "./Routes/Upload";
-// import Settings from "./Routes/Settings";
-// import Header from "./components/Header";
-// import Search from "./Routes/Search";
-// import Login from "./Routes/Login";
-// import ContiDetail from "./Routes/ContiDetail";
-
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
