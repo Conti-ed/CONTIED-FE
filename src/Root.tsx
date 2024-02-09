@@ -1,45 +1,38 @@
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+// import { BrowserRouter, Route, Routes } from "react-router-dom";
+// import Home from "./Routes/Home";
+// import TabBar from "./components/TabBar";
+// import Feed from "./Routes/Feed";
+// import Upload from "./Routes/Upload";
+// import Settings from "./Routes/Settings";
+// import Header from "./components/Header";
+// import Search from "./Routes/Search";
+// import Login from "./Routes/Login";
+// import ContiDetail from "./Routes/ContiDetail";
+
+import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./Routes/Home";
-import TabBar from "./components/TabBar";
-import Feed from "./Routes/Feed";
-import Upload from "./Routes/Upload";
-import Settings from "./Routes/Settings";
 import Header from "./components/Header";
-import Search from "./Routes/Search";
-import Login from "./Routes/Login";
-import ContiDetail from "./Routes/ContiDetail";
+import { Outlet } from "react-router-dom";
+import TabBar from "./components/TabBar";
 
-function App() {
+function Root() {
   const isDark = useRecoilValue(isDarkAtom);
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/upload" element={<Upload />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/conti/:id" element={<ContiDetail />} />
-          </Routes>
-          <TabBar />
-        </BrowserRouter>
+        <Header />
+        <Outlet />
+        <TabBar />
       </ThemeProvider>
     </>
   );
 }
 
 const GlobalStyle = createGlobalStyle`
-html, body, div, span, applet, object, iframe,
+html, body, div, span, Rootlet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -100,4 +93,4 @@ a {
 }
 `;
 
-export default App;
+export default Root;
