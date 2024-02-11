@@ -7,11 +7,38 @@ export const Container = styled.div`
   cursor: pointer;
 `;
 
-export const ContiImage = styled.img`
+export const ContiImgAndKeywords = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
   width: 115px;
   height: 115px;
   border-radius: 10px;
   margin-bottom: 8px;
+`;
+
+export const ContiImage = styled.img`
+  width: 115px;
+  height: 115px;
+  border-radius: 10px;
+  filter: blur(1px);
+  position: relative;
+  z-index: 1;
+`;
+
+export const CenteredKeyword = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-weight: bold;
+  font-size: 18px;
+  color: whitesmoke;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 4px 8px;
+  border-radius: 4px;
 `;
 
 export const ContiTitle = styled.div`

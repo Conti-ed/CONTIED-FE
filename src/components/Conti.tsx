@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import {
   Container,
+  ContiImgAndKeywords,
   ContiImage,
+  CenteredKeyword,
   Contikeyword,
   KeywordsContainer,
 } from "../styles/Conti.styles";
@@ -23,7 +25,12 @@ function Conti({ contiData }: IConti) {
 
   return (
     <Container onClick={onclick}>
-      <ContiImage src={contiData?.thumbnail} />
+      <ContiImgAndKeywords>
+        <ContiImage src={contiData?.thumbnail} alt="재생목록 썸네일" />
+        {contiData?.keywords[0] && (
+          <CenteredKeyword>{contiData.keywords[0]}</CenteredKeyword>
+        )}
+      </ContiImgAndKeywords>
       <KeywordsContainer>
         {contiData?.keywords.map((keyword, i) => (
           <Contikeyword key={i}>#{keyword}</Contikeyword>
