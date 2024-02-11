@@ -25,6 +25,13 @@ import {
   IconContainer,
 } from "./ContiDetail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { styled } from "styled-components";
+
+const SectionSubTitle = styled.h1`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+`;
 
 function Search() {
   const location = useLocation();
@@ -69,6 +76,9 @@ function Search() {
         <SectionHeader>
           <SectionTitle>검색어: {query}</SectionTitle>
         </SectionHeader>
+        {query ? (
+          <SectionSubTitle>" {query} 관련 콘티들 "</SectionSubTitle>
+        ) : null}
         <SectionBody>
           {contiesLoading
             ? Array.from({ length: 20 }).map((_, index) => (
@@ -79,6 +89,9 @@ function Search() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
+      {query ? (
+        <SectionSubTitle>" {query} 관련 찬양들 "</SectionSubTitle>
+      ) : null}
       <SongList>
         {songs &&
           songs.map((s, i) => (
