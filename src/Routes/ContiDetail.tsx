@@ -127,7 +127,7 @@ export const TotalDurationContainer = styled(DetailItem)`
   justify-content: center;
   margin-top: 25px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   color: #c1c8ce;
 `;
 
@@ -140,26 +140,32 @@ export const IconContainer = styled.div`
 const Keywords = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 3px;
   align-items: center;
   justify-content: center;
 `;
 
 const KeywordItem = styled.div`
-  background-color: #e1ecf4;
-  color: #3178c6;
+  font-weight: bold;
+  color: #c1c8ce;
   padding: 5px;
   border-radius: 5px;
-  font-weight: 500;
+`;
+
+const StyledLink = styled(Link)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
 `;
 
 const SheetButton = styled.button`
   ${setFontStyle}
-  font-weight: 500;
+  font-weight: bold;
   border-radius: 10px;
-  background-color: #e1ecf4;
+  background-color: transparent;
   padding: 5px;
-  color: #3178c6;
+  color: #c1c8ce;
   margin: 0 auto;
 `;
 
@@ -294,12 +300,12 @@ function ContiDetail() {
         </div>
       )}
       {data?.sheet && (
-        <Link to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
+        <StyledLink to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
           <SheetButton>
             {data.sheet.filename}{" "}
             {Math.floor((data.sheet.size / 1024 / 1024) * 10) / 10}MB
           </SheetButton>
-        </Link>
+        </StyledLink>
       )}
     </Container>
   );
