@@ -102,6 +102,7 @@ function Header() {
                 transition={{ ease: "linear" }}
                 initial={{ scaleX: 0 }}
                 animate={inputAnimation}
+                exit={{ scaleX: 0 }}
               />
             </StyledLink>
           </HeaderRightIcons>

@@ -72,4 +72,5 @@ export const SearchInput = styled(motion.input)`
   border-radius: 10px;
   padding-left: 25px;
   width: 85%;
+  transform-origin: right;
 `;
