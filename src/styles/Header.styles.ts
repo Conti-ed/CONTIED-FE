@@ -69,5 +69,5 @@ export const StyledLink = styled(Link)`
 export const SearchInput = styled(motion.input)`
   border-radius: 10px;
   padding-left: 25px;
-  width: 80%;
+  width: 85%;
 `;
