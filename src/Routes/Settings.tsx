@@ -13,8 +13,10 @@ import {
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { HiUserCircle, HiBell } from "react-icons/hi";
 import { FaGuitar } from "react-icons/fa6";
+import { IoIosLogOut } from "react-icons/io";
 import { useRecoilState } from "recoil";
 import { isDarkAtom } from "../atoms";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [isDark, setIsDark] = useRecoilState(isDarkAtom);
@@ -22,6 +24,11 @@ const Settings = () => {
   const sunImage = "/images/sun.png";
   const moonBackImage = "/images/moon_back.png";
   const sunBackImage = "/images/sun_back.png";
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/login");
+  };
 
   const toggleMode = () => {
     setIsDark(!isDark);
@@ -105,6 +112,10 @@ const Settings = () => {
         <MenuItem>
           <MenuTitle>문의 및 건의사항</MenuTitle>
           <ChevronRightIcon />
+        </MenuItem>
+        <MenuItem>
+          <MenuTitle>로그아웃</MenuTitle>
+          <IoIosLogOut onClick={handleLogout} />
         </MenuItem>
       </Section>
     </SettingsContainer>
