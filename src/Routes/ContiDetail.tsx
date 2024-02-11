@@ -7,6 +7,7 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const Container = styled(motion.div)`
   padding-top: 35px;
@@ -132,6 +133,28 @@ export const TotalDurationContainer = styled(DetailItem)`
   color: #c1c8ce;
 `;
 
+const OptionsMenu = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  white-space: nowrap;
+`;
+
+const OptionItem = styled.div`
+  padding: 5px 10px;
+  &:hover {
+    border: 1px solid #ccc;
+  }
+`;
+
 export const IconContainer = styled.div`
   margin-left: auto;
   display: flex;
@@ -170,7 +193,7 @@ const SheetButton = styled.button`
   margin: 0 auto;
 `;
 
-const DetailVariants = {
+const detailVariants = {
   initial: {
     opacity: 0,
   },
@@ -182,12 +205,39 @@ const DetailVariants = {
   },
 };
 
+const optionsVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};
+
+interface OptionsPosition {
+  x: number;
+  y: number;
+}
+
 function ContiDetail() {
+  const [activeOptions, setActiveOptions] = useState<number | null>(null);
+  const [optionsPosition, setOptionsPosition] = useState<OptionsPosition>({
+    x: 0,
+    y: 0,
+  });
   const { id: cid } = useParams();
   const { data, isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
   });
+
+  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setOptionsPosition({ x: rect.left - 88, y: rect.top + 10 });
+  };
 
   const navigate = useNavigate();
 
@@ -244,9 +294,13 @@ function ContiDetail() {
     });
   };
 
+  const deleteSong = () => {
+    setActiveOptions(null);
+  };
+
   return (
     <Container
-      variants={DetailVariants}
+      variants={detailVariants}
       initial="initial"
       animate="animate"
       exit="exit"
@@ -283,7 +337,7 @@ function ContiDetail() {
           </HeaderContainer>
           <SongList>
             {data?.songs.map((s, i) => (
-              <SongItem key={i}>
+              <SongItem key={s.id || i}>
                 <SongNumber>{i + 1}.</SongNumber>
                 <SongInfo>
                   <SongTitle>{s.title}</SongTitle>
@@ -297,9 +351,34 @@ function ContiDetail() {
                     </ArtistAndDuration>
                   </SongDetails>
                 </SongInfo>
-                <IconContainer>
+                <IconContainer
+                  onClick={(event) => {
+                    handleMoreClick(event);
+                    setActiveOptions(s.id !== undefined ? s.id : null);
+                  }}
+                >
                   <MoreVertIcon />
                 </IconContainer>
+                {activeOptions === s.id && (
+                  <OptionsMenu
+                    style={{
+                      position: "fixed",
+                      left: `${optionsPosition.x}px`,
+                      top: `${optionsPosition.y}px`,
+                    }}
+                    variants={optionsVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
+                    <OptionItem onClick={() => deleteSong()}>
+                      삭제하기
+                    </OptionItem>
+                    <OptionItem onClick={() => deleteSong()}>
+                      기타 옵션
+                    </OptionItem>
+                  </OptionsMenu>
+                )}
               </SongItem>
             ))}
           </SongList>
