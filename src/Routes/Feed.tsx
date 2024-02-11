@@ -1,4 +1,9 @@
-import { CenteredContainer, Container, Spinner } from "../styles/Feed.styles";
+import {
+  CenteredContainer,
+  Container,
+  Spinner,
+  FeedVariants,
+} from "../styles/Feed.styles";
 import Conti from "../components/Conti";
 import { useQuery } from "react-query";
 import { ContiType } from "../types";
@@ -19,7 +24,12 @@ function Feed() {
   }, [data, setConties]);
 
   return (
-    <Container>
+    <Container
+      variants={FeedVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {isLoading ? (
         <CenteredContainer>
           <div>잠시만요...</div>

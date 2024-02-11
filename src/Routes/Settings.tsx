@@ -1,4 +1,5 @@
 import {
+  settingsVariants,
   SettingsContainer,
   Section,
   SectionTitle,
@@ -27,7 +28,12 @@ const Settings = () => {
   };
 
   return (
-    <SettingsContainer>
+    <SettingsContainer
+      variants={settingsVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       <Section>
         <SectionTitle>
           <IconWrapper>

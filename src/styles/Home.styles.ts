@@ -1,6 +1,7 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   padding: 0 20px;
@@ -80,3 +81,15 @@ export const SectionBody = styled.div`
 
 // export const CCMContainer = styled.div``;
 // export const CCMHeader = styled.div``;
+
+export const HomeVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};

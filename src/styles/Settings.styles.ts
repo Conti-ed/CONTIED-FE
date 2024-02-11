@@ -1,6 +1,7 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
-export const SettingsContainer = styled.div`
+export const SettingsContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -120,3 +121,15 @@ export const ToggleCircle = styled.span<{
     props.$isdark ? `url(${props.$moonimg})` : `url(${props.$sunimg})`};
   background-size: cover;
 `;
+
+export const settingsVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};

@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 
 export const TopIconsContainer = styled.div`
@@ -46,7 +48,6 @@ export const Logo = styled.img`
 
 export const HeaderRight = styled.div`
   display: flex;
-  gap: 15px;
 `;
 
 export const HeaderRightIcons = styled.div`
@@ -54,7 +55,19 @@ export const HeaderRightIcons = styled.div`
   cursor: pointer;
 `;
 
-export const SearchInput = styled.input`
+export const StyledLink = styled(Link)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    width: 14px;
+    height: auto;
+    fill: white;
+  }
+`;
+
+export const SearchInput = styled(motion.input)`
   border-radius: 10px;
-  padding-left: 7px;
+  padding-left: 25px;
+  width: 80%;
 `;

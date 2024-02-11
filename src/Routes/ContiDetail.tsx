@@ -6,6 +6,7 @@ import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
+import { motion } from "framer-motion";
 
 const Container = styled(motion.div)`
   padding-top: 35px;
@@ -169,6 +170,18 @@ const SheetButton = styled.button`
   margin: 0 auto;
 `;
 
+const DetailVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};
+
 function ContiDetail() {
   const { id: cid } = useParams();
   const { data, isLoading } = useQuery<ContiType>({
@@ -232,7 +245,12 @@ function ContiDetail() {
   };
 
   return (
-    <Container>
+    <Container
+      variants={DetailVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {isLoading ? (
         <CenteredContainer>
           <div>잠시만요...</div>

@@ -1,6 +1,7 @@
+import { motion } from "framer-motion";
 import styled, { keyframes } from "styled-components";
 
-export const Container = styled.div`
+export const Container = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 15px;
@@ -38,3 +39,15 @@ export const CenteredContainer = styled.div`
   right: 0;
   bottom: 0;
 `;
+
+export const FeedVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};

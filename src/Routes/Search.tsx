@@ -10,6 +10,7 @@ import {
   SectionHeader,
   SectionTitle,
   SectionBody,
+  HomeVariants,
 } from "../styles/Home.styles";
 import {
   ArtistAndDuration,
@@ -58,7 +59,12 @@ function Search() {
   };
 
   return (
-    <Container>
+    <Container
+      variants={HomeVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       <SectionContainer>
         <SectionHeader>
           <SectionTitle>검색어: {query}</SectionTitle>

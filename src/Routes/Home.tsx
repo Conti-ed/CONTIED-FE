@@ -9,6 +9,7 @@ import {
   SectionTitle,
   SectionMore,
   SectionBody,
+  HomeVariants,
 } from "../styles/Home.styles";
 import { SERVER_URL, getKeywords, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
@@ -45,7 +46,12 @@ function Home() {
   });
 
   return (
-    <Container>
+    <Container
+      variants={HomeVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       <KeywordContainer>
         {!keywordsLoading &&
           keywords
