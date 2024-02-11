@@ -86,6 +86,7 @@ function Header() {
                   fill: searchOpen ? "black" : "white",
                   width: searchOpen ? "14px" : "17px",
                 }}
+                initial={{ x: 160 }}
                 transition={{ ease: "linear" }}
                 viewBox="0 0 16 16"
                 xmlns="http://www.w3.org/2000/svg"
