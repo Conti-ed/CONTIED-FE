@@ -5,6 +5,7 @@ import KakaoLogin from "react-kakao-login";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const colors = {
   main: "#96c9ed",
@@ -28,6 +29,13 @@ const FormContainer = styled.div`
   border-radius: 4px;
   margin: 0 auto;
   box-shadow: 0 4px 10px 4px rgba(${colors.formBg}, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const FormWrapper = styled.div`
+  min-height: 235px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -67,6 +75,7 @@ const TabGroup = styled.ul`
 `;
 
 const TabButton = styled.button`
+  position: relative;
   border: none;
   background: none;
   cursor: pointer;
@@ -74,6 +83,7 @@ const TabButton = styled.button`
   font-size: 17px;
   padding: 15px;
   transition: 0.5s ease;
+  min-height: 48px;
   width: 50%;
   text-align: center;
 
@@ -88,6 +98,15 @@ const TabButton = styled.button`
     background: ${colors.main};
     color: ${colors.white};
   }
+`;
+
+const ActiveTabIndicator = styled(motion.div)`
+  height: 2px;
+  background-color: ${colors.main};
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
 `;
 
 const Title = styled.h1`
@@ -126,6 +145,12 @@ const Button = styled.button`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+`;
+
+const KakaoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 type FormValues = {
@@ -197,15 +222,31 @@ function Login() {
     <AppContainer>
       <FormContainer>
         <TabGroup>
-          <li className={activeTab === "login" ? "active" : ""}>
-            <TabButton onClick={() => switchTab("login")}>로그인</TabButton>
+          <li>
+            <TabButton
+              className={activeTab === "login" ? "active" : ""}
+              onClick={() => switchTab("login")}
+            >
+              로그인
+              {activeTab === "login" && (
+                <ActiveTabIndicator layoutId="underline" />
+              )}
+            </TabButton>
           </li>
-          <li className={activeTab === "signup" ? "active" : ""}>
-            <TabButton onClick={() => switchTab("signup")}>회원가입</TabButton>
+          <li>
+            <TabButton
+              className={activeTab === "signup" ? "active" : ""}
+              onClick={() => switchTab("signup")}
+            >
+              회원가입
+              {activeTab === "signup" && (
+                <ActiveTabIndicator layoutId="underline" />
+              )}
+            </TabButton>
           </li>
         </TabGroup>
         {activeTab === "login" ? (
-          <>
+          <FormWrapper>
             <Title>로그인</Title>
             <Form onSubmit={handleSubmit(handleLogin)}>
               <Input
@@ -219,15 +260,17 @@ function Login() {
               />
               <Button type="submit">로그인</Button>
             </Form>
-            <KakaoLogin
-              token={"ca220974886e2ef4eb4a37d21b258d7c"}
-              onSuccess={kakaoResponse}
-              onFail={console.error}
-              onLogout={console.info}
-            />
-          </>
+            <KakaoContainer>
+              <KakaoLogin
+                token={"ca220974886e2ef4eb4a37d21b258d7c"}
+                onSuccess={kakaoResponse}
+                onFail={console.error}
+                onLogout={console.info}
+              />
+            </KakaoContainer>
+          </FormWrapper>
         ) : (
-          <>
+          <FormWrapper>
             <Title>회원가입</Title>
             <Form onSubmit={handleSubmit(handleSignup)}>
               <Input
@@ -258,7 +301,7 @@ function Login() {
               />
               <Button type="submit">회원가입</Button>
             </Form>
-          </>
+          </FormWrapper>
         )}
       </FormContainer>
     </AppContainer>
