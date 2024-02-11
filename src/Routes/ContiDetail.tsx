@@ -7,7 +7,7 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   padding-top: 35px;
   padding: 10px;
   padding-bottom: 100px;
