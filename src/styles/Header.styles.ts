@@ -11,6 +11,7 @@ export const TopIconsContainer = styled.div`
   align-items: center;
   position: sticky;
   top: 0;
+  z-index: 1000;
   background-color: ${(props) => props.theme.bgColor};
 `;
 
@@ -38,6 +39,7 @@ export const Container = styled.div`
   width: 100%;
   height: 70px;
   top: 44px;
+  z-index: 1000;
   background-color: ${(props) => props.theme.bgColor};
 `;
 

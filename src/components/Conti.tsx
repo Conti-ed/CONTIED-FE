@@ -3,6 +3,7 @@ import {
   Container,
   ContiImgAndKeywords,
   ContiImage,
+  CenteredContainer,
   CenteredKeyword,
   Contikeyword,
   KeywordsContainer,
@@ -28,7 +29,9 @@ function Conti({ contiData }: IConti) {
       <ContiImgAndKeywords>
         <ContiImage src={contiData?.thumbnail} alt="재생목록 썸네일" />
         {contiData?.keywords[0] && (
-          <CenteredKeyword>{contiData.keywords[0]}</CenteredKeyword>
+          <CenteredContainer>
+            <CenteredKeyword>{contiData.keywords[0]}</CenteredKeyword>
+          </CenteredContainer>
         )}
       </ContiImgAndKeywords>
       <KeywordsContainer>

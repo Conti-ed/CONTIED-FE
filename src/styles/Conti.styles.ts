@@ -8,9 +8,6 @@ export const Container = styled.div`
 `;
 
 export const ContiImgAndKeywords = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
   width: 115px;
   height: 115px;
@@ -23,22 +20,25 @@ export const ContiImage = styled.img`
   height: 115px;
   border-radius: 10px;
   filter: blur(1px);
-  position: relative;
-  z-index: 1;
+`;
+
+export const CenteredContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
 `;
 
 export const CenteredKeyword = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
   font-weight: bold;
   font-size: 18px;
   color: whitesmoke;
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 4px 8px;
-  border-radius: 4px;
 `;
 
 export const ContiTitle = styled.div`
@@ -63,8 +63,8 @@ export const Contikeyword = styled.div`
   display: grid;
   place-content: center;
   width: auto;
-  height: 18px;
-  font-size: 6px;
+  height: 20px;
+  font-size: 10px;
   border-radius: 8px;
   white-space: nowrap;
   cursor: pointer;
