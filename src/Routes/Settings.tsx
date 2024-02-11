@@ -26,7 +26,11 @@ const Settings = () => {
   const sunBackImage = "/images/sun_back.png";
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user_info");
+
     navigate("/login");
   };
 
