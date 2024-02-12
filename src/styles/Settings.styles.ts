@@ -5,6 +5,7 @@ export const SettingsContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   height: 100%;
+  margin-bottom: 100px;
 `;
 
 export const Section = styled.section`

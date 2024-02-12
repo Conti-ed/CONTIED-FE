@@ -13,7 +13,7 @@ import {
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { HiUserCircle, HiBell } from "react-icons/hi";
 import { FaGuitar } from "react-icons/fa6";
-import { IoIosLogOut } from "react-icons/io";
+import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { useRecoilState } from "recoil";
 import { isDarkAtom, isLoginAtom } from "../atoms";
 import { useNavigate } from "react-router-dom";
@@ -118,10 +118,15 @@ const Settings = () => {
           <MenuTitle>문의 및 건의사항</MenuTitle>
           <ChevronRightIcon />
         </MenuItem>
-        {isLogin && (
-          <MenuItem>
+        {isLogin ? (
+          <MenuItem onClick={handleLogout}>
             <MenuTitle>로그아웃</MenuTitle>
-            <IoIosLogOut onClick={handleLogout} />
+            <IoIosLogOut />
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={() => navigate("/login")}>
+            <MenuTitle>로그인</MenuTitle>
+            <IoIosLogIn />
           </MenuItem>
         )}
       </Section>

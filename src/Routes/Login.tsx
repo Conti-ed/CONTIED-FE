@@ -34,6 +34,7 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
 `;
 
 const FormWrapper = styled.div`
@@ -159,19 +160,30 @@ type FormValues = {
   email: string;
   password: string;
   name: string;
-  passwordConfirm?: string;
 };
 
 function Login() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const setIsLogin = useSetRecoilState(isLoginAtom);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isFetching, setIsFetching] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    formState: { errors },
+  } = useForm<FormValues>();
+
   const switchTab = (tabName: "login" | "signup") => {
+    resetField("email");
+    resetField("name");
+    resetField("password");
     setActiveTab(tabName);
   };
-  const setIsLogin = useSetRecoilState(isLoginAtom);
-  const { register, handleSubmit, watch } = useForm<FormValues>();
 
   const handleLogin = async (formValues: FormValues) => {
+    setIsFetching(true);
     const res = await fetch(`${SERVER_URL}/api/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -182,13 +194,21 @@ function Login() {
     if (res.ok) {
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
-      localStorage.setItem("user_info", JSON.stringify(data.user_data));
+      localStorage.setItem("user_info", JSON.stringify(data.user_info));
       setIsLogin(true);
       navigate("/");
+    } else if (res.status === 401) {
+      setErrorMsg("이메일 또는 비밀번호를 잘못 입력했습니다.");
+    } else {
+      setErrorMsg(
+        "일시적인 오류로 서비스 접속에 실패했습니다. 잠시 후 다시 시도해주세요."
+      );
     }
+    setIsFetching(false);
   };
 
   const handleSignup = async (formValues: FormValues) => {
+    setIsFetching(true);
     const res = await fetch(`${SERVER_URL}/api/user`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -198,7 +218,16 @@ function Login() {
     console.log(data, res.status);
     if (res.ok) {
       switchTab("login");
+    } else if (res.status === 400) {
+      setErrorMsg("이메일 형식에 맞지 않은 메일주소입니다. 다시 시도해주세요.");
+    } else if (res.status === 409) {
+      setErrorMsg(data.message);
+    } else {
+      setErrorMsg(
+        "일시적인 오류로 서비스 접속에 실패했습니다. 잠시 후 다시 시도해주세요."
+      );
     }
+    setIsFetching(false);
   };
 
   const kakaoResponse = async (response: {
@@ -253,59 +282,82 @@ function Login() {
             <Title>로그인</Title>
             <Form onSubmit={handleSubmit(handleLogin)}>
               <Input
-                {...register("email", { required: true })}
+                {...register("email", {
+                  required: { value: true, message: "이메일을 입력해주세요" },
+                })}
                 placeholder="이메일"
               />
               <Input
-                {...register("password", { required: true })}
+                {...register("password", {
+                  required: { value: true, message: "비밀번호를 입력해주세요" },
+                  minLength: {
+                    value: 8,
+                    message: "8자리 ~ 20자리 이내로 입력해주세요.",
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: "8자리 ~ 20자리 이내로 입력해주세요.",
+                  },
+                })}
                 placeholder="비밀번호"
                 type="password"
               />
-              <Button type="submit">로그인</Button>
+              <Button type="submit">{isFetching ? "loading" : "로그인"}</Button>
             </Form>
-            <KakaoContainer>
+            {/* <KakaoContainer>
               <KakaoLogin
                 token={"ca220974886e2ef4eb4a37d21b258d7c"}
                 onSuccess={kakaoResponse}
                 onFail={console.error}
                 onLogout={console.info}
               />
-            </KakaoContainer>
+            </KakaoContainer> */}
           </FormWrapper>
         ) : (
           <FormWrapper>
             <Title>회원가입</Title>
             <Form onSubmit={handleSubmit(handleSignup)}>
               <Input
-                {...register("email", { required: true })}
+                {...register("email", {
+                  required: { value: true, message: "이메일를 입력해주세요" },
+                })}
                 placeholder="이메일"
               />
               <Input
-                {...register("name", { required: true })}
-                placeholder="이름"
-              />
-              <Input
-                {...register("password", { required: true })}
+                {...register("password", {
+                  required: { value: true, message: "비밀번호를 입력해주세요" },
+                })}
                 placeholder="비밀번호"
                 type="password"
               />
               <Input
-                {...register("passwordConfirm", {
-                  required: true,
-                  validate: (val: string | undefined) => {
-                    if (watch("password") !== val) {
-                      console.log("Your passwords do no match");
-                      return "Your passwords do no match";
-                    }
-                  },
+                {...register("name", {
+                  required: { value: true, message: "이름을 입력해주세요" },
                 })}
-                placeholder="비밀번호 확인"
-                type="password"
+                placeholder="이름"
               />
-              <Button type="submit">회원가입</Button>
+              <Button type="submit">
+                {isFetching ? "loading" : "회원가입"}
+              </Button>
             </Form>
           </FormWrapper>
         )}
+        <span
+          style={{
+            position: "absolute",
+            bottom: 0,
+            fontSize: "12px",
+            color: "#ff3e3e",
+          }}
+        >
+          {errors.email
+            ? errors.email.message
+            : errors.password
+            ? errors.password.message
+            : errors.name
+            ? errors.name.message
+            : errorMsg}
+        </span>
       </FormContainer>
     </AppContainer>
   );

@@ -14,11 +14,15 @@ import {
 import { SERVER_URL, getKeywords, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { ContiType, KeywordType } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { isLoginAtom } from "../atoms";
 
 function Home() {
   const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
   const [randomKeyword, setRandomKeyword] = useState("");
+  const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
+
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
     {
@@ -45,6 +49,12 @@ function Home() {
     },
   });
 
+  useEffect(() => {
+    localStorage.getItem("user_info") &&
+      JSON.parse(localStorage.getItem("user_info")!).id &&
+      setIsLogin(true);
+  }, [setIsLogin]);
+
   return (
     <Container
       variants={HomeVariants}
@@ -58,22 +68,26 @@ function Home() {
             ?.slice(0, 10)
             .map((k) => <Keyword key={k.id}>{k.name}</Keyword>)}
       </KeywordContainer>
-      <SectionContainer>
-        <SectionHeader>
-          <SectionTitle>My Conti</SectionTitle>
-          <SectionMore>더보기</SectionMore>
-        </SectionHeader>
-        <SectionBody>
-          {myContiIsLoading
-            ? Array.from({ length: 20 }).map((_, index) => (
-                <ContiPlaceholder key={index} size={115} />
-              ))
-            : myConti &&
-              myConti
-                .slice(0, 20)
-                .map((conti, index) => <Conti key={index} contiData={conti} />)}
-        </SectionBody>
-      </SectionContainer>
+      {isLogin && (
+        <SectionContainer>
+          <SectionHeader>
+            <SectionTitle>My Conti</SectionTitle>
+            <SectionMore>더보기</SectionMore>
+          </SectionHeader>
+          <SectionBody>
+            {myContiIsLoading
+              ? Array.from({ length: 20 }).map((_, index) => (
+                  <ContiPlaceholder key={index} size={115} />
+                ))
+              : myConti &&
+                myConti
+                  .slice(0, 20)
+                  .map((conti, index) => (
+                    <Conti key={index} contiData={conti} />
+                  ))}
+          </SectionBody>
+        </SectionContainer>
+      )}
       <SectionContainer>
         <SectionHeader>
           <SectionTitle>{randomKeyword}</SectionTitle>
