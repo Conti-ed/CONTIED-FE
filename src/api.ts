@@ -32,3 +32,31 @@ export async function getContiesByKeyword(keyword: string) {
 export async function getSongsByKeyword(keyword: string) {
   return (await fetch(`${SERVER_URL}/api/song?keyword=${keyword}`)).json();
 }
+
+export async function refreshToken() {
+  try {
+    const response = await fetch(`${SERVER_URL}/token/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refresh_token: localStorage.getItem("refreshToken"),
+      }),
+    });
+
+    if (!response.ok) {
+      // refresh token 요청이 실패한 경우에 대한 처리
+      throw new Error("Failed to refresh token");
+    }
+
+    const data = await response.json();
+    const newAccessToken = data.access_token;
+    // 여기서 받은 새로운 엑세스 토큰을 저장하거나 반환합니다.
+    return newAccessToken;
+  } catch (error) {
+    // 에러 처리
+    alert("일시적인 오류입니다. 잠시 후에 다시 시도해주세요.");
+    throw error;
+  }
+}
