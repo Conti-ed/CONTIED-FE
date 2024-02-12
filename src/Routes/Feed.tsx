@@ -8,8 +8,8 @@ import Conti from "../components/Conti";
 import { useQuery } from "react-query";
 import { ContiType } from "../types";
 import { getConties } from "../api";
-import { contiesAtom } from "../atoms";
-import { useRecoilState } from "recoil";
+import { contiesAtom, isLoginAtom } from "../atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useEffect } from "react";
 
 function Feed() {
@@ -18,10 +18,17 @@ function Feed() {
     queryFn: getConties,
   });
   const [conties, setConties] = useRecoilState(contiesAtom);
+  const setIsLogin = useSetRecoilState(isLoginAtom);
 
   useEffect(() => {
     data && setConties(data);
   }, [data, setConties]);
+
+  useEffect(() => {
+    localStorage.getItem("user_info") &&
+      JSON.parse(localStorage.getItem("user_info")!).id &&
+      setIsLogin(true);
+  }, [setIsLogin]);
 
   return (
     <Container
