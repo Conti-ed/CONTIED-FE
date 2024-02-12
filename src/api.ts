@@ -15,6 +15,12 @@ export async function getConti(cid: number) {
 }
 
 export async function getMyConties() {
+  if (
+    !localStorage.getItem("user_info") ||
+    localStorage.getItem("user_info") === ""
+  ) {
+    return;
+  }
   const my_id = JSON.parse(localStorage["user_info"]).id;
   return (await fetch(`${SERVER_URL}/api/conti?user=${my_id}`)).json();
 }
