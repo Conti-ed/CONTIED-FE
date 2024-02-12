@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { contiesAtom, fileUploadAtom, isDrawerOpenAtom } from "../atoms";
-import { SERVER_URL } from "../api";
+import { SERVER_URL, refreshToken } from "../api";
 import { ContiType } from "../types";
 import InputFileUpload from "./InputFileUpload";
 import HashtagComponent from "./HashtagComponent";
@@ -22,7 +22,6 @@ import {
 } from "../styles/UploadDrawer.styles";
 import { Spinner } from "../styles/Feed.styles";
 import useFormReset from "../useFormReset";
-import { useNavigate } from "react-router-dom";
 
 export type FormValues = {
   playlist_url: string;
@@ -34,7 +33,6 @@ export interface InputFileUploadRef {
 }
 
 function UploadDrawer() {
-  const navigate = useNavigate();
   const {
     handleSubmit,
     register,
@@ -102,26 +100,46 @@ function UploadDrawer() {
 
         const res = await fetch(`${SERVER_URL}/api/conti`, {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
           body: formData,
         });
         const resData: ContiType = await res.json();
-        console.log(resData);
+        console.log(res.status, resData);
 
         if (res.ok) {
           setConties((prev) => [...(prev || []), resData]);
           setOpen(false);
+          resetAllFields();
         } else if (res.status === 401) {
-          setOpen(false);
-          navigate("login");
+          const newAccessToken = await refreshToken();
+          console.log(newAccessToken);
+          const refreshedResponse = await fetch(`${SERVER_URL}/api/conti`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${newAccessToken}`,
+            },
+            body: formData,
+          });
+          const data = await refreshedResponse.json();
+          console.log(refreshedResponse.status, data);
+          if (refreshedResponse.ok) {
+            localStorage.setItem("accessToken", newAccessToken);
+            setConties((prev) => [...(prev || []), data]);
+            setOpen(false);
+            resetAllFields();
+          }
+        } else {
+          alert("일시적인 문제입니다. 잠시 후에 다시 시도해주세요.");
         }
       } catch (error) {
         console.error("Error during upload:", error);
       } finally {
         setIsFetching(false);
-        resetAllFields();
       }
     },
-    [hashtags, file, setConties, setOpen, navigate, resetAllFields]
+    [hashtags, file, setConties, setOpen, resetAllFields]
   );
 
   return (
