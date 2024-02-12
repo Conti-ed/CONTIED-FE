@@ -15,11 +15,12 @@ import { HiUserCircle, HiBell } from "react-icons/hi";
 import { FaGuitar } from "react-icons/fa6";
 import { IoIosLogOut } from "react-icons/io";
 import { useRecoilState } from "recoil";
-import { isDarkAtom } from "../atoms";
+import { isDarkAtom, isLoginAtom } from "../atoms";
 import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+  const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
   const moonImage = "/images/moon.png";
   const sunImage = "/images/sun.png";
   const moonBackImage = "/images/moon_back.png";
@@ -30,7 +31,7 @@ const Settings = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user_info");
-
+    setIsLogin(false);
     navigate("/login");
   };
 
@@ -117,10 +118,12 @@ const Settings = () => {
           <MenuTitle>문의 및 건의사항</MenuTitle>
           <ChevronRightIcon />
         </MenuItem>
-        <MenuItem>
-          <MenuTitle>로그아웃</MenuTitle>
-          <IoIosLogOut onClick={handleLogout} />
-        </MenuItem>
+        {isLogin && (
+          <MenuItem>
+            <MenuTitle>로그아웃</MenuTitle>
+            <IoIosLogOut onClick={handleLogout} />
+          </MenuItem>
+        )}
       </Section>
     </SettingsContainer>
   );

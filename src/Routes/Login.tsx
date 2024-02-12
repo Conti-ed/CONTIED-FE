@@ -6,6 +6,8 @@ import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSetRecoilState } from "recoil";
+import { isLoginAtom } from "../atoms";
 
 const colors = {
   main: "#96c9ed",
@@ -166,7 +168,7 @@ function Login() {
   const switchTab = (tabName: "login" | "signup") => {
     setActiveTab(tabName);
   };
-
+  const setIsLogin = useSetRecoilState(isLoginAtom);
   const { register, handleSubmit, watch } = useForm<FormValues>();
 
   const handleLogin = async (formValues: FormValues) => {
@@ -181,6 +183,7 @@ function Login() {
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
       localStorage.setItem("user_info", JSON.stringify(data.user_data));
+      setIsLogin(true);
       navigate("/");
     }
   };

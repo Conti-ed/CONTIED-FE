@@ -3,6 +3,8 @@ import { ContiType, SongType } from "./types";
 
 export const isDarkAtom = atom({ key: "isDark", default: true });
 
+export const isLoginAtom = atom({ key: "isLogin", default: false });
+
 export const isDrawerOpenAtom = atom({ key: "isDrawerOpen", default: false });
 
 export const fileUploadAtom = atom<File | null>({
