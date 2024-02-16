@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { SERVER_URL, getConti } from "../api";
-import { ContiType } from "../types";
+import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
@@ -8,6 +8,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  DropResult,
+  Droppable,
+  DroppableProvided,
+} from "react-beautiful-dnd";
 
 const Container = styled(motion.div)`
   padding-top: 35px;
@@ -233,8 +241,24 @@ function ContiDetail() {
   const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
-    onSuccess: (data) => setContiData(data),
+    onSuccess: (data) => {
+      setContiData(data);
+      if (data) {
+        setSongs(data.songs || []);
+      }
+    },
   });
+  const [songs, setSongs] = useState<SongType[]>([]);
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(songs);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setSongs(items);
+  };
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -318,114 +342,139 @@ function ContiDetail() {
   };
 
   return (
-    <Container
-      variants={detailVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-    >
-      {isLoading ? (
-        <CenteredContainer>
-          <div>잠시만요...</div>
-          <Spinner />
-        </CenteredContainer>
-      ) : (
-        <div>
-          <HeaderContainer>
-            <BackButton onClick={() => navigate(-1)}>
-              <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
-              <span
-                style={{
-                  textDecoration: "underline",
-                  fontWeight: "bold",
-                  color: "#8ab1e8",
-                  fontSize: "18px",
-                }}
-              >
-                이전
-              </span>
-            </BackButton>
-            <OwnerInfoContainer>
-              <OwnerName>{contiData?.owner.name}</OwnerName>
-              <CreatedAt>
-                {contiData?.created_at
-                  ? parseLocalDateString(contiData.created_at)
-                  : "Loading..."}
-              </CreatedAt>
-            </OwnerInfoContainer>
-          </HeaderContainer>
-          <SongList>
-            {contiData?.songs.map((s, i) => (
-              <SongItem key={s.id || i}>
-                <SongNumber>{i + 1}.</SongNumber>
-                <SongInfo>
-                  <SongTitle>{s.title}</SongTitle>
-                  <SongDetails>
-                    <ArtistAndDuration>
-                      <SongArtist>{s.artist}</SongArtist>
-                      <span>•</span>
-                      <SongDuration>
-                        {s?.duration ? formatDuration(s.duration) : "0:00"}
-                      </SongDuration>
-                    </ArtistAndDuration>
-                  </SongDetails>
-                </SongInfo>
-                <IconContainer
-                  onClick={(event) => {
-                    handleMoreClick(event);
-                    setActiveOptions(s.id !== undefined ? s.id : null);
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Container
+        variants={detailVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        {isLoading ? (
+          <CenteredContainer>
+            <div>잠시만요...</div>
+            <Spinner />
+          </CenteredContainer>
+        ) : (
+          <div>
+            <HeaderContainer>
+              <BackButton onClick={() => navigate(-1)}>
+                <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
+                <span
+                  style={{
+                    textDecoration: "underline",
+                    fontWeight: "bold",
+                    color: "#8ab1e8",
+                    fontSize: "18px",
                   }}
                 >
-                  <MoreVertIcon />
-                </IconContainer>
-                {activeOptions === s.id && (
-                  <OptionsMenu
-                    style={{
-                      position: "fixed",
-                      left: `${optionsPosition.x}px`,
-                      top: `${optionsPosition.y}px`,
-                    }}
-                    variants={optionsVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                  >
-                    <OptionItem onClick={() => deleteSong(s.id)}>
-                      삭제하기
-                    </OptionItem>
-                    <OptionItem onClick={() => console.log("기타옵션")}>
-                      기타 옵션
-                    </OptionItem>
-                  </OptionsMenu>
-                )}
-              </SongItem>
-            ))}
-          </SongList>
-          <TotalDurationContainer>
-            <span>총 {contiData?.songs.length}개의 곡</span>
-            <span>•</span>
-            <span>
-              {contiData?.duration
-                ? formatTotalDuration(contiData.duration)
-                : "0분"}
-            </span>
-          </TotalDurationContainer>
-          <Keywords>
-            {contiData?.keywords.map((k, i) => (
-              <KeywordItem key={i}>#{k}</KeywordItem>
-            ))}
-          </Keywords>
-        </div>
-      )}
-      {contiData?.sheet && (
-        <StyledLink to={`${SERVER_URL}/api/sheet/${contiData.sheet}`}>
-          <SheetButton>
-            {contiData.sheet.filename}{" "}
-            {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
-          </SheetButton>
-        </StyledLink>
-      )}
-    </Container>
+                  이전
+                </span>
+              </BackButton>
+              <OwnerInfoContainer>
+                <OwnerName>{contiData?.owner.name}</OwnerName>
+                <CreatedAt>
+                  {contiData?.created_at
+                    ? parseLocalDateString(contiData.created_at)
+                    : "Loading..."}
+                </CreatedAt>
+              </OwnerInfoContainer>
+            </HeaderContainer>
+            <Droppable droppableId="songs">
+              {(provided: DroppableProvided) => (
+                <SongList ref={provided.innerRef} {...provided.droppableProps}>
+                  {songs.map((song, index) => (
+                    <Draggable
+                      key={song.id}
+                      draggableId={song.id.toString()}
+                      index={index}
+                    >
+                      {(provided: DraggableProvided) => (
+                        <SongItem
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <SongNumber>{index + 1}.</SongNumber>
+                          <SongInfo>
+                            <SongTitle>{song.title}</SongTitle>
+                            <SongDetails>
+                              <ArtistAndDuration>
+                                <SongArtist>{song.artist}</SongArtist>
+                                <span>•</span>
+                                <SongDuration>
+                                  {song.duration
+                                    ? formatDuration(song.duration)
+                                    : "0:00"}
+                                </SongDuration>
+                              </ArtistAndDuration>
+                            </SongDetails>
+                          </SongInfo>
+                          <IconContainer
+                            onClick={(event) => {
+                              handleMoreClick(event);
+                              setActiveOptions(
+                                song.id !== undefined ? song.id : null
+                              );
+                            }}
+                          >
+                            <MoreVertIcon />
+                          </IconContainer>
+                          {activeOptions === song.id && (
+                            <OptionsMenu
+                              style={{
+                                position: "fixed",
+                                left: `${optionsPosition.x}px`,
+                                top: `${optionsPosition.y}px`,
+                              }}
+                              variants={optionsVariants}
+                              initial="initial"
+                              animate="animate"
+                              exit="exit"
+                            >
+                              <OptionItem onClick={() => deleteSong(song.id)}>
+                                삭제하기
+                              </OptionItem>
+                              <OptionItem
+                                onClick={() => console.log("기타옵션")}
+                              >
+                                기타 옵션
+                              </OptionItem>
+                            </OptionsMenu>
+                          )}
+                        </SongItem>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </SongList>
+              )}
+            </Droppable>
+            <TotalDurationContainer>
+              <span>총 {contiData?.songs.length}개의 곡</span>
+              <span>•</span>
+              <span>
+                {contiData?.duration
+                  ? formatTotalDuration(contiData.duration)
+                  : "0분"}
+              </span>
+            </TotalDurationContainer>
+            <Keywords>
+              {contiData?.keywords.map((k, i) => (
+                <KeywordItem key={i}>#{k}</KeywordItem>
+              ))}
+            </Keywords>
+          </div>
+        )}
+        {contiData?.sheet && (
+          <StyledLink to={`${SERVER_URL}/api/sheet/${contiData.sheet}`}>
+            <SheetButton>
+              {contiData.sheet.filename}{" "}
+              {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
+            </SheetButton>
+          </StyledLink>
+        )}
+      </Container>
+    </DragDropContext>
   );
 }
 

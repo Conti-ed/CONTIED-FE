@@ -13,7 +13,7 @@ export type KeywordType = {
 };
 
 export type SongType = {
-  id?: number;
+  id: number;
   title: string;
   artist: string;
   releaseDate?: string;

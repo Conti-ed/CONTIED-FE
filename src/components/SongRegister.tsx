@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useForm } from "react-hook-form";
 
 type FormValues = {
+  id: number;
   title: string;
   artist: string;
   youtubeUrl?: string;
@@ -24,6 +25,7 @@ function SongRegister() {
 
   const onSubmit = (data: FormValues) => {
     const newSong: SongType = {
+      id: data.id,
       title: data.title,
       artist: data.artist,
       releaseDate: releaseDate?.toLocaleDateString("ko-KR", {
