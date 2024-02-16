@@ -19,6 +19,7 @@ interface IConti {
 
 function Conti({ contiData }: IConti) {
   const navigate = useNavigate();
+  console.log(contiData);
 
   const onclick = async () => {
     navigate(`/conti/${contiData?.id}`);

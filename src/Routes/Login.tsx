@@ -47,7 +47,7 @@ const FormWrapper = styled.div`
 const TabGroup = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 0 30px 0;
+  margin: 0;
   &:after {
     content: "";
     display: table;

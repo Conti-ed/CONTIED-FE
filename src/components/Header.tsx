@@ -82,7 +82,7 @@ function Header() {
               <motion.svg
                 onClick={handleSearchIconClick}
                 animate={{
-                  x: searchOpen ? 23 : 160,
+                  x: searchOpen ? 23 : 145,
                   fill: searchOpen ? "black" : "white",
                   width: searchOpen ? "14px" : "17px",
                 }}
