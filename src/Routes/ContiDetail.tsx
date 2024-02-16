@@ -229,9 +229,11 @@ function ContiDetail() {
     y: 0,
   });
   const { id: cid } = useParams();
-  const { data, isLoading } = useQuery<ContiType>({
+  const [contiData, setContiData] = useState<ContiType | undefined>(undefined);
+  const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
+    onSuccess: (data) => setContiData(data),
   });
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -294,8 +296,25 @@ function ContiDetail() {
     });
   };
 
-  const deleteSong = () => {
+  const deleteSong = async (sid: number | undefined) => {
+    const uid = JSON.parse(localStorage["user_info"]).id;
+    const token = localStorage["accessToken"];
     setActiveOptions(null);
+    const res = await fetch(
+      `${SERVER_URL}/api/song/${sid}?cid=${cid}&uid=${uid}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await res.json();
+    console.log(res.status, data);
+
+    if (res.ok) {
+      setContiData(data);
+    }
   };
 
   return (
@@ -327,16 +346,16 @@ function ContiDetail() {
               </span>
             </BackButton>
             <OwnerInfoContainer>
-              <OwnerName>{data?.owner.name}</OwnerName>
+              <OwnerName>{contiData?.owner.name}</OwnerName>
               <CreatedAt>
-                {data?.created_at
-                  ? parseLocalDateString(data.created_at)
+                {contiData?.created_at
+                  ? parseLocalDateString(contiData.created_at)
                   : "Loading..."}
               </CreatedAt>
             </OwnerInfoContainer>
           </HeaderContainer>
           <SongList>
-            {data?.songs.map((s, i) => (
+            {contiData?.songs.map((s, i) => (
               <SongItem key={s.id || i}>
                 <SongNumber>{i + 1}.</SongNumber>
                 <SongInfo>
@@ -371,10 +390,10 @@ function ContiDetail() {
                     animate="animate"
                     exit="exit"
                   >
-                    <OptionItem onClick={() => deleteSong()}>
+                    <OptionItem onClick={() => deleteSong(s.id)}>
                       삭제하기
                     </OptionItem>
-                    <OptionItem onClick={() => deleteSong()}>
+                    <OptionItem onClick={() => console.log("기타옵션")}>
                       기타 옵션
                     </OptionItem>
                   </OptionsMenu>
@@ -383,24 +402,26 @@ function ContiDetail() {
             ))}
           </SongList>
           <TotalDurationContainer>
-            <span>총 {data?.songs.length}개의 곡</span>
+            <span>총 {contiData?.songs.length}개의 곡</span>
             <span>•</span>
             <span>
-              {data?.duration ? formatTotalDuration(data.duration) : "0분"}
+              {contiData?.duration
+                ? formatTotalDuration(contiData.duration)
+                : "0분"}
             </span>
           </TotalDurationContainer>
           <Keywords>
-            {data?.keywords.map((k, i) => (
+            {contiData?.keywords.map((k, i) => (
               <KeywordItem key={i}>#{k}</KeywordItem>
             ))}
           </Keywords>
         </div>
       )}
-      {data?.sheet && (
-        <StyledLink to={`${SERVER_URL}/api/sheet/${data.sheet}`}>
+      {contiData?.sheet && (
+        <StyledLink to={`${SERVER_URL}/api/sheet/${contiData.sheet}`}>
           <SheetButton>
-            {data.sheet.filename}{" "}
-            {Math.floor((data.sheet.size / 1024 / 1024) * 10) / 10}MB
+            {contiData.sheet.filename}{" "}
+            {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
           </SheetButton>
         </StyledLink>
       )}
