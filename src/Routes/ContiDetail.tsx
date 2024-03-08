@@ -290,23 +290,30 @@ function ContiDetail() {
     onSuccess: (data) => {
       setContiData(data);
       if (data) {
-        setSongs(data.songs || []);
+        setSongs(data.songs.sort((a, b) => a.order - b.order) || []);
         setIsOwner(data.owner.id === JSON.parse(localStorage["user_info"]).id);
       }
     },
   });
   const [songs, setSongs] = useState<SongType[]>([]);
+  const uid = JSON.parse(localStorage["user_info"]).id;
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [deletingSongId, setDeletingSongId] = useState<number | null>(null);
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const items = Array.from(songs);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-
     setSongs(items);
+
+    const res = fetch(
+      `${SERVER_URL}/api/conti/${cid}?uid=${uid}&start=${result.source.index}&end=${result.destination.index}`,
+      { method: "PUT" }
+    );
+    const data = await (await res).json();
+    console.log((await res).status, data);
   };
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -391,7 +398,6 @@ function ContiDetail() {
 
   const deleteSong = async (sid: number | undefined) => {
     console.log("Attempting to delete song with ID:", sid);
-    const uid = JSON.parse(localStorage["user_info"]).id;
     const token = localStorage["accessToken"];
     setActiveOptions(null);
     const res = await fetch(
