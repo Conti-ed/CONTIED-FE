@@ -36,6 +36,7 @@ function SongRegister() {
       youtubeUrl: data.youtubeUrl,
       lyrics: data.lyrics,
       duration: data.duration,
+      order: 0,
     };
     setSongs((prev) => [...prev, newSong]);
     setOpen(false);

@@ -20,6 +20,7 @@ export type SongType = {
   youtubeUrl?: string;
   lyrics?: string;
   duration: number;
+  order: number;
 };
 
 export type SheetType = {
