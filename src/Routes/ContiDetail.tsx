@@ -207,6 +207,13 @@ const OptionItem = styled.div`
   }
 `;
 
+const OptionPlay = styled(Link)`
+  padding: 5px 10px;
+  &:hover {
+    border: 1px solid #ccc;
+  }
+`;
+
 export const IconContainer = styled.div`
   margin-left: auto;
   display: flex;
@@ -526,6 +533,15 @@ function ContiDetail() {
                               animate="animate"
                               exit="exit"
                             >
+                              <OptionPlay
+                                to={`https://www.youtube.com/results?search_query=${song.title.replace(
+                                  " ",
+                                  "+"
+                                )}`}
+                                target="_blank"
+                              >
+                                들어보기
+                              </OptionPlay>
                               {isOwner && (
                                 <OptionItem
                                   onClick={() => handleDeleteClick(song.id)}
