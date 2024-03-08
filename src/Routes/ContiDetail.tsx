@@ -238,6 +238,7 @@ function ContiDetail() {
   });
   const { id: cid } = useParams();
   const [contiData, setContiData] = useState<ContiType | undefined>(undefined);
+  const [isOwner, setIsOwner] = useState(false);
   const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
@@ -245,9 +246,11 @@ function ContiDetail() {
       setContiData(data);
       if (data) {
         setSongs(data.songs || []);
+        setIsOwner(data.owner.id === JSON.parse(localStorage["user_info"]).id);
       }
     },
   });
+  console.log(isOwner);
   const [songs, setSongs] = useState<SongType[]>([]);
 
   const onDragEnd = (result: DropResult) => {
@@ -334,9 +337,10 @@ function ContiDetail() {
       }
     );
     const data = await res.json();
-    console.log(res.status, data);
+    // console.log(res.status, data);
 
     if (res.ok) {
+      setSongs(songs.filter((song) => song.id !== sid));
       setContiData(data);
     }
   };
@@ -431,9 +435,11 @@ function ContiDetail() {
                               animate="animate"
                               exit="exit"
                             >
-                              <OptionItem onClick={() => deleteSong(song.id)}>
-                                삭제하기
-                              </OptionItem>
+                              {isOwner && (
+                                <OptionItem onClick={() => deleteSong(song.id)}>
+                                  삭제하기
+                                </OptionItem>
+                              )}
                               <OptionItem
                                 onClick={() => console.log("기타옵션")}
                               >
