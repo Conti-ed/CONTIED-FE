@@ -127,6 +127,50 @@ export const SongDetails = styled.div`
   margin-top: 5px;
 `;
 
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ModalContainer = styled(motion.div)`
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  max-width: 500px;
+  text-align: center;
+`;
+
+export const ModalTitle = styled.p`
+  color: black;
+  font-weight: bold;
+  margin-top: 5px;
+  margin-bottom: 20px;
+`;
+
+export const ModalButton = styled.button`
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #388ee9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:nth-child(2) {
+    background-color: #b6434f;
+  }
+`;
+
 export const ArtistAndDuration = styled(DetailItem)`
   display: flex;
   align-items: center;
@@ -252,6 +296,8 @@ function ContiDetail() {
     },
   });
   const [songs, setSongs] = useState<SongType[]>([]);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [deletingSongId, setDeletingSongId] = useState<number | null>(null);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -365,6 +411,24 @@ function ContiDetail() {
     }
   };
 
+  const handleDeleteClick = (songId: number) => {
+    setShowDeleteConfirmModal(true);
+    setDeletingSongId(songId);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deletingSongId !== null) {
+      await deleteSong(deletingSongId);
+      setDeletingSongId(null);
+    }
+    setShowDeleteConfirmModal(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmModal(false);
+    setDeletingSongId(null);
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Container
@@ -457,7 +521,9 @@ function ContiDetail() {
                               exit="exit"
                             >
                               {isOwner && (
-                                <OptionItem onClick={() => deleteSong(song.id)}>
+                                <OptionItem
+                                  onClick={() => handleDeleteClick(song.id)}
+                                >
                                   삭제하기
                                 </OptionItem>
                               )}
@@ -499,6 +565,21 @@ function ContiDetail() {
               {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
             </SheetButton>
           </StyledLink>
+        )}
+        {showDeleteConfirmModal && (
+          <ModalOverlay>
+            <ModalContainer
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+            >
+              <ModalTitle>삭제하시겠습니까?</ModalTitle>
+              <div>
+                <ModalButton onClick={handleConfirmDelete}>네</ModalButton>
+                <ModalButton onClick={handleCancelDelete}>아니오</ModalButton>
+              </div>
+            </ModalContainer>
+          </ModalOverlay>
         )}
       </Container>
     </DragDropContext>
