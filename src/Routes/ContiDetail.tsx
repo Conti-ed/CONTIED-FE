@@ -7,7 +7,7 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -236,6 +236,7 @@ function ContiDetail() {
     x: 0,
     y: 0,
   });
+  const optionsMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const [contiData, setContiData] = useState<ContiType | undefined>(undefined);
   const [isOwner, setIsOwner] = useState(false);
@@ -250,7 +251,6 @@ function ContiDetail() {
       }
     },
   });
-  console.log(isOwner);
   const [songs, setSongs] = useState<SongType[]>([]);
 
   const onDragEnd = (result: DropResult) => {
@@ -264,9 +264,29 @@ function ContiDetail() {
   };
 
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     setOptionsPosition({ x: rect.left - 88, y: rect.top + 10 });
+    setActiveOptions(
+      activeOptions === parseInt(event.currentTarget.id)
+        ? null
+        : parseInt(event.currentTarget.id)
+    );
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        optionsMenuRef.current &&
+        !optionsMenuRef.current.contains(event.target as Node)
+      ) {
+        setActiveOptions(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [activeOptions]);
 
   const navigate = useNavigate();
 
@@ -324,6 +344,7 @@ function ContiDetail() {
   };
 
   const deleteSong = async (sid: number | undefined) => {
+    console.log("Attempting to delete song with ID:", sid);
     const uid = JSON.parse(localStorage["user_info"]).id;
     const token = localStorage["accessToken"];
     setActiveOptions(null);
@@ -337,7 +358,6 @@ function ContiDetail() {
       }
     );
     const data = await res.json();
-    // console.log(res.status, data);
 
     if (res.ok) {
       setSongs(songs.filter((song) => song.id !== sid));
@@ -425,6 +445,7 @@ function ContiDetail() {
                           </IconContainer>
                           {activeOptions === song.id && (
                             <OptionsMenu
+                              ref={optionsMenuRef}
                               style={{
                                 position: "fixed",
                                 left: `${optionsPosition.x}px`,
