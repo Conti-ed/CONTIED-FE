@@ -12,6 +12,7 @@ import {
   DragDropContext,
   Draggable,
   DraggableProvided,
+  DraggableStateSnapshot,
   DropResult,
   Droppable,
   DroppableProvided,
@@ -488,12 +489,23 @@ function ContiDetail() {
                       key={song.id}
                       draggableId={song.id.toString()}
                       index={index}
+                      isDragDisabled={!isOwner}
                     >
-                      {(provided: DraggableProvided) => (
+                      {(
+                        provided: DraggableProvided,
+                        snapshot: DraggableStateSnapshot
+                      ) => (
                         <SongItem
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style,
+                            cursor:
+                              !isOwner && !snapshot.isDragging
+                                ? "default"
+                                : "grab",
+                          }}
                         >
                           <SongNumber>{index + 1}.</SongNumber>
                           <SongInfo>
