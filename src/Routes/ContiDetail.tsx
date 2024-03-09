@@ -481,7 +481,7 @@ function ContiDetail() {
                 </CreatedAt>
               </OwnerInfoContainer>
             </HeaderContainer>
-            <Droppable droppableId="songs">
+            <Droppable droppableId={`songs-${cid}`}>
               {(provided: DroppableProvided) => (
                 <SongList ref={provided.innerRef} {...provided.droppableProps}>
                   {songs.map((song, index) => (
