@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
 import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -288,10 +288,21 @@ function ContiDetail() {
     x: 0,
     y: 0,
   });
-  const optionsMenuRef = useRef<HTMLDivElement | null>(null);
-  const { id: cid } = useParams();
   const [contiData, setContiData] = useState<ContiType | undefined>(undefined);
   const [isOwner, setIsOwner] = useState(false);
+  const [songs, setSongs] = useState<SongType[]>([]);
+
+  const optionsMenuRef = useRef<HTMLDivElement | null>(null);
+  const { id: cid } = useParams();
+  const uid = JSON.parse(localStorage["user_info"]).id;
+
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.refetchQueries(["conties", "conti", cid]);
+  }, [cid, queryClient]);
+
   const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
@@ -302,17 +313,16 @@ function ContiDetail() {
         setIsOwner(data.owner.id === JSON.parse(localStorage["user_info"]).id);
       }
     },
+    refetchOnWindowFocus: true,
   });
-  const [songs, setSongs] = useState<SongType[]>([]);
-  const uid = JSON.parse(localStorage["user_info"]).id;
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
-  const [deletingSongId, setDeletingSongId] = useState<number | null>(null);
 
+  // When a Song is Dragged and Dropped
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const items = Array.from(songs);
     const [reorderedItem] = items.splice(result.source.index, 1);
+
     items.splice(result.destination.index, 0, reorderedItem);
     setSongs(items);
 
@@ -324,6 +334,7 @@ function ContiDetail() {
     console.log((await res).status, data);
   };
 
+  // When the More Button is Pressed
   const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
@@ -349,8 +360,7 @@ function ContiDetail() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [activeOptions]);
 
-  const navigate = useNavigate();
-
+  // Set Duration
   const formatDuration = (duration: number) => {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
@@ -366,6 +376,7 @@ function ContiDetail() {
     }
   };
 
+  // Set Overall Duration
   const formatTotalDuration = (duration: number) => {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
@@ -377,6 +388,7 @@ function ContiDetail() {
     }
   };
 
+  // Adjust Date by Region upon Registration
   const parseLocalDateString = (dateString: string): string => {
     const [datePart, timePart] = dateString.split(" ");
     const [month, day, year] = datePart.split("/").map(Number);
@@ -404,8 +416,12 @@ function ContiDetail() {
     });
   };
 
+  // Delete Confirmation Modal
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [deletingSongId, setDeletingSongId] = useState<number | null>(null);
+
   const deleteSong = async (sid: number | undefined) => {
-    console.log("Attempting to delete song with ID:", sid);
+    // console.log("Attempting to delete song with ID:", sid);
     const token = localStorage["accessToken"];
     setActiveOptions(null);
     const res = await fetch(
@@ -425,11 +441,13 @@ function ContiDetail() {
     }
   };
 
+  // When the Delete Button is Pressed
   const handleDeleteClick = (songId: number) => {
     setShowDeleteConfirmModal(true);
     setDeletingSongId(songId);
   };
 
+  // Confirm Delete Song
   const handleConfirmDelete = async () => {
     if (deletingSongId !== null) {
       await deleteSong(deletingSongId);
@@ -438,13 +456,14 @@ function ContiDetail() {
     setShowDeleteConfirmModal(false);
   };
 
+  // Cancel Delete Song
   const handleCancelDelete = () => {
     setShowDeleteConfirmModal(false);
     setDeletingSongId(null);
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd} key={cid}>
       <Container
         variants={detailVariants}
         initial="initial"
@@ -481,7 +500,7 @@ function ContiDetail() {
                 </CreatedAt>
               </OwnerInfoContainer>
             </HeaderContainer>
-            <Droppable droppableId={`songs-${cid}`}>
+            <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
               {(provided: DroppableProvided) => (
                 <SongList ref={provided.innerRef} {...provided.droppableProps}>
                   {songs.map((song, index) => (
