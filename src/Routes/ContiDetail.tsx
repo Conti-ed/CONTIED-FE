@@ -319,10 +319,8 @@ function ContiDetail() {
   // When a Song is Dragged and Dropped
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
-
-    const items = Array.from(songs);
+    const items = [...songs];
     const [reorderedItem] = items.splice(result.source.index, 1);
-
     items.splice(result.destination.index, 0, reorderedItem);
     setSongs(items);
 
@@ -502,7 +500,11 @@ function ContiDetail() {
             </HeaderContainer>
             <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
               {(provided: DroppableProvided) => (
-                <SongList ref={provided.innerRef} {...provided.droppableProps}>
+                <SongList
+                  className={`songs-${cid}`}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
                   {songs.map((song, index) => (
                     <Draggable
                       key={song.id}
