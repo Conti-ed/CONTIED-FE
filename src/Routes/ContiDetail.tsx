@@ -94,6 +94,42 @@ const InfoContainer = styled.div`
   margin-right: 10px;
 `;
 
+const KeyContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 13px;
+`;
+
+const KeywordText = styled.span`
+  font-size: 16px;
+  color: black;
+  font-weight: bold;
+`;
+
+const KeyEditButton = styled.button`
+  ${setFontStyle}
+  background-color: #10769b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-left: 10px;
+`;
+
+const KeyEditInput = styled.input`
+  ${setFontStyle}
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 90%;
+  box-sizing: border-box;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+`;
+
 const DetailItem = styled.div`
   display: flex;
   align-items: center;
@@ -159,6 +195,12 @@ export const ModalContainer = styled(motion.div)`
   z-index: 1001;
   max-width: 500px;
   text-align: center;
+`;
+
+const ModalContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 `;
 
 export const ModalTitle = styled.p`
@@ -302,7 +344,11 @@ function ContiDetail() {
   const [isOwner, setIsOwner] = useState(false);
   const [songs, setSongs] = useState<SongType[]>([]);
 
+  const [editKeywordIndex, setEditKeywordIndex] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<string>("");
+
   const optionsMenuRef = useRef<HTMLDivElement | null>(null);
+  const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
 
@@ -357,9 +403,44 @@ function ContiDetail() {
     );
   };
 
+  // When the Owner Button is Pressed
+  const [showOwnerMenu, setShowOwnerMenu] = useState(false);
+  const [ownerPosition, setOwnerPosition] = useState<OptionsPosition>({
+    x: 0,
+    y: 0,
+  });
+
+  const handleOwnerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    setOwnerPosition({ x: rect.left - 100, y: rect.top + 10 });
+    setShowOwnerMenu(true);
+  };
+
+  // Reset Keyword
+  const [showKeywordModal, setShowKeywordModal] = useState(false);
+
+  const handleOpenKeywordModal = () => {
+    setShowKeywordModal(true);
+    setEditKeywordIndex(null);
+  };
+
+  const handleCloseKeywordModal = () => {
+    setShowKeywordModal(false);
+    setEditKeywordIndex(null);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
+        showOwnerMenu &&
+        ownerMenuRef.current &&
+        !ownerMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowOwnerMenu(false);
+      }
+      if (
+        activeOptions !== null &&
         optionsMenuRef.current &&
         !optionsMenuRef.current.contains(event.target as Node)
       ) {
@@ -368,8 +449,32 @@ function ContiDetail() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [activeOptions]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showOwnerMenu, activeOptions]);
+
+  const handleEditStart = (index: number, keyword: string) => {
+    setEditKeywordIndex(index);
+    setEditValue(keyword);
+  };
+
+  const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(event.target.value);
+  };
+
+  const handleEditKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (event.key === "Enter" && contiData) {
+      const newKeywords = [...contiData.keywords];
+      newKeywords[index] = editValue;
+      const updatedContiData = { ...contiData, keywords: newKeywords };
+      setContiData(updatedContiData);
+      setEditKeywordIndex(null);
+    }
+  };
 
   // Set Duration
   const formatDuration = (duration: number) => {
@@ -511,9 +616,34 @@ function ContiDetail() {
                       : "Loading..."}
                   </CreatedAt>
                 </InfoContainer>
-                <IconContainer>
+                <IconContainer
+                  onClick={(event) => {
+                    handleOwnerOptionsClick(event);
+                  }}
+                >
                   <BorderColorIcon />
                 </IconContainer>
+                {showOwnerMenu && (
+                  <OptionsMenu
+                    ref={ownerMenuRef}
+                    style={{
+                      position: "fixed",
+                      left: `${ownerPosition.x}px`,
+                      top: `${ownerPosition.y}px`,
+                    }}
+                    variants={optionsVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
+                    <OptionItem>콘티 삭제</OptionItem>
+                    {isOwner && (
+                      <OptionItem onClick={handleOpenKeywordModal}>
+                        키워드 수정
+                      </OptionItem>
+                    )}
+                  </OptionsMenu>
+                )}
               </OwnerInfoContainer>
             </HeaderContainer>
             <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
@@ -638,6 +768,41 @@ function ContiDetail() {
               {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
             </SheetButton>
           </StyledLink>
+        )}
+        {showKeywordModal && (
+          <ModalOverlay onClick={handleCloseKeywordModal}>
+            <ModalContainer
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ModalTitle>선택해서 수정해주세요!</ModalTitle>
+              <ModalContentContainer>
+                {contiData?.keywords.map((keyword, index) => (
+                  <KeyContainer key={index}>
+                    {index === editKeywordIndex ? (
+                      <KeyEditInput
+                        value={editValue}
+                        onChange={handleEditChange}
+                        onKeyDown={(event) => handleEditKeyDown(event, index)}
+                        autoFocus
+                      />
+                    ) : (
+                      <>
+                        <KeywordText>{keyword}</KeywordText>
+                        <KeyEditButton
+                          onClick={() => handleEditStart(index, keyword)}
+                        >
+                          수정
+                        </KeyEditButton>
+                      </>
+                    )}
+                  </KeyContainer>
+                ))}
+              </ModalContentContainer>
+            </ModalContainer>
+          </ModalOverlay>
         )}
         {showDeleteConfirmModal && (
           <ModalOverlay>
