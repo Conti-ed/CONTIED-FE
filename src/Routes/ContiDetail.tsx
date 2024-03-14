@@ -318,7 +318,6 @@ function ContiDetail() {
 
   // When a Song is Dragged and Dropped
   const onDragEnd = async ({ source, destination }: DropResult) => {
-    console.log(source);
     if (!destination) return;
     if (destination.index === source.index) return;
 
