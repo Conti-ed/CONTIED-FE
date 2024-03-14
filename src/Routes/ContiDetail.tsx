@@ -317,15 +317,19 @@ function ContiDetail() {
   });
 
   // When a Song is Dragged and Dropped
-  const onDragEnd = async (result: DropResult) => {
-    if (!result.destination) return;
+  const onDragEnd = async ({ source, destination }: DropResult) => {
+    console.log(source);
+    if (!destination) return;
+    if (destination.index === source.index) return;
+
     const items = [...songs];
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    const [reorderedItem] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, reorderedItem);
+
     setSongs(items);
 
     const res = fetch(
-      `${SERVER_URL}/api/conti/${cid}?uid=${uid}&start=${result.source.index}&end=${result.destination.index}`,
+      `${SERVER_URL}/api/conti/${cid}?uid=${uid}&start=${source.index}&end=${destination.index}`,
       { method: "PUT" }
     );
     const data = await (await res).json();
