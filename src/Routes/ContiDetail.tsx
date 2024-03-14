@@ -69,7 +69,9 @@ const BackButton = styled.button`
 `;
 
 const OwnerInfoContainer = styled.div`
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
   margin-right: 10px;
 `;
 
@@ -82,6 +84,11 @@ const CreatedAt = styled.div`
   font-size: 0.8rem;
   color: #6c757d;
   line-height: 1;
+`;
+
+const InfoContainer = styled.div`
+  text-align: right;
+  margin-right: 10px;
 `;
 
 const DetailItem = styled.div`
@@ -493,12 +500,17 @@ function ContiDetail() {
                 </span>
               </BackButton>
               <OwnerInfoContainer>
-                <OwnerName>{contiData?.owner.name}</OwnerName>
-                <CreatedAt>
-                  {contiData?.created_at
-                    ? parseLocalDateString(contiData.created_at)
-                    : "Loading..."}
-                </CreatedAt>
+                <InfoContainer>
+                  <OwnerName>{contiData?.owner.name}</OwnerName>
+                  <CreatedAt>
+                    {contiData?.created_at
+                      ? parseLocalDateString(contiData.created_at)
+                      : "Loading..."}
+                  </CreatedAt>
+                </InfoContainer>
+                <IconContainer>
+                  <MoreVertIcon />
+                </IconContainer>
               </OwnerInfoContainer>
             </HeaderContainer>
             <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
