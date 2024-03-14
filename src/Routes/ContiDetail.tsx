@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -70,8 +71,9 @@ const BackButton = styled.button`
 
 const OwnerInfoContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  margin-top: 3px;
+
+  justify-content: center;
+  align-items: center;
   margin-right: 10px;
 `;
 
@@ -88,6 +90,7 @@ const CreatedAt = styled.div`
 
 const InfoContainer = styled.div`
   text-align: right;
+  margin-top: 5px;
   margin-right: 10px;
 `;
 
@@ -509,7 +512,7 @@ function ContiDetail() {
                   </CreatedAt>
                 </InfoContainer>
                 <IconContainer>
-                  <MoreVertIcon />
+                  <BorderColorIcon />
                 </IconContainer>
               </OwnerInfoContainer>
             </HeaderContainer>
