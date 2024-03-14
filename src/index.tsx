@@ -9,11 +9,9 @@ const queryClient = new QueryClient();
 const root = createRoot(document.getElementById("root")!);
 
 root.render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </RecoilRoot>
-  </React.StrictMode>
+  <RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  </RecoilRoot>
 );
