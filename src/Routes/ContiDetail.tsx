@@ -618,7 +618,7 @@ function ContiDetail() {
           </div>
         )}
         {contiData?.sheet && (
-          <StyledLink to={`${SERVER_URL}/api/sheet/${contiData.sheet}`}>
+          <StyledLink to={`${SERVER_URL}/api/sheet/${contiData.sheet.id}`}>
             <SheetButton>
               {contiData.sheet.filename}{" "}
               {Math.floor((contiData.sheet.size / 1024 / 1024) * 10) / 10}MB
