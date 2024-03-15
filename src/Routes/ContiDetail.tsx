@@ -19,24 +19,24 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 
-const Container = styled(motion.div)`
+const PageContainer = styled(motion.div)`
   padding-top: 35px;
   padding: 10px;
   padding-bottom: 100px;
 `;
 
-const Spin = keyframes`
+const LoadingAnimation = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-const Spinner = styled.div`
+const LoadingSpinner = styled.div`
   border: 4px solid #f3f3f3;
   border-top: 4px solid #333;
   border-radius: 50%;
   width: 30px;
   height: 30px;
-  animation: ${Spin} 2s linear infinite;
+  animation: ${LoadingAnimation} 2s linear infinite;
   margin-top: 10px;
 `;
 
@@ -53,7 +53,7 @@ const CenteredContainer = styled.div`
   bottom: 0;
 `;
 
-const HeaderContainer = styled.div`
+const PageHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -69,7 +69,7 @@ const BackButton = styled.button`
   border: none;
 `;
 
-const OwnerInfoContainer = styled.div`
+const OwnerInfoPanel = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -93,14 +93,14 @@ const InfoContainer = styled.div`
   margin-right: 10px;
 `;
 
-const KeyContainer = styled.div`
+const KeywordEditorContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 13px;
 `;
 
-const KeywordText = styled.span`
+const KeywordDisplay = styled.span`
   font-size: 16px;
   color: black;
   font-weight: bold;
@@ -173,7 +173,7 @@ export const SongDetails = styled.div`
   margin-top: 5px;
 `;
 
-export const ModalOverlay = styled.div`
+export const OverlayModal = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -186,7 +186,7 @@ export const ModalOverlay = styled.div`
   z-index: 1000;
 `;
 
-export const ModalContainer = styled(motion.div)`
+export const KeywordEditModalContainer = styled(motion.div)`
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -370,6 +370,7 @@ const initialState: ContiDetailState = {
 function ContiDetail() {
   const [state, setState] = useState<ContiDetailState>(initialState);
 
+  // Update States
   const updateState = (updates: Partial<ContiDetailState>) => {
     setState((prevState) => ({ ...prevState, ...updates }));
   };
@@ -386,6 +387,7 @@ function ContiDetail() {
     queryClient.refetchQueries(["conties", "conti", cid]);
   }, [cid, queryClient]);
 
+  // When the Conti was First Uploaded
   const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
@@ -428,7 +430,7 @@ function ContiDetail() {
   };
 
   // When the More Button is Pressed
-  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+  const songOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     const newActiveOptions = parseInt(event.currentTarget.id);
@@ -441,7 +443,7 @@ function ContiDetail() {
   };
 
   // When the Owner Button is Pressed
-  const handleOwnerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+  const ownerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     updateState({
@@ -450,17 +452,26 @@ function ContiDetail() {
     });
   };
 
-  // Reset Keyword
-  const handleOpenKeywordModal = () => {
+  // Modal Management
+  const toggleModal = (
+    modalName: keyof Omit<ContiDetailState, "contiData" | "songs">,
+    isVisible: boolean
+  ) => {
+    updateState({ [modalName]: isVisible });
+  };
+
+  // Open Keyword Modal
+  const openKeywordModal = () => {
+    toggleModal("showKeywordModal", true);
     updateState({
-      showKeywordModal: true,
       editKeywordIndex: null,
     });
   };
 
-  const handleCloseKeywordModal = async () => {
+  // Close Keyword Modal
+  const closeKeywordModal = async () => {
+    toggleModal("showKeywordModal", false);
     updateState({
-      showKeywordModal: false,
       editKeywordIndex: null,
     });
 
@@ -488,6 +499,7 @@ function ContiDetail() {
     }
   };
 
+  // When Clicking Outside the Options Modal
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -513,7 +525,7 @@ function ContiDetail() {
   }, [state.showOwnerMenu, state.activeOptions, ownerMenuRef, optionsMenuRef]);
 
   // Setting Keyword Default Values ​​in Edit Modal
-  const handleEditStart = (index: number, keyword: string) => {
+  const startKeywordEditing = (index: number, keyword: string) => {
     updateState({
       editKeywordIndex: index,
       editValue: keyword,
@@ -521,14 +533,14 @@ function ContiDetail() {
   };
 
   // Edit Keywords in Edit Modal
-  const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeKeywordEditing = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateState({
       editValue: event.target.value,
     });
   };
 
-  // When Hit Enter in the Edit Modal
-  const handleEditKeyDown = (
+  // Press Enter in the Edit Modal
+  const submitKeywordEdit = (
     event: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -544,7 +556,7 @@ function ContiDetail() {
   };
 
   // Delete Keyword from Edit Modal
-  const handleRemoveKeyword = (index: number) => {
+  const removeKeyword = (index: number) => {
     if (state.contiData) {
       const newKeywords = state.contiData.keywords.filter(
         (_, idx) => idx !== index
@@ -555,7 +567,8 @@ function ContiDetail() {
     }
   };
 
-  const handleAddNewKeyword = (keyword: string) => {
+  // Add Keyword from Edit Modal
+  const addNewKeyword = (keyword: string) => {
     if (
       keyword.trim() !== "" &&
       state.contiData &&
@@ -651,6 +664,7 @@ function ContiDetail() {
     }
   };
 
+  // Delete Conti
   const deleteConti = async () => {
     const token = localStorage["accessToken"];
     const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
@@ -667,16 +681,16 @@ function ContiDetail() {
 
   // When the Delete Conti Button is Pressed
   const deleteContiClick = () => {
+    toggleModal("showDeleteConfirmModal", true);
     updateState({
-      showDeleteConfirmModal: true,
       mode: "conti",
     });
   };
 
   // When the Delete Song Button is Pressed
-  const handleDeleteClick = (songId: number) => {
+  const deleteSongClick = (songId: number) => {
+    toggleModal("showDeleteConfirmModal", true);
     updateState({
-      showDeleteConfirmModal: true,
       deletingSongId: songId,
       mode: "song",
     });
@@ -700,7 +714,7 @@ function ContiDetail() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd} key={cid}>
-      <Container
+      <PageContainer
         variants={detailVariants}
         initial="initial"
         animate="animate"
@@ -709,11 +723,11 @@ function ContiDetail() {
         {isLoading ? (
           <CenteredContainer>
             <div>잠시만요...</div>
-            <Spinner />
+            <LoadingSpinner />
           </CenteredContainer>
         ) : (
           <div>
-            <HeaderContainer>
+            <PageHeader>
               <BackButton onClick={() => navigate(-1)}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
                 <span
@@ -727,7 +741,7 @@ function ContiDetail() {
                   이전
                 </span>
               </BackButton>
-              <OwnerInfoContainer>
+              <OwnerInfoPanel>
                 <InfoContainer>
                   <OwnerName>{state.contiData?.owner.name}</OwnerName>
                   <CreatedAt>
@@ -738,7 +752,7 @@ function ContiDetail() {
                 </InfoContainer>
                 <IconContainer
                   onClick={(event) => {
-                    handleOwnerOptionsClick(event);
+                    ownerOptionsClick(event);
                   }}
                 >
                   <BorderColorIcon />
@@ -760,14 +774,14 @@ function ContiDetail() {
                       콘티 삭제
                     </OptionItem>
                     {state.isOwner && (
-                      <OptionItem onClick={handleOpenKeywordModal}>
+                      <OptionItem onClick={openKeywordModal}>
                         키워드 수정
                       </OptionItem>
                     )}
                   </OptionsMenu>
                 )}
-              </OwnerInfoContainer>
-            </HeaderContainer>
+              </OwnerInfoPanel>
+            </PageHeader>
             <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
               {(provided: DroppableProvided) => (
                 <SongList
@@ -815,7 +829,7 @@ function ContiDetail() {
                           </SongInfo>
                           <IconContainer
                             onClick={(event) => {
-                              handleMoreClick(event);
+                              songOptionsClick(event);
                               setState((prevState) => ({
                                 ...prevState,
                                 activeOptions:
@@ -849,7 +863,7 @@ function ContiDetail() {
                               </OptionPlay>
                               {state.isOwner && (
                                 <OptionItem
-                                  onClick={() => handleDeleteClick(song.id)}
+                                  onClick={() => deleteSongClick(song.id)}
                                 >
                                   삭제하기
                                 </OptionItem>
@@ -897,8 +911,8 @@ function ContiDetail() {
           </StyledLink>
         )}
         {state.showKeywordModal && (
-          <ModalOverlay onClick={handleCloseKeywordModal}>
-            <ModalContainer
+          <OverlayModal onClick={closeKeywordModal}>
+            <KeywordEditModalContainer
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
@@ -907,34 +921,34 @@ function ContiDetail() {
               <ModalTitle>선택해서 수정해주세요!</ModalTitle>
               <ModalContentContainer>
                 {state.contiData?.keywords?.map((keyword, index) => (
-                  <KeyContainer key={index}>
+                  <KeywordEditorContainer key={index}>
                     {index === state.editKeywordIndex ? (
                       <KeyEditInput
                         value={state.editValue}
-                        onChange={handleEditChange}
-                        onKeyDown={(event) => handleEditKeyDown(event, index)}
+                        onChange={changeKeywordEditing}
+                        onKeyDown={(event) => submitKeywordEdit(event, index)}
                         autoFocus
                       />
                     ) : (
                       <>
-                        <KeywordText>{keyword}</KeywordText>
+                        <KeywordDisplay>{keyword}</KeywordDisplay>
                         <KeyEditButton
-                          onClick={() => handleEditStart(index, keyword)}
+                          onClick={() => startKeywordEditing(index, keyword)}
                         >
                           수정
                         </KeyEditButton>
                         <KeyEditButton
-                          onClick={() => handleRemoveKeyword(index)}
+                          onClick={() => removeKeyword(index)}
                           style={{ marginLeft: "10px" }}
                         >
                           X
                         </KeyEditButton>
                       </>
                     )}
-                  </KeyContainer>
+                  </KeywordEditorContainer>
                 ))}
                 {state.contiData && state.contiData.keywords.length < 3 && (
-                  <KeyContainer>
+                  <KeywordEditorContainer>
                     {state.showNewKeywordInput ? (
                       <KeyEditInput
                         value={state.editValue}
@@ -946,7 +960,7 @@ function ContiDetail() {
                             event.key === "Enter" &&
                             state.editValue.trim() !== ""
                           ) {
-                            handleAddNewKeyword(state.editValue);
+                            addNewKeyword(state.editValue);
                             updateState({
                               editValue: "",
                               showNewKeywordInput: false,
@@ -964,15 +978,15 @@ function ContiDetail() {
                         +
                       </KeyEditButton>
                     )}
-                  </KeyContainer>
+                  </KeywordEditorContainer>
                 )}
               </ModalContentContainer>
-            </ModalContainer>
-          </ModalOverlay>
+            </KeywordEditModalContainer>
+          </OverlayModal>
         )}
         {state.showDeleteConfirmModal && (
-          <ModalOverlay>
-            <ModalContainer
+          <OverlayModal>
+            <KeywordEditModalContainer
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
@@ -984,10 +998,10 @@ function ContiDetail() {
                 </ModalButton>
                 <ModalButton onClick={handleCancelDelete}>아니오</ModalButton>
               </div>
-            </ModalContainer>
-          </ModalOverlay>
+            </KeywordEditModalContainer>
+          </OverlayModal>
         )}
-      </Container>
+      </PageContainer>
     </DragDropContext>
   );
 }
