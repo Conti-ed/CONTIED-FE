@@ -570,6 +570,7 @@ function ContiDetail() {
   // Delete Confirmation Modal
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [deletingSongId, setDeletingSongId] = useState<number | null>(null);
+  const [mode, setMode] = useState("");
 
   const deleteSong = async (sid: number | undefined) => {
     // console.log("Attempting to delete song with ID:", sid);
@@ -592,25 +593,48 @@ function ContiDetail() {
     }
   };
 
-  // When the Delete Button is Pressed
+  const deleteConti = async () => {
+    const token = localStorage["accessToken"];
+    const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.ok) {
+      navigate(-1);
+    }
+  };
+
+  // When the Delete Conti Button is Pressed
+  const deleteContiClick = () => {
+    setShowDeleteConfirmModal(true);
+    setMode("conti");
+  };
+
+  // When the Delete Song Button is Pressed
   const handleDeleteClick = (songId: number) => {
     setShowDeleteConfirmModal(true);
     setDeletingSongId(songId);
+    setMode("song");
   };
 
-  // Confirm Delete Song
-  const handleConfirmDelete = async () => {
-    if (deletingSongId !== null) {
+  // Confirm Delete Song & Conti
+  const handleConfirmDelete = async (mode: string) => {
+    if (mode === "song" && deletingSongId !== null) {
       await deleteSong(deletingSongId);
       setDeletingSongId(null);
+    }
+    if (mode === "conti") {
+      deleteConti();
     }
     setShowDeleteConfirmModal(false);
   };
 
-  // Cancel Delete Song
+  // Cancel Delete Song & Conti
   const handleCancelDelete = () => {
     setShowDeleteConfirmModal(false);
-    setDeletingSongId(null);
   };
 
   return (
@@ -671,7 +695,9 @@ function ContiDetail() {
                     animate="animate"
                     exit="exit"
                   >
-                    <OptionItem>콘티 삭제</OptionItem>
+                    <OptionItem onClick={deleteContiClick}>
+                      콘티 삭제
+                    </OptionItem>
                     {isOwner && (
                       <OptionItem onClick={handleOpenKeywordModal}>
                         키워드 수정
@@ -881,7 +907,9 @@ function ContiDetail() {
             >
               <ModalTitle>삭제하시겠습니까?</ModalTitle>
               <div>
-                <ModalButton onClick={handleConfirmDelete}>네</ModalButton>
+                <ModalButton onClick={() => handleConfirmDelete(mode)}>
+                  네
+                </ModalButton>
                 <ModalButton onClick={handleCancelDelete}>아니오</ModalButton>
               </div>
             </ModalContainer>
