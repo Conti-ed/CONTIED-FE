@@ -425,13 +425,20 @@ function ContiDetail() {
     setEditKeywordIndex(null);
   };
 
-  const handleCloseKeywordModal = () => {
+  const handleCloseKeywordModal = async () => {
     setShowKeywordModal(false);
     setEditKeywordIndex(null);
     // ['a', 'b', 'c']
-    // fetch()
 
     console.log(contiData?.keywords);
+    const formData = new FormData();
+    formData.append("keywords", JSON.stringify(contiData?.keywords));
+    const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
+      method: "PUT",
+      body: formData,
+    });
+    const data = await res.json();
+    console.log(res.status, data);
   };
 
   useEffect(() => {
