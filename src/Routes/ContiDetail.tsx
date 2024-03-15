@@ -384,7 +384,7 @@ function ContiDetail() {
     setSongs(items);
 
     const res = fetch(
-      `${SERVER_URL}/api/conti/${cid}?uid=${uid}&start=${source.index}&end=${destination.index}`,
+      `${SERVER_URL}/api/order?cid=${cid}&uid=${uid}&start=${source.index}&end=${destination.index}`,
       { method: "PUT" }
     );
     const data = await (await res).json();
@@ -428,6 +428,10 @@ function ContiDetail() {
   const handleCloseKeywordModal = () => {
     setShowKeywordModal(false);
     setEditKeywordIndex(null);
+    // ['a', 'b', 'c']
+    // fetch()
+
+    console.log(contiData?.keywords);
   };
 
   useEffect(() => {
