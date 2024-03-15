@@ -427,14 +427,15 @@ function ContiDetail() {
   const handleCloseKeywordModal = async () => {
     setShowKeywordModal(false);
     setEditKeywordIndex(null);
-    // ['a', 'b', 'c']
-
-    console.log(contiData?.keywords);
     const formData = new FormData();
     formData.append("keywords", JSON.stringify(contiData?.keywords));
+    const token = localStorage["accessToken"];
     const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
       method: "PUT",
       body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     const data = await res.json();
     console.log(res.status, data);
