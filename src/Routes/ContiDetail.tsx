@@ -71,8 +71,7 @@ const BackButton = styled.button`
 
 const OwnerInfoContainer = styled.div`
   display: flex;
-
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   margin-right: 10px;
 `;
@@ -454,15 +453,18 @@ function ContiDetail() {
     };
   }, [showOwnerMenu, activeOptions]);
 
+  // Setting Keyword Default Values ​​in Edit Modal
   const handleEditStart = (index: number, keyword: string) => {
     setEditKeywordIndex(index);
     setEditValue(keyword);
   };
 
+  // Edit Keywords in Edit Modal
   const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditValue(event.target.value);
   };
 
+  // When Hit Enter in the Edit Modal
   const handleEditKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>,
     index: number
@@ -470,6 +472,28 @@ function ContiDetail() {
     if (event.key === "Enter" && contiData) {
       const newKeywords = [...contiData.keywords];
       newKeywords[index] = editValue;
+      const updatedContiData = { ...contiData, keywords: newKeywords };
+      setContiData(updatedContiData);
+      setEditKeywordIndex(null);
+      setEditValue("");
+    }
+  };
+
+  // Delete Keyword from Edit Modal
+  const handleRemoveKeyword = (index: number) => {
+    if (contiData) {
+      const newKeywords = contiData.keywords.filter((_, idx) => idx !== index);
+      const updatedContiData = { ...contiData, keywords: newKeywords };
+      setContiData(updatedContiData);
+    }
+  };
+
+  const [showNewKeywordInput, setShowNewKeywordInput] = useState(false);
+
+  const handleAddNewKeyword = (keyword: string) => {
+    if (keyword.trim() !== "" && contiData && contiData.keywords.length < 3) {
+      const newKeywords = [...contiData.keywords];
+      newKeywords.push(keyword);
       const updatedContiData = { ...contiData, keywords: newKeywords };
       setContiData(updatedContiData);
       setEditKeywordIndex(null);
@@ -779,7 +803,7 @@ function ContiDetail() {
             >
               <ModalTitle>선택해서 수정해주세요!</ModalTitle>
               <ModalContentContainer>
-                {contiData?.keywords.map((keyword, index) => (
+                {contiData?.keywords?.map((keyword, index) => (
                   <KeyContainer key={index}>
                     {index === editKeywordIndex ? (
                       <KeyEditInput
@@ -796,10 +820,43 @@ function ContiDetail() {
                         >
                           수정
                         </KeyEditButton>
+                        <KeyEditButton
+                          onClick={() => handleRemoveKeyword(index)}
+                          style={{ marginLeft: "10px" }}
+                        >
+                          X
+                        </KeyEditButton>
                       </>
                     )}
                   </KeyContainer>
                 ))}
+                {contiData && contiData.keywords.length < 3 && (
+                  <KeyContainer>
+                    {showNewKeywordInput ? (
+                      <KeyEditInput
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === "Enter" &&
+                            editValue.trim() !== ""
+                          ) {
+                            handleAddNewKeyword(editValue);
+                            setEditValue("");
+                            setShowNewKeywordInput(false);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <KeyEditButton
+                        onClick={() => setShowNewKeywordInput(true)}
+                      >
+                        +
+                      </KeyEditButton>
+                    )}
+                  </KeyContainer>
+                )}
               </ModalContentContainer>
             </ModalContainer>
           </ModalOverlay>
