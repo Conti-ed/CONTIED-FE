@@ -24,6 +24,7 @@ import { Spinner } from "../styles/Feed.styles";
 import useFormReset from "../useFormReset";
 
 export type FormValues = {
+  title: string;
   playlist_url: string;
   description?: string;
 };
@@ -150,14 +151,13 @@ function UploadDrawer() {
           <List>
             <ListItem>
               <ListSubheader>
-                Youtube 플레이리스트{" "}
-                <span style={{ color: "red" }}>(필수)</span>
+                타이틀 <span style={{ color: "red" }}>(필수)</span>
               </ListSubheader>
               <Input
-                {...register("playlist_url", {
-                  required: "Playlist URL은 필수입니다!",
+                {...register("title", {
+                  required: "타이틀은 필수입니다!",
                 })}
-                placeholder="https://www.youtube.com/playlist?list=..."
+                placeholder="타이틀"
                 onKeyDown={handleKeyPress}
               />
               {errors.playlist_url && (
@@ -193,6 +193,20 @@ function UploadDrawer() {
             <Divider />
           </List>
           <List>
+            <ListItem>
+              <ListSubheader>
+                Youtube 플레이리스트{" "}
+                <span style={{ color: "teal" }}>(선택)</span>
+              </ListSubheader>
+              <Input
+                {...register("playlist_url")}
+                placeholder="https://www.youtube.com/playlist?list=..."
+                onKeyDown={handleKeyPress}
+              />
+              {errors.playlist_url && (
+                <WarningMessage>{errors.playlist_url.message}</WarningMessage>
+              )}
+            </ListItem>
             <ListItem>
               <ListSubheader>
                 악보 업로드 <span style={{ color: "teal" }}>(선택)</span>

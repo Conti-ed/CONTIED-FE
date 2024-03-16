@@ -32,6 +32,7 @@ export type SheetType = {
 export type ContiType = null | {
   id: number;
   owner: UserType;
+  title: string;
   keywords: string[];
   songs: SongType[];
   sheet: SheetType;

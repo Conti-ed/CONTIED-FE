@@ -13,6 +13,7 @@ interface IConti {
   contiData: {
     thumbnail: string;
     keywords: string[];
+    title: string;
     id: number;
   } | null;
 }
@@ -27,9 +28,9 @@ function Conti({ contiData }: IConti) {
     <Container onClick={onclick}>
       <ContiImgAndKeywords>
         <ContiImage src={contiData?.thumbnail} alt="재생목록 썸네일" />
-        {contiData?.keywords[0] && (
+        {contiData && (
           <CenteredContainer>
-            <CenteredKeyword>{contiData.keywords[0]}</CenteredKeyword>
+            <CenteredKeyword>{contiData.title}</CenteredKeyword>
           </CenteredContainer>
         )}
       </ContiImgAndKeywords>
