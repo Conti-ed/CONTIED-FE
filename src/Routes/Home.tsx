@@ -17,11 +17,13 @@ import { ContiType, KeywordType } from "../types";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../atoms";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
   const [randomKeyword, setRandomKeyword] = useState("");
   const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
+  const navigate = useNavigate();
 
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
@@ -64,9 +66,14 @@ function Home() {
     >
       <KeywordContainer>
         {!keywordsLoading &&
-          keywords
-            ?.slice(0, 10)
-            .map((k) => <Keyword key={k.id}>{k.name}</Keyword>)}
+          keywords?.slice(0, 10).map((k) => (
+            <Keyword
+              key={k.id}
+              onClick={() => navigate(`/search?query=${k.name}`)}
+            >
+              {k.name}
+            </Keyword>
+          ))}
       </KeywordContainer>
       {isLogin && (
         <SectionContainer>
