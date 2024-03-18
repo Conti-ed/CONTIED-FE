@@ -14,7 +14,8 @@ export const StyledDrawer = styled.div<DrawerProps>`
   width: 100%;
   height: 100vh;
   background-color: ${(props) => props.theme.bgColor};
-  transform: ${(props) => (props.open ? "translateY(0)" : "translateY(100%)")};
+  transform: ${(props) =>
+    props.open ? "translateY(-6%)" : "translateY(100%)"};
   transition: transform 0.3s ease-in-out;
   z-index: 1000;
   border-radius: 30px;
@@ -91,7 +92,7 @@ export const Button = styled.button`
   cursor: pointer;
   position: absolute;
   right: 20px;
-  bottom: 48.5vh;
+  top: 473px;
 `;
 
 export const HashtagContainer = styled.div<{ $hashTags?: boolean }>`

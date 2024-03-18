@@ -53,6 +53,25 @@ const CenteredContainer = styled.div`
   bottom: 0;
 `;
 
+const TitleHeader = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const Title = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+`;
+
+export const EditIconContainer = styled.div`
+  position: absolute;
+  right: 0;
+`;
+
 const PageHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -73,7 +92,6 @@ const OwnerInfoPanel = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  margin-right: 10px;
 `;
 
 const OwnerName = styled.div`
@@ -727,6 +745,37 @@ function ContiDetail() {
           </CenteredContainer>
         ) : (
           <div>
+            <TitleHeader>
+              <Title>{state.contiData?.title}</Title>
+              <EditIconContainer
+                onClick={(event) => {
+                  ownerOptionsClick(event);
+                }}
+              >
+                <BorderColorIcon />
+              </EditIconContainer>
+              {state.showOwnerMenu && (
+                <OptionsMenu
+                  ref={ownerMenuRef}
+                  style={{
+                    position: "fixed",
+                    left: `${state.ownerPosition.x}px`,
+                    top: `${state.ownerPosition.y}px`,
+                  }}
+                  variants={optionsVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  <OptionItem onClick={deleteContiClick}>콘티 삭제</OptionItem>
+                  {state.isOwner && (
+                    <OptionItem onClick={openKeywordModal}>
+                      키워드 수정
+                    </OptionItem>
+                  )}
+                </OptionsMenu>
+              )}
+            </TitleHeader>
             <PageHeader>
               <BackButton onClick={() => navigate(-1)}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
@@ -750,36 +799,6 @@ function ContiDetail() {
                       : "Loading..."}
                   </CreatedAt>
                 </InfoContainer>
-                <IconContainer
-                  onClick={(event) => {
-                    ownerOptionsClick(event);
-                  }}
-                >
-                  <BorderColorIcon />
-                </IconContainer>
-                {state.showOwnerMenu && (
-                  <OptionsMenu
-                    ref={ownerMenuRef}
-                    style={{
-                      position: "fixed",
-                      left: `${state.ownerPosition.x}px`,
-                      top: `${state.ownerPosition.y}px`,
-                    }}
-                    variants={optionsVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                  >
-                    <OptionItem onClick={deleteContiClick}>
-                      콘티 삭제
-                    </OptionItem>
-                    {state.isOwner && (
-                      <OptionItem onClick={openKeywordModal}>
-                        키워드 수정
-                      </OptionItem>
-                    )}
-                  </OptionsMenu>
-                )}
               </OwnerInfoPanel>
             </PageHeader>
             <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
