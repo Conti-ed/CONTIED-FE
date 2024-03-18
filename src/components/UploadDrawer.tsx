@@ -55,6 +55,7 @@ function UploadDrawer() {
   const resetAllFields = useFormReset(reset, setHashtags, inputFileUploadRef);
 
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
+  const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [isHashtagEmpty, setIsHashtagEmpty] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -83,10 +84,15 @@ function UploadDrawer() {
 
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
+      if (!data.title) {
+        setIsTitleEmpty(true);
+        return;
+      }
       if (hashtags.length === 0) {
         setIsHashtagEmpty(true);
         return;
       }
+      setIsTitleEmpty(false);
       setIsHashtagEmpty(false);
       setIsFetching(true);
       try {
@@ -157,11 +163,13 @@ function UploadDrawer() {
                 {...register("title", {
                   required: "타이틀은 필수입니다!",
                 })}
-                placeholder="타이틀"
+                placeholder="콘티에 이름을 붙여주세요!"
                 onKeyDown={handleKeyPress}
               />
-              {errors.playlist_url && (
-                <WarningMessage>{errors.playlist_url.message}</WarningMessage>
+              {isTitleEmpty && (
+                <WarningMessage>
+                  최소 한 개의 해시태그를 추가해야 합니다!
+                </WarningMessage>
               )}
             </ListItem>
             <ListItem>
@@ -200,7 +208,7 @@ function UploadDrawer() {
               </ListSubheader>
               <Input
                 {...register("playlist_url")}
-                placeholder="https://www.youtube.com/playlist?list=..."
+                placeholder="재생목록 링크를 통해 곡을 가져올 수 있어요!"
                 onKeyDown={handleKeyPress}
               />
               {errors.playlist_url && (
