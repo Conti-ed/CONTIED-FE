@@ -38,6 +38,7 @@ function UploadDrawer() {
     handleSubmit,
     register,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormValues>();
 
@@ -63,7 +64,12 @@ function UploadDrawer() {
   const setConties = useSetRecoilState(contiesAtom);
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  const contiTitle = watch("title");
+
   useEffect(() => {
+    setIsTitleEmpty(!contiTitle);
+    setIsHashtagEmpty(false);
+
     const handleBodyClick = (e: MouseEvent) => {
       if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -74,7 +80,7 @@ function UploadDrawer() {
     return () => {
       document.body.removeEventListener("mousedown", handleBodyClick);
     };
-  }, [setOpen]);
+  }, [contiTitle, hashtags, setOpen, drawerRef]);
 
   const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.keyCode === 13) {
@@ -82,21 +88,18 @@ function UploadDrawer() {
     }
   }, []);
 
-  useEffect(() => {
-    setIsHashtagEmpty(false);
-  }, [hashtags]);
-
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
-      if (!data.title) {
-        setIsTitleEmpty(true);
+      const isTitleValid = !!data.title;
+      const areHashtagsValid = hashtags.length > 0;
+
+      setIsTitleEmpty(!isTitleValid);
+      setIsHashtagEmpty(!areHashtagsValid);
+
+      if (!isTitleValid || !areHashtagsValid) {
+        // Early return if validation fails
         return;
       }
-      if (hashtags.length === 0) {
-        setIsHashtagEmpty(true);
-        return;
-      }
-      setIsTitleEmpty(false);
       setIsFetching(true);
       try {
         setIsFetching(true);
