@@ -62,7 +62,6 @@ export const KeywordInput = styled(Input)<{ $isExceeding?: boolean }>`
   &:focus {
     border: ${({ $isExceeding }) =>
       $isExceeding ? "1px solid red" : "1px solid #80bdff"};
-    outline: none;
   }
 `;
 

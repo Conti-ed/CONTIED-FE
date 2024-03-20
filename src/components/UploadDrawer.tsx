@@ -82,6 +82,10 @@ function UploadDrawer() {
     }
   }, []);
 
+  useEffect(() => {
+    setIsHashtagEmpty(false);
+  }, [hashtags]);
+
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
       if (!data.title) {
@@ -93,7 +97,6 @@ function UploadDrawer() {
         return;
       }
       setIsTitleEmpty(false);
-      setIsHashtagEmpty(false);
       setIsFetching(true);
       try {
         setIsFetching(true);
@@ -167,9 +170,7 @@ function UploadDrawer() {
                 onKeyDown={handleKeyPress}
               />
               {isTitleEmpty && (
-                <WarningMessage>
-                  최소 한 개의 해시태그를 추가해야 합니다!
-                </WarningMessage>
+                <WarningMessage>타이틀을 추가해야 합니다!</WarningMessage>
               )}
             </ListItem>
             <ListItem>
