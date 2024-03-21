@@ -448,33 +448,51 @@ function ContiDetail() {
   };
 
   // When the More Button is Pressed
-  const songOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
-    const newActiveOptions = parseInt(event.currentTarget.id);
-
-    updateState({
-      optionsPosition: { x: rect.left - 88, y: rect.top + 10 },
-      activeOptions:
-        state.activeOptions === newActiveOptions ? null : newActiveOptions,
-    });
-  };
-
-  // When the Owner Button is Pressed
-  const ownerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
-    updateState({
-      ownerPosition: { x: rect.left - 100, y: rect.top + 10 },
-      showOwnerMenu: true,
-    });
-  };
-
-  // Modal Management
-  const toggleModal = (
-    modalName: keyof Omit<ContiDetailState, "contiData" | "songs">,
-    isVisible: boolean
+  const handleOptionsClick = (
+    event: React.MouseEvent<HTMLElement>,
+    isOwnerMenu: boolean,
+    optionsGetter: (event: React.MouseEvent<HTMLElement>) => {
+      x: number;
+      y: number;
+    }
   ) => {
+    event.stopPropagation();
+    const { x, y } = optionsGetter(event);
+
+    if (isOwnerMenu) {
+      updateState({
+        ownerPosition: { x, y },
+        showOwnerMenu: !state.showOwnerMenu,
+      });
+    } else {
+      const activeOptionId = parseInt(event.currentTarget.id, 10);
+      updateState({
+        optionsPosition: { x, y },
+        activeOptions: isNaN(activeOptionId) ? null : activeOptionId,
+      });
+    }
+  };
+
+  const ownerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+    handleOptionsClick(event, true, (event) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      return { x: rect.left - 100, y: rect.top + 10 };
+    });
+  };
+
+  const songOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+    handleOptionsClick(event, false, (event) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      return { x: rect.left - 88, y: rect.top + 10 };
+    });
+  };
+
+  type ModalNames =
+    | "showKeywordModal"
+    | "showDeleteConfirmModal"
+    | "showOwnerMenu";
+
+  const toggleModal = (modalName: ModalNames, isVisible: boolean) => {
     updateState({ [modalName]: isVisible });
   };
 
@@ -767,6 +785,7 @@ function ContiDetail() {
                   animate="animate"
                   exit="exit"
                 >
+                  <OptionItem>타이틀 수정</OptionItem>
                   <OptionItem onClick={deleteContiClick}>콘티 삭제</OptionItem>
                   {state.isOwner && (
                     <OptionItem onClick={openKeywordModal}>
