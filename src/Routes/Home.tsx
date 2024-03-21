@@ -98,7 +98,11 @@ function Home() {
       <SectionContainer>
         <SectionHeader>
           <SectionTitle>{randomKeyword}</SectionTitle>
-          <SectionMore>더보기</SectionMore>
+          <SectionMore
+            onClick={() => navigate(`/search?query=${randomKeyword}`)}
+          >
+            더보기
+          </SectionMore>
         </SectionHeader>
         <SectionBody>
           {keywordsLoading

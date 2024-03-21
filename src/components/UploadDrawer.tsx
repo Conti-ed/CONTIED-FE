@@ -63,7 +63,6 @@ function UploadDrawer() {
   const file = useRecoilValue(fileUploadAtom);
   const setConties = useSetRecoilState(contiesAtom);
   const drawerRef = useRef<HTMLDivElement>(null);
-
   const contiTitle = watch("title");
 
   useEffect(() => {
