@@ -79,7 +79,9 @@ function Home() {
         <SectionContainer>
           <SectionHeader>
             <SectionTitle>My Conti</SectionTitle>
-            <SectionMore>더보기</SectionMore>
+            <SectionMore onClick={() => navigate(`/myconti`)}>
+              더보기
+            </SectionMore>
           </SectionHeader>
           <SectionBody>
             {myContiIsLoading

@@ -6,6 +6,7 @@ import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";
 import Settings from "./Routes/Settings";
 import Login from "./Routes/Login";
+import MyConti from "./Routes/MyConti";
 import ContiDetail from "./Routes/ContiDetail";
 
 const router = createBrowserRouter([
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: "upload", element: <Upload /> },
       { path: "settings", element: <Settings /> },
       { path: "login", element: <Login /> },
+      { path: "myconti", element: <MyConti /> },
       { path: "conti/:id", element: <ContiDetail /> },
     ],
   },

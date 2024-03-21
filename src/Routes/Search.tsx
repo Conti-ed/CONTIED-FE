@@ -89,9 +89,7 @@ function Search() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
-      {query ? (
-        <SectionSubTitle>" {query} 관련 찬양들 "</SectionSubTitle>
-      ) : null}
+      {query ? <SectionSubTitle>" {query} 관련 곡들 "</SectionSubTitle> : null}
       <SongList>
         {songs &&
           songs.map((s, i) => (
