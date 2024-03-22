@@ -6,7 +6,7 @@ import { SERVER_URL, refreshToken } from "../api";
 import { ContiType } from "../types";
 import InputFileUpload from "./InputFileUpload";
 import HashtagComponent from "./HashtagComponent";
-import useHashtags from "../useHashtags";
+import useHashtags from "../hooks/useHashtags";
 import {
   Button,
   Divider,
@@ -21,7 +21,7 @@ import {
   WarningMessage,
 } from "../styles/UploadDrawer.styles";
 import { Spinner } from "../styles/Feed.styles";
-import useFormReset from "../useFormReset";
+import useFormReset from "../hooks/useFormReset";
 
 export type FormValues = {
   title: string;
