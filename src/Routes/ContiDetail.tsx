@@ -18,6 +18,7 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
+import ConfirmModal from "../components/ConfirmModal";
 
 const PageContainer = styled(motion.div)`
   padding-top: 35px;
@@ -1022,23 +1023,12 @@ function ContiDetail() {
             </KeywordEditModalContainer>
           </OverlayModal>
         )}
-        {state.showDeleteConfirmModal && (
-          <OverlayModal>
-            <KeywordEditModalContainer
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-            >
-              <ModalTitle>삭제하시겠습니까?</ModalTitle>
-              <div>
-                <ModalButton onClick={() => handleConfirmDelete(state.mode)}>
-                  네
-                </ModalButton>
-                <ModalButton onClick={handleCancelDelete}>아니오</ModalButton>
-              </div>
-            </KeywordEditModalContainer>
-          </OverlayModal>
-        )}
+        <ConfirmModal
+          title="삭제하시겠습니까?"
+          onConfirm={() => handleConfirmDelete(state.mode)}
+          onCancel={handleCancelDelete}
+          isVisible={state.showDeleteConfirmModal}
+        />
       </PageContainer>
     </DragDropContext>
   );
