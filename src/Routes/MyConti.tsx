@@ -1,4 +1,4 @@
-import Conti from "../components/Conti";
+// import Conti from "../components/Conti";
 import { Container, HomeVariants } from "../styles/Home.styles";
 
 function MyConti() {
