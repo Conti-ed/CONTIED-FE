@@ -12,20 +12,8 @@ import {
   SectionBody,
   HomeVariants,
 } from "../styles/Home.styles";
-import {
-  ArtistAndDuration,
-  SongArtist,
-  SongDetails,
-  SongDuration,
-  SongInfo,
-  SongItem,
-  SongList,
-  SongNumber,
-  SongTitle,
-  IconContainer,
-} from "./ContiDetail";
-import { formatDuration } from "../utils/formatDuration";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { SongList } from "./ContiDetail";
+import { SongItem } from "../components/SongItem";
 import { styled } from "styled-components";
 
 const SectionSubTitle = styled.h1`
@@ -76,24 +64,13 @@ function Search() {
       <SongList>
         {songs &&
           songs.map((s, i) => (
-            <SongItem key={i}>
-              <SongNumber>{i + 1}.</SongNumber>
-              <SongInfo>
-                <SongTitle>{s.title}</SongTitle>
-                <SongDetails>
-                  <ArtistAndDuration>
-                    <SongArtist>{s.artist}</SongArtist>
-                    <span>•</span>
-                    <SongDuration>
-                      {s?.duration ? formatDuration(s.duration) : "0:00"}
-                    </SongDuration>
-                  </ArtistAndDuration>
-                </SongDetails>
-              </SongInfo>
-              <IconContainer>
-                <MoreVertIcon />
-              </IconContainer>
-            </SongItem>
+            <div key={i}>
+              <SongItem
+                song={s}
+                index={i}
+                onOptionsClick={() => null}
+              ></SongItem>
+            </div>
           ))}
       </SongList>
     </Container>

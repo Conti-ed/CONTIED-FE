@@ -4,7 +4,6 @@ import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
@@ -19,11 +18,11 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 import {
-  formatDuration,
   formatTotalDuration,
   parseLocalDateString,
 } from "../utils/formatDuration";
 import ConfirmModal from "../components/ConfirmModal";
+import SongItem from "../components/SongItem";
 
 const PageContainer = styled(motion.div)`
   padding-top: 35px;
@@ -165,36 +164,6 @@ export const SongList = styled.div`
   text-align: left;
   font-size: 15px;
   margin-left: 10px;
-`;
-
-export const SongItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 20px 10px 20px 0px;
-`;
-
-export const SongNumber = styled.span`
-  min-width: 20px;
-  margin-right: 8px;
-`;
-
-export const SongInfo = styled.span`
-  padding: 0px 30px 0px 0px;
-`;
-
-export const SongTitle = styled.span`
-  font-weight: 700;
-  flex: 1;
-`;
-
-export const SongArtist = styled.span``;
-
-export const SongDuration = styled.span``;
-
-export const SongDetails = styled.div`
-  color: #6c757d;
-  font-size: 13px;
-  margin-top: 5px;
 `;
 
 export const OverlayModal = styled.div`
@@ -486,11 +455,20 @@ function ContiDetail() {
     });
   };
 
-  const songOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    handleOptionsClick(event, false, (event) => {
+  const songOptionsClick = (
+    songId: number,
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    const { x, y } = ((event) => {
       const rect = event.currentTarget.getBoundingClientRect();
       return { x: rect.left - 88, y: rect.top + 10 };
-    });
+    })(event);
+
+    setState((prevState) => ({
+      ...prevState,
+      optionsPosition: { x, y },
+      activeOptions: prevState.activeOptions === songId ? null : songId,
+    }));
   };
 
   type ModalNames =
@@ -788,7 +766,7 @@ function ContiDetail() {
                         provided: DraggableProvided,
                         snapshot: DraggableStateSnapshot
                       ) => (
-                        <SongItem
+                        <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
@@ -800,33 +778,13 @@ function ContiDetail() {
                                 : "grab",
                           }}
                         >
-                          <SongNumber>{index + 1}.</SongNumber>
-                          <SongInfo>
-                            <SongTitle>{song.title}</SongTitle>
-                            <SongDetails>
-                              <ArtistAndDuration>
-                                <SongArtist>{song.artist}</SongArtist>
-                                <span>•</span>
-                                <SongDuration>
-                                  {song.duration
-                                    ? formatDuration(song.duration)
-                                    : "0:00"}
-                                </SongDuration>
-                              </ArtistAndDuration>
-                            </SongDetails>
-                          </SongInfo>
-                          <IconContainer
-                            onClick={(event) => {
-                              songOptionsClick(event);
-                              setState((prevState) => ({
-                                ...prevState,
-                                activeOptions:
-                                  song.id !== undefined ? song.id : null,
-                              }));
-                            }}
-                          >
-                            <MoreVertIcon />
-                          </IconContainer>
+                          <SongItem
+                            song={song}
+                            index={index}
+                            onOptionsClick={(songId, event) =>
+                              songOptionsClick(songId, event)
+                            }
+                          />
                           {state.activeOptions === song.id && (
                             <OptionsMenu
                               ref={optionsMenuRef}
@@ -863,7 +821,7 @@ function ContiDetail() {
                               </OptionItem>
                             </OptionsMenu>
                           )}
-                        </SongItem>
+                        </div>
                       )}
                     </Draggable>
                   ))}
