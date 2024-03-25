@@ -24,6 +24,7 @@ import {
   SongTitle,
   IconContainer,
 } from "./ContiDetail";
+import { formatDuration } from "../utils/formatDuration";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { styled } from "styled-components";
 
@@ -43,27 +44,9 @@ function Search() {
       queryFn: () => getContiesByKeyword(query!),
     }
   );
-  const { data: songs, isLoading: songsLoading } = useQuery<SongType[]>(
-    ["songs", query],
-    {
-      queryFn: () => getSongsByKeyword(query!),
-    }
-  );
-
-  const formatDuration = (duration: number) => {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = duration % 60;
-
-    const formattedMinutes = minutes.toString().padStart(2, "0");
-    const formattedSeconds = seconds.toString().padStart(2, "0");
-
-    if (hours > 0) {
-      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
-    } else {
-      return `${minutes}:${formattedSeconds}`;
-    }
-  };
+  const { data: songs } = useQuery<SongType[]>(["songs", query], {
+    queryFn: () => getSongsByKeyword(query!),
+  });
 
   return (
     <Container
