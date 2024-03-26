@@ -8,9 +8,12 @@ import {
 } from "../styles/Home.styles";
 import Conti from "../components/Conti";
 import { ContiType } from "../types";
-import { getMyConties } from "../api";
+import { getConti, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { styled } from "styled-components";
+import { useEffect, useState } from "react";
+import { SongList } from "./ContiDetail";
+import SongItem from "../components/SongItem";
 
 const SectionSubTitle = styled.h1`
   font-size: 20px;
@@ -20,12 +23,32 @@ const SectionSubTitle = styled.h1`
 `;
 
 function MyConti() {
+  const [myContiDetails, setMyContiDetails] = useState<ContiType[]>([]);
+
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
-    ["myConti"],
-    {
-      queryFn: getMyConties,
-    }
+    "myConti",
+    getMyConties
   );
+
+  useEffect(() => {
+    if (myConti) {
+      const fetchContiDetails = async () => {
+        try {
+          const contiDetailsPromises = myConti.map((conti) =>
+            getConti(conti!.id)
+          );
+          const details = await Promise.all(contiDetailsPromises);
+          setMyContiDetails(details.reverse());
+        } catch (error) {
+          console.error("내 콘티 정보를 가져오는 데 실패했습니다.", error);
+        }
+      };
+      fetchContiDetails();
+    }
+  }, [myConti]);
+
+  const allSongs = myContiDetails.flatMap((conti) => conti!.songs || []);
+  console.log(myContiDetails);
 
   return (
     <Container
@@ -47,10 +70,17 @@ function MyConti() {
               myConti
                 .slice()
                 .reverse()
-                .slice(0, 20)
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
+      <SectionSubTitle>"내가 업로드한 곡들"</SectionSubTitle>
+      <SongList>
+        {allSongs.map((s, i) => (
+          <div key={i}>
+            <SongItem song={s} index={i} onOptionsClick={() => null}></SongItem>
+          </div>
+        ))}
+      </SongList>
     </Container>
   );
 }
