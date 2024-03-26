@@ -15,21 +15,29 @@ import { useEffect, useState } from "react";
 import { SongList } from "./ContiDetail";
 import SongItem from "../components/SongItem";
 
-const SectionSubTitle = styled.h1`
+const ContiSubTitle = styled.h1`
   font-size: 20px;
   font-weight: bold;
-  margin-top: 5px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+`;
+
+const SongsSubTitle = styled.h1`
+  font-size: 20px;
+  font-weight: bold;
   margin-bottom: 15px;
 `;
 
 function MyConti() {
   const [myContiDetails, setMyContiDetails] = useState<ContiType[]>([]);
 
+  // Fetch My Conties
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     "myConti",
     getMyConties
   );
 
+  // Fetch My Conti's Details
   useEffect(() => {
     if (myConti) {
       const fetchContiDetails = async () => {
@@ -48,7 +56,6 @@ function MyConti() {
   }, [myConti]);
 
   const allSongs = myContiDetails.flatMap((conti) => conti!.songs || []);
-  console.log(myContiDetails);
 
   return (
     <Container
@@ -59,7 +66,7 @@ function MyConti() {
     >
       <SectionContainer>
         <SectionHeader>
-          <SectionSubTitle>"내가 업로드한 콘티들"</SectionSubTitle>
+          <ContiSubTitle>"내가 업로드한 콘티들"</ContiSubTitle>
         </SectionHeader>
         <SectionBody>
           {myContiIsLoading
@@ -73,7 +80,7 @@ function MyConti() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
-      <SectionSubTitle>"내가 업로드한 곡들"</SectionSubTitle>
+      <SongsSubTitle>"내가 업로드한 곡들"</SongsSubTitle>
       <SongList>
         {allSongs.map((s, i) => (
           <div key={i}>
