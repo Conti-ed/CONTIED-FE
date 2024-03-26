@@ -43,7 +43,10 @@ function Feed() {
           <Spinner />
         </CenteredContainer>
       ) : (
-        conties?.map((conti, i) => <Conti key={i} contiData={conti} />)
+        conties
+          ?.slice()
+          .reverse()
+          .map((conti, i) => <Conti key={i} contiData={conti} />)
       )}
     </Container>
   );

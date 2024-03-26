@@ -90,6 +90,8 @@ function Home() {
                 ))
               : myConti &&
                 myConti
+                  .slice()
+                  .reverse()
                   .slice(0, 20)
                   .map((conti, index) => (
                     <Conti key={index} contiData={conti} />
