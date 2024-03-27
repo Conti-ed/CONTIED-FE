@@ -823,11 +823,13 @@ function ContiDetail() {
                                   삭제하기
                                 </OptionItem>
                               )}
-                              <OptionItem
-                                onClick={() => console.log("기타옵션")}
-                              >
-                                기타 옵션
-                              </OptionItem>
+                              {!state.isOwner && (
+                                <OptionItem
+                                  onClick={() => console.log("가져오기")}
+                                >
+                                  가져오기
+                                </OptionItem>
+                              )}
                             </OptionsMenu>
                           )}
                         </div>
