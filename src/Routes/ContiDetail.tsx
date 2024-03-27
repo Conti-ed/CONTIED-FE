@@ -7,7 +7,7 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -404,30 +404,36 @@ function ContiDetail() {
   });
 
   // When a Song is Dragged and Dropped
-  const onDragEnd = async ({ source, destination }: DropResult) => {
-    if (!destination) return;
+  const onDragEnd = useCallback(
+    ({ source, destination }: DropResult) => {
+      if (!destination || source.index === destination.index) return;
 
-    setState((prevState) => {
-      const newSongs = Array.from(prevState.songs);
-      const [reorderedItem] = newSongs.splice(source.index, 1);
-      newSongs.splice(destination.index, 0, reorderedItem);
+      setState((prevState) => {
+        const newSongs = Array.from(prevState.songs);
+        const [reorderedItem] = newSongs.splice(source.index, 1);
+        newSongs.splice(destination.index, 0, reorderedItem);
 
-      return { ...prevState, songs: newSongs };
-    });
+        return { ...prevState, songs: newSongs };
+      });
 
-    try {
-      const response = await fetch(
-        `${SERVER_URL}/api/order?cid=${cid}&uid=${uid}&start=${source.index}&end=${destination.index}`,
-        {
-          method: "PUT",
+      const updateOrder = async () => {
+        try {
+          const response = await fetch(
+            `${SERVER_URL}/api/order?cid=${cid}&uid=${uid}&start=${source.index}&end=${destination.index}`,
+            {
+              method: "PUT",
+            }
+          );
+          const data = await response.json();
+          console.log(response.status, data);
+        } catch (error) {
+          console.error("Failed to update song order", error);
         }
-      );
-      const data = await response.json();
-      console.log(response.status, data);
-    } catch (error) {
-      console.error("Failed to update song order", error);
-    }
-  };
+      };
+      updateOrder();
+    },
+    [cid, uid]
+  );
 
   // When the More Button is Pressed
   const handleOptionsClick = (
@@ -774,6 +780,8 @@ function ContiDetail() {
                         snapshot: DraggableStateSnapshot
                       ) => (
                         <div
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
                           ref={provided.innerRef}
                           style={{
                             ...provided.draggableProps.style,
@@ -782,8 +790,6 @@ function ContiDetail() {
                                 ? "default"
                                 : "grab",
                           }}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
                         >
                           <SongItem
                             song={song}

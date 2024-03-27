@@ -81,4 +81,4 @@ export const SongItem: React.FC<SongItemProps> = ({
   );
 };
 
-export default SongItem;
+export default React.memo(SongItem);
