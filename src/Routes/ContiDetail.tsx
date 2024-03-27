@@ -405,7 +405,7 @@ function ContiDetail() {
 
   // When a Song is Dragged and Dropped
   const onDragEnd = async ({ source, destination }: DropResult) => {
-    if (!destination || destination.index === source.index) return;
+    if (!destination) return;
 
     setState((prevState) => {
       const newSongs = Array.from(prevState.songs);
@@ -684,7 +684,7 @@ function ContiDetail() {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd} key={cid}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <PageContainer
         variants={detailVariants}
         initial="initial"
@@ -775,8 +775,6 @@ function ContiDetail() {
                       ) => (
                         <div
                           ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
                           style={{
                             ...provided.draggableProps.style,
                             cursor:
@@ -784,6 +782,8 @@ function ContiDetail() {
                                 ? "default"
                                 : "grab",
                           }}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
                         >
                           <SongItem
                             song={song}
