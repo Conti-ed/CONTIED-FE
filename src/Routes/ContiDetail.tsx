@@ -761,13 +761,9 @@ function ContiDetail() {
                 </InfoContainer>
               </OwnerInfoPanel>
             </PageHeader>
-            <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
+            <Droppable droppableId={cid!.toString()}>
               {(provided: DroppableProvided) => (
-                <SongList
-                  className={`songs-${cid}`}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
+                <SongList {...provided.droppableProps} ref={provided.innerRef}>
                   {state.songs.map((song, index) => (
                     <Draggable
                       key={song.id}
