@@ -52,17 +52,19 @@ interface SongItemProps {
     songId: number,
     event: React.MouseEvent<HTMLElement>
   ) => void;
+  dragHandleProps?: any;
 }
 
 export const SongItem: React.FC<SongItemProps> = ({
   song,
   index,
   onOptionsClick,
+  dragHandleProps,
 }) => {
   return (
     <SongItemContainer>
       <SongNumber>{index + 1}.</SongNumber>
-      <SongInfo>
+      <SongInfo {...dragHandleProps}>
         <SongTitle>{song.title}</SongTitle>
         <SongDetails>
           <ArtistAndDuration>

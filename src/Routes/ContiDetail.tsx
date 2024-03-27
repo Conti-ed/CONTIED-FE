@@ -777,7 +777,6 @@ function ContiDetail() {
                       ) => (
                         <div
                           {...provided.draggableProps}
-                          {...provided.dragHandleProps}
                           ref={provided.innerRef}
                           style={{
                             ...provided.draggableProps.style,
@@ -793,6 +792,7 @@ function ContiDetail() {
                             onOptionsClick={(songId, event) =>
                               songOptionsClick(songId, event)
                             }
+                            dragHandleProps={provided.dragHandleProps}
                           />
                           {state.activeOptions === song.id && (
                             <OptionsMenu
