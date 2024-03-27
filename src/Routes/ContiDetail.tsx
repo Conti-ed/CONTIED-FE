@@ -84,13 +84,20 @@ const PageHeader = styled.div`
   margin-bottom: 20px;
 `;
 
-const BackButton = styled.button`
+const BackButtonContainer = styled.button`
   display: flex;
   align-items: center;
   background-color: transparent;
   gap: 5px;
   border-radius: 10px;
   border: none;
+`;
+
+const BackButton = styled.span`
+  text-decoration: "underline";
+  font-weight: "bold";
+  font-size: "18px";
+  color: "#8ab1e8";
 `;
 
 const OwnerInfoPanel = styled.div`
@@ -724,9 +731,9 @@ function ContiDetail() {
               )}
             </TitleHeader>
             <PageHeader>
-              <BackButton onClick={() => navigate(-1)}>
+              <BackButtonContainer onClick={() => navigate(-1)}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
-                <span
+                <BackButton
                   style={{
                     textDecoration: "underline",
                     fontWeight: "bold",
@@ -735,8 +742,8 @@ function ContiDetail() {
                   }}
                 >
                   이전
-                </span>
-              </BackButton>
+                </BackButton>
+              </BackButtonContainer>
               <OwnerInfoPanel>
                 <InfoContainer>
                   <OwnerName>{state.contiData?.owner.name}</OwnerName>
