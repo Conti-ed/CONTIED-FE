@@ -186,7 +186,7 @@ export const OverlayModal = styled.div`
   z-index: 1000;
 `;
 
-export const KeywordEditModalContainer = styled(motion.div)`
+export const EditModalContainer = styled(motion.div)`
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -339,12 +339,14 @@ interface ContiDetailState {
   contiData: ContiType | undefined;
   isOwner: boolean;
   songs: SongType[];
+  showTitleModal: boolean;
+  editTitleValue: string;
+  showKeywordModal: boolean;
+  showNewKeywordInput: boolean;
   editKeywordIndex: number | null;
   editValue: string;
   showOwnerMenu: boolean;
   ownerPosition: OptionsPosition;
-  showKeywordModal: boolean;
-  showNewKeywordInput: boolean;
   showDeleteConfirmModal: boolean;
   deletingSongId: number | null;
   mode: string;
@@ -356,12 +358,14 @@ const initialState: ContiDetailState = {
   contiData: undefined,
   isOwner: false,
   songs: [],
+  showTitleModal: false,
+  editTitleValue: "",
+  showKeywordModal: false,
+  showNewKeywordInput: false,
   editKeywordIndex: null,
   editValue: "",
   showOwnerMenu: false,
   ownerPosition: { x: 0, y: 0 },
-  showKeywordModal: false,
-  showNewKeywordInput: false,
   showDeleteConfirmModal: false,
   deletingSongId: null,
   mode: "",
@@ -485,12 +489,36 @@ function ContiDetail() {
   };
 
   type ModalNames =
+    | "showTitleModal"
     | "showKeywordModal"
     | "showDeleteConfirmModal"
     | "showOwnerMenu";
 
   const toggleModal = (modalName: ModalNames, isVisible: boolean) => {
     updateState({ [modalName]: isVisible });
+  };
+
+  const updateTitle = async () => {
+    const formData = new FormData();
+    formData.append("title", state.editTitleValue);
+    const token = localStorage["accessToken"];
+
+    try {
+      const response = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const updatedConti = await response.json();
+
+      if (response.ok) {
+        console.error("Updated title", updatedConti);
+      }
+    } catch (error) {
+      console.error("Error updating title", error);
+    }
   };
 
   // Open Keyword Modal
@@ -730,7 +758,18 @@ function ContiDetail() {
                   animate="animate"
                   exit="exit"
                 >
-                  <OptionItem>타이틀 수정</OptionItem>
+                  {state.isOwner && (
+                    <OptionItem
+                      onClick={() => {
+                        updateState({
+                          showTitleModal: true,
+                          editTitleValue: state.contiData?.title || "",
+                        });
+                      }}
+                    >
+                      타이틀 수정
+                    </OptionItem>
+                  )}
                   <OptionItem onClick={deleteContiClick}>콘티 삭제</OptionItem>
                   {state.isOwner && (
                     <OptionItem onClick={openKeywordModal}>
@@ -871,9 +910,31 @@ function ContiDetail() {
             </SheetButton>
           </StyledLink>
         )}
+        {state.showTitleModal && (
+          <OverlayModal onClick={() => toggleModal("showTitleModal", false)}>
+            <EditModalContainer
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ModalTitle>타이틀 수정</ModalTitle>
+              <ModalContentContainer>
+                <KeyEditInput
+                  value={state.editTitleValue}
+                  onChange={(e) =>
+                    updateState({ editTitleValue: e.target.value })
+                  }
+                  autoFocus
+                />
+                <ModalButton onClick={updateTitle}>수정하기</ModalButton>
+              </ModalContentContainer>
+            </EditModalContainer>
+          </OverlayModal>
+        )}
         {state.showKeywordModal && (
           <OverlayModal onClick={closeKeywordModal}>
-            <KeywordEditModalContainer
+            <EditModalContainer
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
@@ -942,7 +1003,7 @@ function ContiDetail() {
                   </KeywordEditorContainer>
                 )}
               </ModalContentContainer>
-            </KeywordEditModalContainer>
+            </EditModalContainer>
           </OverlayModal>
         )}
         <ConfirmModal
