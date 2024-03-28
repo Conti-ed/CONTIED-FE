@@ -123,6 +123,28 @@ const InfoContainer = styled.div`
   margin-right: 10px;
 `;
 
+const TitleEditInput = styled.input`
+  ${setFontStyle}
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+`;
+
+const TitleEditButton = styled.button`
+  margin-top: 20px;
+  padding: 8px 12px;
+  background-color: #388ee9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
 const KeywordEditorContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -200,6 +222,12 @@ const ModalContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+`;
+
+const TitleEditContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const ModalTitle = styled.p`
@@ -498,9 +526,18 @@ function ContiDetail() {
     updateState({ [modalName]: isVisible });
   };
 
-  const updateTitle = async () => {
+  const openTitleModal = () => {
+    toggleModal("showTitleModal", true);
+    updateState({
+      editTitleValue: state.contiData?.title || "",
+    });
+  };
+
+  const closeTitleModal = async () => {
+    toggleModal("showTitleModal", false);
+
     const formData = new FormData();
-    formData.append("title", state.editTitleValue);
+    formData.append("title", JSON.stringify(state.contiData?.title));
     const token = localStorage["accessToken"];
 
     try {
@@ -514,7 +551,9 @@ function ContiDetail() {
       const updatedConti = await response.json();
 
       if (response.ok) {
-        console.error("Updated title", updatedConti);
+        console.log("Updated title", updatedConti);
+      } else {
+        console.error("Failed to update title", updatedConti);
       }
     } catch (error) {
       console.error("Error updating title", error);
@@ -759,14 +798,7 @@ function ContiDetail() {
                   exit="exit"
                 >
                   {state.isOwner && (
-                    <OptionItem
-                      onClick={() => {
-                        updateState({
-                          showTitleModal: true,
-                          editTitleValue: state.contiData?.title || "",
-                        });
-                      }}
-                    >
+                    <OptionItem onClick={openTitleModal}>
                       타이틀 수정
                     </OptionItem>
                   )}
@@ -911,24 +943,31 @@ function ContiDetail() {
           </StyledLink>
         )}
         {state.showTitleModal && (
-          <OverlayModal onClick={() => toggleModal("showTitleModal", false)}>
+          <OverlayModal onClick={closeTitleModal}>
             <EditModalContainer
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <ModalTitle>타이틀 수정</ModalTitle>
-              <ModalContentContainer>
-                <KeyEditInput
+              <ModalTitle>어떤 타이틀을 원하시나요?</ModalTitle>
+              <TitleEditContainer>
+                <TitleEditInput
                   value={state.editTitleValue}
                   onChange={(e) =>
                     updateState({ editTitleValue: e.target.value })
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      closeTitleModal();
+                    }
+                  }}
                   autoFocus
                 />
-                <ModalButton onClick={updateTitle}>수정하기</ModalButton>
-              </ModalContentContainer>
+                <TitleEditButton onClick={closeTitleModal}>
+                  수정하기
+                </TitleEditButton>
+              </TitleEditContainer>
             </EditModalContainer>
           </OverlayModal>
         )}
