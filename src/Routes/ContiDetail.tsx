@@ -673,6 +673,10 @@ function ContiDetail() {
     });
   };
 
+  const titlePrefix =
+    state.mode === "conti" ? "콘티를" : state.mode === "song" ? "곡을" : "";
+  const modalTitle = `해당 ${titlePrefix} 삭제할까요?`;
+
   // Confirm Delete Song & Conti
   const handleConfirmDelete = async (mode: string) => {
     if (mode === "song" && state.deletingSongId !== null) {
@@ -942,7 +946,7 @@ function ContiDetail() {
           </OverlayModal>
         )}
         <ConfirmModal
-          title="삭제하시겠습니까?"
+          title={modalTitle}
           onConfirm={() => handleConfirmDelete(state.mode)}
           onCancel={handleCancelDelete}
           isVisible={state.showDeleteConfirmModal}
