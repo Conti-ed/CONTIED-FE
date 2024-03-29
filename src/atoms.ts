@@ -18,3 +18,20 @@ export const contiesAtom = atom<ContiType[] | null>({
 });
 
 export const songsAtom = atom<SongType[]>({ key: "songs", default: [] });
+
+export const modalAtom = atom<{
+  isShow: boolean;
+  modalType:
+    | "ConfirmDeleteSong"
+    | "ConfirmDeleteConti"
+    | "ModifyKeywords"
+    | null;
+  id: number | null;
+}>({
+  key: "isShowModal",
+  default: {
+    isShow: false,
+    modalType: null,
+    id: null,
+  },
+});
