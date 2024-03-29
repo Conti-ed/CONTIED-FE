@@ -430,6 +430,7 @@ function ContiDetail() {
         isOwner: data
           ? data.owner.id === JSON.parse(localStorage["user_info"]).id
           : false,
+        editTitleValue: data?.title,
       });
     },
     refetchOnWindowFocus: true,
@@ -537,7 +538,7 @@ function ContiDetail() {
     toggleModal("showTitleModal", false);
 
     const formData = new FormData();
-    formData.append("title", JSON.stringify(state.contiData?.title));
+    formData.append("title", state.editTitleValue);
     const token = localStorage["accessToken"];
 
     try {
@@ -548,12 +549,25 @@ function ContiDetail() {
           Authorization: `Bearer ${token}`,
         },
       });
-      const updatedConti = await response.json();
 
       if (response.ok) {
-        console.log("Updated title", updatedConti);
+        const updatedConti: ContiType | null = await response.json();
+        if (updatedConti !== null) {
+          updateState({
+            contiData: {
+              ...(state.contiData ?? {}),
+              title: updatedConti.title,
+            } as ContiType,
+          });
+          console.log("Updated title", updatedConti);
+        } else {
+          console.error(
+            "Failed to update title: updatedConti is null or state.contiData is undefined"
+          );
+        }
       } else {
-        console.error("Failed to update title", updatedConti);
+        const errorData = await response.json();
+        console.error("Failed to update title", errorData);
       }
     } catch (error) {
       console.error("Error updating title", error);
@@ -776,7 +790,7 @@ function ContiDetail() {
         ) : (
           <div>
             <TitleHeader>
-              <Title>{state.contiData?.title}</Title>
+              <Title>{state.editTitleValue}</Title>
               <EditIconContainer
                 onClick={(event) => {
                   ownerOptionsClick(event);
