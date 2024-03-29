@@ -5,7 +5,7 @@ const LoadingAnimation = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const LoadingSpinner = styled.div`
+export const LoadingSpinner = styled.div`
   border: 4px solid #f3f3f3;
   border-top: 4px solid #333;
   border-radius: 50%;
@@ -14,5 +14,3 @@ const LoadingSpinner = styled.div`
   animation: ${LoadingAnimation} 2s linear infinite;
   margin-top: 10px;
 `;
-
-export default LoadingSpinner;

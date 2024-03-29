@@ -17,7 +17,7 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { LoadingSpinner } from "../styles/LoadingSpinner";
 import {
   formatTotalDuration,
   parseLocalDateString,

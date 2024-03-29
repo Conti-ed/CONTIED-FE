@@ -1,7 +1,7 @@
 import { SERVER_URL } from "../api";
 import { useForm } from "react-hook-form";
 import { styled } from "styled-components";
-import KakaoLogin from "react-kakao-login";
+// import KakaoLogin from "react-kakao-login";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -150,11 +150,11 @@ const Form = styled.form`
   flex-direction: column;
 `;
 
-const KakaoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+// const KakaoContainer = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// `;
 
 type FormValues = {
   email: string;
@@ -230,25 +230,25 @@ function Login() {
     setIsFetching(false);
   };
 
-  const kakaoResponse = async (response: {
-    response: { access_token: any };
-  }) => {
-    console.log(response.response.access_token);
+  // const kakaoResponse = async (response: {
+  //   response: { access_token: any };
+  // }) => {
+  //   console.log(response.response.access_token);
 
-    let res = await fetch(
-      `${SERVER_URL}/rest-auth/kakao/?code=${response.response.access_token}`,
-      {
-        method: "GET",
-      }
-    );
-    let data = await res.json();
-    localStorage.setItem("accessToken", data.kakao_data.access_token);
-    localStorage.setItem("refreshToken", data.kakao_data.refresh_token);
-    localStorage.setItem("user_info", JSON.stringify(data.user_info));
-    console.log(res, data);
+  //   let res = await fetch(
+  //     `${SERVER_URL}/rest-auth/kakao/?code=${response.response.access_token}`,
+  //     {
+  //       method: "GET",
+  //     }
+  //   );
+  //   let data = await res.json();
+  //   localStorage.setItem("accessToken", data.kakao_data.access_token);
+  //   localStorage.setItem("refreshToken", data.kakao_data.refresh_token);
+  //   localStorage.setItem("user_info", JSON.stringify(data.user_info));
+  //   console.log(res, data);
 
-    navigate("/");
-  };
+  //   navigate("/");
+  // };
 
   return (
     <AppContainer>
