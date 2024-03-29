@@ -1,19 +1,19 @@
 import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
-import { ContiType, SongType } from "../types";
+import { ContiType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import useContiDetailState from "../hooks/useContiDetailState";
 import {
   DragDropContext,
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
-  DropResult,
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
@@ -342,61 +342,13 @@ const optionsVariants = {
   },
 };
 
-interface OptionsPosition {
-  x: number;
-  y: number;
-}
-
-interface ContiDetailState {
-  activeOptions: number | null;
-  optionsPosition: OptionsPosition;
-  contiData: ContiType | undefined;
-  isOwner: boolean;
-  songs: SongType[];
-  showTitleModal: boolean;
-  editTitleValue: string;
-  showKeywordModal: boolean;
-  showNewKeywordInput: boolean;
-  editKeywordIndex: number | null;
-  editValue: string;
-  showOwnerMenu: boolean;
-  ownerPosition: OptionsPosition;
-  showDeleteConfirmModal: boolean;
-  deletingSongId: number | null;
-  mode: string;
-}
-
-const initialState: ContiDetailState = {
-  activeOptions: null,
-  optionsPosition: { x: 0, y: 0 },
-  contiData: undefined,
-  isOwner: false,
-  songs: [],
-  showTitleModal: false,
-  editTitleValue: "",
-  showKeywordModal: false,
-  showNewKeywordInput: false,
-  editKeywordIndex: null,
-  editValue: "",
-  showOwnerMenu: false,
-  ownerPosition: { x: 0, y: 0 },
-  showDeleteConfirmModal: false,
-  deletingSongId: null,
-  mode: "",
-};
-
 function ContiDetail() {
-  const [state, setState] = useState<ContiDetailState>(initialState);
-
-  // Update States
-  const updateState = (updates: Partial<ContiDetailState>) => {
-    setState((prevState) => ({ ...prevState, ...updates }));
-  };
-
   const optionsMenuRef = useRef<HTMLDivElement | null>(null);
   const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
+  const { state, updateState, onDragEnd, songOptionsClick, deleteSong } =
+    useContiDetailState(Number(cid), uid);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -421,38 +373,6 @@ function ContiDetail() {
     },
     refetchOnWindowFocus: true,
   });
-
-  // When a Song is Dragged and Dropped
-  const onDragEnd = useCallback(
-    ({ source, destination }: DropResult) => {
-      if (!destination || source.index === destination.index) return;
-
-      setState((prevState) => {
-        const newSongs = Array.from(prevState.songs);
-        const [reorderedItem] = newSongs.splice(source.index, 1);
-        newSongs.splice(destination.index, 0, reorderedItem);
-
-        return { ...prevState, songs: newSongs };
-      });
-
-      const updateOrder = async () => {
-        try {
-          const response = await fetch(
-            `${SERVER_URL}/api/order?cid=${cid}&uid=${uid}&start=${source.index}&end=${destination.index}`,
-            {
-              method: "PUT",
-            }
-          );
-          const data = await response.json();
-          console.log(response.status, data);
-        } catch (error) {
-          console.error("Failed to update song order", error);
-        }
-      };
-      updateOrder();
-    },
-    [cid, uid]
-  );
 
   // When the More Button is Pressed
   const handleOptionsClick = (
@@ -485,22 +405,6 @@ function ContiDetail() {
       const rect = event.currentTarget.getBoundingClientRect();
       return { x: rect.left - 100, y: rect.top + 10 };
     });
-  };
-
-  const songOptionsClick = (
-    songId: number,
-    event: React.MouseEvent<HTMLElement>
-  ) => {
-    const { x, y } = ((event) => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      return { x: rect.left - 88, y: rect.top + 10 };
-    })(event);
-
-    setState((prevState) => ({
-      ...prevState,
-      optionsPosition: { x, y },
-      activeOptions: prevState.activeOptions === songId ? null : songId,
-    }));
   };
 
   type ModalNames =
@@ -622,7 +526,7 @@ function ContiDetail() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [state.showOwnerMenu, state.activeOptions, ownerMenuRef, optionsMenuRef]);
+  }, [state.showOwnerMenu, state.activeOptions, updateState]);
 
   // Setting Keyword Default Values ​​in Edit Modal
   const startKeywordEditing = (index: number, keyword: string) => {
@@ -679,32 +583,6 @@ function ContiDetail() {
         contiData: { ...state.contiData, keywords: newKeywords },
         editKeywordIndex: null,
       });
-    }
-  };
-
-  // Delete Confirmation Modal
-  const deleteSong = async (sid: number | undefined) => {
-    const token = localStorage["accessToken"];
-    updateState({
-      activeOptions: null,
-    });
-    const res = await fetch(
-      `${SERVER_URL}/api/song/${sid}?cid=${cid}&uid=${uid}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const data = await res.json();
-
-    if (res.ok) {
-      setState((prevState) => ({
-        ...prevState,
-        songs: prevState.songs.filter((song) => song.id !== sid),
-        contiData: data,
-      }));
     }
   };
 
