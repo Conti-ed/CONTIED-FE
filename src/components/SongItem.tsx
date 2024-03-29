@@ -7,7 +7,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 const SongItemContainer = styled.div`
   display: flex;
   align-items: center;
-  margin: 20px 10px 20px 0px;
+  padding: 10px 10px 10px 0px;
 `;
 
 const SongNumber = styled.span`
