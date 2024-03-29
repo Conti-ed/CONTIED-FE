@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
 import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
@@ -17,6 +17,7 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
+import LoadingSpinner from "../components/LoadingSpinner";
 import {
   formatTotalDuration,
   parseLocalDateString,
@@ -28,21 +29,6 @@ const PageContainer = styled(motion.div)`
   padding-top: 35px;
   padding: 10px;
   padding-bottom: 100px;
-`;
-
-const LoadingAnimation = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const LoadingSpinner = styled.div`
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #333;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: ${LoadingAnimation} 2s linear infinite;
-  margin-top: 10px;
 `;
 
 const CenteredContainer = styled.div`
