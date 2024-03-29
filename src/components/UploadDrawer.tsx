@@ -20,7 +20,7 @@ import {
   StyledDrawer,
   WarningMessage,
 } from "../styles/UploadDrawer.styles";
-import { Spinner } from "../styles/Feed.styles";
+import { LoadingSpinner } from "../styles/LoadingSpinner";
 import useFormReset from "../hooks/useFormReset";
 
 export type FormValues = {
@@ -243,7 +243,7 @@ function UploadDrawer() {
           <List>
             <ListItem>
               <Button type="submit" disabled={isFetching}>
-                {isFetching ? <Spinner /> : <>콘티 공유하기</>}
+                {isFetching ? <LoadingSpinner /> : <>콘티 공유하기</>}
               </Button>
             </ListItem>
           </List>

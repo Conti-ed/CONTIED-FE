@@ -39,7 +39,7 @@ function Feed() {
     >
       {isLoading ? (
         <CenteredContainer>
-          <div>잠시만요...</div>
+          <div style={{ marginBottom: "10px" }}>잠시만요...</div>
           <LoadingSpinner />
         </CenteredContainer>
       ) : (
