@@ -449,7 +449,7 @@ function ContiDetail() {
               title: updatedConti.title,
             } as ContiType,
           });
-          console.log("Updated title", updatedConti);
+          // console.log("Updated title", updatedConti);
         } else {
           console.error(
             "Failed to update title: updatedConti is null or state.contiData is undefined"
@@ -494,7 +494,7 @@ function ContiDetail() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Keywords updated successfully", data);
+        // console.log("Keywords updated successfully", data);
       } else {
         console.error("Failed to update keywords", data);
       }
