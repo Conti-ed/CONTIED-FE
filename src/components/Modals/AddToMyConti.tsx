@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../styles/LoadingSpinner";
+import React from "react";
 
 const ContiList = styled.ul`
   display: flex;
@@ -20,18 +21,19 @@ const ContiList = styled.ul`
   margin-bottom: 20px;
 `;
 
-const ContiItem = styled.li<{ selected: boolean; exists: boolean }>`
+const ContiItem = styled.li<{ selected: boolean; $exists: boolean }>`
   padding: 10px 10px;
   border-radius: 10px;
   transition: background-color 0.2s, font-weight 0.2s;
   font-size: 15px;
   text-align: left;
-  background-color: ${({ selected, exists }) =>
-    exists ? "lightcoral" : selected ? "#e9f5ff" : "transparent"};
+  background-color: ${({ selected, $exists }) =>
+    $exists ? "lightcoral" : selected ? "#e9f5ff" : "transparent"};
   font-weight: ${({ selected }) => (selected ? "bold" : "normal")};
   cursor: pointer;
   &:hover {
-    background-color: ${({ exists }) => (exists ? "lightcoral" : "lightgray")};
+    background-color: ${({ $exists }) =>
+      $exists ? "lightcoral" : "lightgray"};
     font-weight: bold;
   }
 `;
@@ -115,7 +117,7 @@ function AddToMyConti() {
             ?.slice()
             .reverse()
             .map((conti, i) => (
-              <>
+              <React.Fragment key={i}>
                 <ContiItem
                   key={i}
                   onClick={() => {
@@ -123,14 +125,14 @@ function AddToMyConti() {
                     setExistingSongContiId(null);
                   }}
                   selected={contiToAdd?.id === conti!.id}
-                  exists={existingSongContiId === conti!.id}
+                  $exists={existingSongContiId === conti!.id}
                 >
                   {conti?.title}
                 </ContiItem>
                 {existingSongContiId === conti!.id && (
                   <ErrorMessage>이미 콘티에 있는 곡이에요.</ErrorMessage>
                 )}
-              </>
+              </React.Fragment>
             ))}
         </ContiList>
       )}
