@@ -12,6 +12,7 @@ export interface ContiDetailState {
   optionsPosition: OptionsPosition;
   contiData: ContiType | undefined;
   isOwner: boolean;
+  isFavorite: boolean;
   songs: SongType[];
   showTitleModal: boolean;
   editTitleValue: string;
@@ -31,6 +32,7 @@ const initialState: ContiDetailState = {
   optionsPosition: { x: 0, y: 0 },
   contiData: undefined,
   isOwner: false,
+  isFavorite: false,
   songs: [],
   showTitleModal: false,
   editTitleValue: "",
@@ -85,6 +87,14 @@ const useContiDetailState = (cid: number, uid: number) => {
     [cid, uid]
   );
 
+  const toggleFavorite = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setState((prevState) => ({
+      ...prevState,
+      isFavorite: !prevState.isFavorite,
+    }));
+  };
+
   const songOptionsClick = (
     songId: number,
     event: React.MouseEvent<HTMLElement>
@@ -101,7 +111,7 @@ const useContiDetailState = (cid: number, uid: number) => {
     }));
   };
 
-  return { state, updateState, onDragEnd, songOptionsClick };
+  return { state, updateState, onDragEnd, toggleFavorite, songOptionsClick };
 };
 
 export default useContiDetailState;

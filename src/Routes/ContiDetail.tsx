@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
@@ -55,14 +57,20 @@ const TitleHeader = styled.div`
   margin-bottom: 10px;
 `;
 
+const Spacer = styled.div`
+  width: 32px;
+`;
+
 const Title = styled.div`
   font-size: 20px;
   font-weight: 700;
+  flex-grow: 1;
+  text-align: center;
 `;
 
 export const EditIconContainer = styled.div`
-  position: absolute;
-  right: 0;
+  width: 32px;
+  margin-left: auto;
 `;
 
 const PageHeader = styled.div`
@@ -237,7 +245,7 @@ function ContiDetail() {
   const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
-  const { state, updateState, onDragEnd, songOptionsClick } =
+  const { state, updateState, onDragEnd, toggleFavorite, songOptionsClick } =
     useContiDetailState(Number(cid), uid);
   const [modal, setModal] = useRecoilState(modalAtom);
 
@@ -336,13 +344,21 @@ function ContiDetail() {
         ) : (
           <div>
             <TitleHeader>
+              <Spacer />
               <Title>{state.contiData?.title}</Title>
               <EditIconContainer
                 onClick={(event) => {
-                  ownerOptionsClick(event);
+                  if (state.isOwner) ownerOptionsClick(event);
+                  else toggleFavorite(event);
                 }}
               >
-                <BorderColorIcon />
+                {state.isOwner ? (
+                  <BorderColorIcon />
+                ) : state.isFavorite ? (
+                  <FavoriteIcon style={{ fontSize: "24px" }} />
+                ) : (
+                  <FavoriteBorderIcon style={{ fontSize: "24px" }} />
+                )}
               </EditIconContainer>
               {state.showOwnerMenu && (
                 <OptionsMenu
@@ -358,41 +374,41 @@ function ContiDetail() {
                   exit="exit"
                 >
                   {state.isOwner && (
-                    <OptionItem
-                      onClick={() =>
-                        setModal({
-                          isShow: true,
-                          modalType: "ModifyTitle",
-                          id: Number(cid),
-                        })
-                      }
-                    >
-                      타이틀 수정
-                    </OptionItem>
-                  )}
-                  <OptionItem
-                    onClick={() =>
-                      setModal({
-                        isShow: true,
-                        modalType: "ConfirmDeleteConti",
-                        id: Number(cid),
-                      })
-                    }
-                  >
-                    콘티 삭제
-                  </OptionItem>
-                  {state.isOwner && (
-                    <OptionItem
-                      onClick={() =>
-                        setModal({
-                          isShow: true,
-                          modalType: "ModifyKeywords",
-                          id: Number(cid),
-                        })
-                      }
-                    >
-                      키워드 수정
-                    </OptionItem>
+                    <>
+                      <OptionItem
+                        onClick={() =>
+                          setModal({
+                            isShow: true,
+                            modalType: "ModifyTitle",
+                            id: Number(cid),
+                          })
+                        }
+                      >
+                        타이틀 수정
+                      </OptionItem>
+                      <OptionItem
+                        onClick={() =>
+                          setModal({
+                            isShow: true,
+                            modalType: "ConfirmDeleteConti",
+                            id: Number(cid),
+                          })
+                        }
+                      >
+                        콘티 삭제
+                      </OptionItem>
+                      <OptionItem
+                        onClick={() =>
+                          setModal({
+                            isShow: true,
+                            modalType: "ModifyKeywords",
+                            id: Number(cid),
+                          })
+                        }
+                      >
+                        키워드 수정
+                      </OptionItem>
+                    </>
                   )}
                 </OptionsMenu>
               )}
