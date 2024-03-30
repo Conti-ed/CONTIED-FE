@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import { ModalButton, ModalTitle } from "../../styles/Modal.styles";
-import { setFontStyle } from "../../styles/UploadDrawer.styles";
 import { useQuery } from "react-query";
-import { SERVER_URL, getMyConties } from "../../api";
-import { ContiType } from "../../types";
+import { SERVER_URL, getConti, getMyConties } from "../../api";
+import { ContiType, SongType } from "../../types";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
@@ -19,25 +18,41 @@ const ContiList = styled.ul`
   max-height: 200px;
   gap: 10px;
   margin-bottom: 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
-const ContiItem = styled.li<{ selected: boolean }>`
-  ${setFontStyle}
+const ContiItem = styled.li<{ selected: boolean; exists: boolean }>`
   padding: 10px 10px;
   border-radius: 10px;
-  transition: 0.2s background-color;
+  transition: background-color 0.2s, font-weight 0.2s;
   font-size: 15px;
   text-align: left;
-  background-color: ${({ selected }) => (selected ? "#e9f5ff" : "transparent")};
+  background-color: ${({ selected, exists }) =>
+    exists ? "lightcoral" : selected ? "#e9f5ff" : "transparent"};
+  font-weight: ${({ selected }) => (selected ? "bold" : "normal")};
   cursor: pointer;
   &:hover {
-    background-color: lightgray;
+    background-color: ${({ exists }) => (exists ? "lightcoral" : "lightgray")};
+    font-weight: bold;
   }
+`;
+
+const ErrorMessage = styled.div`
+  padding: 0px 10px;
+  color: red;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: left;
 `;
 
 function AddToMyConti() {
   const navigate = useNavigate();
   const [contiToAdd, setContiToAdd] = useState<ContiType>(null);
+  const [existingSongContiId, setExistingSongContiId] = useState<number | null>(
+    null
+  );
   const [modal, setModal] = useRecoilState(modalAtom);
   const { data, isLoading } = useQuery<ContiType[]>(["myConti"], {
     queryFn: getMyConties,
@@ -47,9 +62,31 @@ function AddToMyConti() {
     setModal({ isShow: false, modalType: null, id: null });
   };
 
+  const isSongAlreadyInConti = async (
+    contiId: number,
+    songId: number
+  ): Promise<boolean> => {
+    if (!data) return false;
+    try {
+      const contiDetailsPromises = data.map(() => getConti(contiId));
+      const details = await Promise.all(contiDetailsPromises);
+      return details.some((detail) =>
+        detail.songs.some((song: SongType) => song.id === songId)
+      );
+    } catch (error) {
+      console.error("Error fetching conti details:", error);
+      return false;
+    }
+  };
+
   const addToConti = async () => {
     if (contiToAdd !== null) {
       const { id: cid } = contiToAdd;
+      const alreadyExists = await isSongAlreadyInConti(cid, Number(modal.id));
+      if (alreadyExists) {
+        setExistingSongContiId(cid);
+        return;
+      }
       const token = localStorage["accessToken"];
       const res = await fetch(
         `${SERVER_URL}/api/conti-song?cid=${cid}&sid=${modal.id}`,
@@ -71,7 +108,7 @@ function AddToMyConti() {
 
   return (
     <>
-      <ModalTitle>어떤 콘티로 가져올까요?</ModalTitle>
+      <ModalTitle>어떤 콘티에 추가할까요?</ModalTitle>
       <hr></hr>
       {isLoading ? (
         <LoadingSpinner />
@@ -81,13 +118,22 @@ function AddToMyConti() {
             ?.slice()
             .reverse()
             .map((conti, i) => (
-              <ContiItem
-                key={i}
-                onClick={() => setContiToAdd(conti)}
-                selected={contiToAdd?.id === conti!.id}
-              >
-                {conti?.title}
-              </ContiItem>
+              <>
+                <ContiItem
+                  key={i}
+                  onClick={() => {
+                    setContiToAdd(conti);
+                    setExistingSongContiId(null);
+                  }}
+                  selected={contiToAdd?.id === conti!.id}
+                  exists={existingSongContiId === conti!.id}
+                >
+                  {conti?.title}
+                </ContiItem>
+                {existingSongContiId === conti!.id && (
+                  <ErrorMessage>이미 콘티에 있는 곡이에요.</ErrorMessage>
+                )}
+              </>
             ))}
         </ContiList>
       )}

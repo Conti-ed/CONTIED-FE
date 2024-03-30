@@ -398,7 +398,7 @@ function ContiDetail() {
               )}
             </TitleHeader>
             <PageHeader>
-              <BackButtonContainer onClick={() => navigate("/feed")}>
+              <BackButtonContainer onClick={() => navigate(-1)}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
                 <BackButton
                   style={{
@@ -500,7 +500,7 @@ function ContiDetail() {
                                     })
                                   }
                                 >
-                                  가져오기
+                                  추가하기
                                 </OptionItem>
                               )}
                             </OptionsMenu>
