@@ -34,7 +34,7 @@ export const ModalTitle = styled.p`
   color: black;
   font-weight: bold;
   margin-top: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 `;
 
 export const ModalButton = styled.button`

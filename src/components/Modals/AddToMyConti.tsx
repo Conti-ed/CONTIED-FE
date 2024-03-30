@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
 import { useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "../../styles/LoadingSpinner";
 
 const ContiList = styled.ul`
   display: flex;
@@ -22,7 +23,7 @@ const ContiList = styled.ul`
 
 const ContiItem = styled.li<{ selected: boolean }>`
   ${setFontStyle}
-  padding: 10px 20px;
+  padding: 10px 10px;
   border-radius: 10px;
   transition: 0.2s background-color;
   font-size: 15px;
@@ -70,21 +71,24 @@ function AddToMyConti() {
 
   return (
     <>
-      <ModalTitle>내 콘티</ModalTitle>
+      <ModalTitle>어떤 콘티로 가져올까요?</ModalTitle>
       <hr></hr>
       {isLoading ? (
-        "로딩중..."
+        <LoadingSpinner />
       ) : (
         <ContiList>
-          {data?.map((conti, i) => (
-            <ContiItem
-              key={i}
-              onClick={() => setContiToAdd(conti)}
-              selected={contiToAdd?.id === conti!.id}
-            >
-              {conti?.title}
-            </ContiItem>
-          ))}
+          {data
+            ?.slice()
+            .reverse()
+            .map((conti, i) => (
+              <ContiItem
+                key={i}
+                onClick={() => setContiToAdd(conti)}
+                selected={contiToAdd?.id === conti!.id}
+              >
+                {conti?.title}
+              </ContiItem>
+            ))}
         </ContiList>
       )}
       <div>
