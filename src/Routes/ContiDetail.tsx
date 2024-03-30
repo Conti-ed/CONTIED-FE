@@ -2,11 +2,9 @@ import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
 import { ContiType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
@@ -71,6 +69,31 @@ const Title = styled.div`
 export const EditIconContainer = styled.div`
   width: 32px;
   margin-left: auto;
+`;
+
+const fillHeart = keyframes`
+  from {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
+
+const HeartIcon = styled.svg<{ $isFavorite: boolean }>`
+  width: 24px;
+  height: 24px;
+  fill: ${({ $isFavorite }) => ($isFavorite ? "lightcoral" : "transparent")};
+  stroke: lightcoral;
+  stroke-width: 2px;
+  transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out;
+  ${({ $isFavorite }) =>
+    $isFavorite &&
+    css`
+      animation: ${fillHeart} 0.6s ease forwards;
+    `}
 `;
 
 const PageHeader = styled.div`
@@ -354,10 +377,16 @@ function ContiDetail() {
               >
                 {state.isOwner ? (
                   <BorderColorIcon />
-                ) : state.isFavorite ? (
-                  <FavoriteIcon style={{ fontSize: "24px" }} />
                 ) : (
-                  <FavoriteBorderIcon style={{ fontSize: "24px" }} />
+                  <HeartIcon
+                    $isFavorite={state.isFavorite}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    stroke="lightcoral"
+                  >
+                    <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
+                  </HeartIcon>
                 )}
               </EditIconContainer>
               {state.showOwnerMenu && (
