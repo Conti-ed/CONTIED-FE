@@ -15,12 +15,9 @@ const ContiList = styled.ul`
   flex-direction: column;
   color: black;
   min-width: 200px;
-  max-height: 200px;
+  max-height: 180px;
   gap: 10px;
   margin-bottom: 20px;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const ContiItem = styled.li<{ selected: boolean; exists: boolean }>`
