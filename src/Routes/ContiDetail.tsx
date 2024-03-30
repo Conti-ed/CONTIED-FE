@@ -427,8 +427,8 @@ function ContiDetail() {
                 <SongList {...provided.droppableProps} ref={provided.innerRef}>
                   {state.songs.map((song, index) => (
                     <Draggable
-                      key={song.id}
-                      draggableId={song.id.toString()}
+                      key={index}
+                      draggableId={index + ""}
                       index={index}
                       isDragDisabled={!state.isOwner}
                     >
