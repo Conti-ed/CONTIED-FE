@@ -8,6 +8,7 @@ import { ContiDetailState } from "../Routes/ContiDetail";
 import ConfirmDeleteConti from "./Modals/ConfirmDeleteConti";
 import ModifyKeywords from "./Modals/ModifyKeywords";
 import { SERVER_URL } from "../api";
+import AddToMyConti from "./Modals/AddToMyConti";
 
 interface IModal {
   state: ContiDetailState;
@@ -68,6 +69,8 @@ function Modal({ state, setState }: IModal) {
           <ConfirmDeleteConti id={{ cid, uid }} />
         ) : modal.modalType === "ModifyKeywords" ? (
           <ModifyKeywords state={state} setState={setState} />
+        ) : modal.modalType === "AddToMyConti" ? (
+          <AddToMyConti />
         ) : null}
       </ModalContainer>
     </OverlayModal>

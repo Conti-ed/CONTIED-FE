@@ -25,6 +25,7 @@ export const modalAtom = atom<{
     | "ConfirmDeleteSong"
     | "ConfirmDeleteConti"
     | "ModifyKeywords"
+    | "AddToMyConti"
     | null;
   id: number | null;
 }>({

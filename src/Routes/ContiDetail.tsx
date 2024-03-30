@@ -648,9 +648,15 @@ function ContiDetail() {
                                 </OptionItem>
                               )}
                               <OptionItem
-                                onClick={() => console.log("기타옵션")}
+                                onClick={() =>
+                                  setModal({
+                                    isShow: true,
+                                    modalType: "AddToMyConti",
+                                    id: song.id,
+                                  })
+                                }
                               >
-                                기타 옵션
+                                가져오기
                               </OptionItem>
                             </OptionsMenu>
                           )}
