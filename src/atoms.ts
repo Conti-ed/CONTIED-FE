@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { ContiType, SongType } from "./types";
+import { ContiType, ModalType, SongType } from "./types";
 
 export const isDarkAtom = atom({ key: "isDark", default: true });
 
@@ -21,13 +21,7 @@ export const songsAtom = atom<SongType[]>({ key: "songs", default: [] });
 
 export const modalAtom = atom<{
   isShow: boolean;
-  modalType:
-    | "ConfirmDeleteSong"
-    | "ConfirmDeleteConti"
-    | "ModifyKeywords"
-    | "AddToMyConti"
-    | "ModifyTitle"
-    | null;
+  modalType: ModalType;
   id: number | null;
 }>({
   key: "isShowModal",

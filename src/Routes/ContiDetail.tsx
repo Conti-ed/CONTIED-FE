@@ -1,13 +1,13 @@
 import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
-import { ContiType } from "../types";
+import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { css, keyframes } from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import useContiDetailState from "../hooks/useContiDetailState";
 import {
   DragDropContext,
@@ -26,6 +26,7 @@ import SongItem from "../components/SongItem";
 import Modal from "../components/Modal";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../atoms";
+import OptionsMenu, { IMenuItem } from "../components/OptionsMenu";
 
 const PageContainer = styled(motion.div)`
   padding-top: 35px;
@@ -170,35 +171,6 @@ export const TotalDurationContainer = styled(DetailItem)`
   color: #c1c8ce;
 `;
 
-const OptionsMenu = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  white-space: nowrap;
-`;
-
-const OptionItem = styled.div`
-  padding: 5px 10px;
-  &:hover {
-    border: 1px solid #ccc;
-  }
-`;
-
-const OptionPlay = styled(Link)`
-  padding: 5px 10px;
-  &:hover {
-    border: 1px solid #ccc;
-  }
-`;
-
 export const IconContainer = styled.div`
   margin-left: auto;
   display: flex;
@@ -237,35 +209,9 @@ const SheetButton = styled.button`
   margin: 0 auto;
 `;
 
-const detailVariants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
-};
-
-const optionsVariants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-  },
-  exit: {
-    opacity: 0,
-  },
-};
-
 function ContiDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const optionsMenuRef = useRef<HTMLDivElement | null>(null);
-  const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
   const { state, updateState, onDragEnd, toggleFavorite, songOptionsClick } =
@@ -326,38 +272,69 @@ function ContiDetail() {
     });
   };
 
-  // When Clicking Outside the Options Modal
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        state.showOwnerMenu &&
-        ownerMenuRef.current &&
-        !ownerMenuRef.current.contains(event.target as Node)
-      ) {
-        updateState({ showOwnerMenu: false });
-      }
-      if (
-        state.activeOptions !== null &&
-        optionsMenuRef.current &&
-        !optionsMenuRef.current.contains(event.target as Node)
-      ) {
-        updateState({ activeOptions: null });
-      }
-    };
+  const ownerMenuItems = [
+    {
+      label: "타이틀 수정",
+      onClick: () =>
+        setModal({ isShow: true, modalType: "ModifyTitle", id: Number(cid) }),
+    },
+    {
+      label: "콘티 삭제",
+      onClick: () =>
+        setModal({
+          isShow: true,
+          modalType: "ConfirmDeleteConti",
+          id: Number(cid),
+        }),
+    },
+    {
+      label: "키워드 수정",
+      onClick: () =>
+        setModal({
+          isShow: true,
+          modalType: "ModifyKeywords",
+          id: Number(cid),
+        }),
+    },
+  ];
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [state.showOwnerMenu, state.activeOptions, updateState]);
+  const getMenuItems = (song: SongType) => {
+    const items: IMenuItem[] = [
+      {
+        label: "들어보기",
+        link: `https://www.youtube.com/results?search_query=${song.title.replace(
+          " ",
+          "+"
+        )}`,
+      },
+    ];
+    if (state.isOwner) {
+      items.push({
+        label: "삭제하기",
+        onClick: () =>
+          setModal({
+            isShow: true,
+            modalType: "ConfirmDeleteSong",
+            id: song.id,
+          }),
+      });
+    } else if (!state.isOwner) {
+      items.push({
+        label: "추가하기",
+        onClick: () =>
+          setModal({ isShow: true, modalType: "AddToMyConti", id: song.id }),
+      });
+    }
+
+    return items;
+  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <PageContainer
-        variants={detailVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
         {isLoading ? (
           <CenteredContainer>
@@ -391,55 +368,11 @@ function ContiDetail() {
               </EditIconContainer>
               {state.showOwnerMenu && (
                 <OptionsMenu
-                  ref={ownerMenuRef}
-                  style={{
-                    position: "fixed",
-                    left: `${state.ownerPosition.x}px`,
-                    top: `${state.ownerPosition.y}px`,
-                  }}
-                  variants={optionsVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                >
-                  {state.isOwner && (
-                    <>
-                      <OptionItem
-                        onClick={() =>
-                          setModal({
-                            isShow: true,
-                            modalType: "ModifyTitle",
-                            id: Number(cid),
-                          })
-                        }
-                      >
-                        타이틀 수정
-                      </OptionItem>
-                      <OptionItem
-                        onClick={() =>
-                          setModal({
-                            isShow: true,
-                            modalType: "ConfirmDeleteConti",
-                            id: Number(cid),
-                          })
-                        }
-                      >
-                        콘티 삭제
-                      </OptionItem>
-                      <OptionItem
-                        onClick={() =>
-                          setModal({
-                            isShow: true,
-                            modalType: "ModifyKeywords",
-                            id: Number(cid),
-                          })
-                        }
-                      >
-                        키워드 수정
-                      </OptionItem>
-                    </>
-                  )}
-                </OptionsMenu>
+                  x={state.ownerPosition.x}
+                  y={state.ownerPosition.y}
+                  onClose={() => updateState({ showOwnerMenu: false })}
+                  menuItems={ownerMenuItems}
+                />
               )}
             </TitleHeader>
             <PageHeader>
@@ -502,53 +435,13 @@ function ContiDetail() {
                           />
                           {state.activeOptions === song.id && (
                             <OptionsMenu
-                              ref={optionsMenuRef}
-                              style={{
-                                position: "fixed",
-                                left: `${state.optionsPosition.x}px`,
-                                top: `${state.optionsPosition.y}px`,
-                              }}
-                              variants={optionsVariants}
-                              initial="initial"
-                              animate="animate"
-                              exit="exit"
-                            >
-                              <OptionPlay
-                                to={`https://www.youtube.com/results?search_query=${song.title.replace(
-                                  " ",
-                                  "+"
-                                )}`}
-                                target="_blank"
-                              >
-                                들어보기
-                              </OptionPlay>
-                              {state.isOwner && (
-                                <OptionItem
-                                  onClick={() =>
-                                    setModal({
-                                      isShow: true,
-                                      modalType: "ConfirmDeleteSong",
-                                      id: song.id,
-                                    })
-                                  }
-                                >
-                                  삭제하기
-                                </OptionItem>
-                              )}
-                              {!state.isOwner && (
-                                <OptionItem
-                                  onClick={() =>
-                                    setModal({
-                                      isShow: true,
-                                      modalType: "AddToMyConti",
-                                      id: song.id,
-                                    })
-                                  }
-                                >
-                                  추가하기
-                                </OptionItem>
-                              )}
-                            </OptionsMenu>
+                              x={state.optionsPosition.x}
+                              y={state.optionsPosition.y}
+                              onClose={() =>
+                                updateState({ activeOptions: null })
+                              }
+                              menuItems={getMenuItems(song)}
+                            />
                           )}
                         </div>
                       )}

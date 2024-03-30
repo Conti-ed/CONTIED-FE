@@ -43,3 +43,11 @@ export type ContiType = null | {
   updated_at: string;
   created_at: string;
 };
+
+export type ModalType =
+  | "ConfirmDeleteSong"
+  | "ConfirmDeleteConti"
+  | "ModifyKeywords"
+  | "AddToMyConti"
+  | "ModifyTitle"
+  | null;
