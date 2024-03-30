@@ -40,6 +40,7 @@ function UploadDrawer() {
     reset,
     watch,
     formState: { errors },
+    clearErrors,
   } = useForm<FormValues>();
 
   const {
@@ -56,7 +57,6 @@ function UploadDrawer() {
   const resetAllFields = useFormReset(reset, setHashtags, inputFileUploadRef);
 
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
-  const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [isHashtagEmpty, setIsHashtagEmpty] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -66,7 +66,9 @@ function UploadDrawer() {
   const contiTitle = watch("title");
 
   useEffect(() => {
-    setIsTitleEmpty(!contiTitle);
+    if (!open) {
+      clearErrors();
+    }
     setIsHashtagEmpty(false);
 
     const handleBodyClick = (e: MouseEvent) => {
@@ -79,7 +81,7 @@ function UploadDrawer() {
     return () => {
       document.body.removeEventListener("mousedown", handleBodyClick);
     };
-  }, [contiTitle, hashtags, setOpen, drawerRef]);
+  }, [contiTitle, hashtags, setOpen, drawerRef, open, clearErrors]);
 
   const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.keyCode === 13) {
@@ -89,14 +91,10 @@ function UploadDrawer() {
 
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
-      const isTitleValid = !!data.title;
       const areHashtagsValid = hashtags.length > 0;
-
-      setIsTitleEmpty(!isTitleValid);
       setIsHashtagEmpty(!areHashtagsValid);
 
-      if (!isTitleValid || !areHashtagsValid) {
-        // Early return if validation fails
+      if (!areHashtagsValid) {
         return;
       }
       setIsFetching(true);
@@ -171,7 +169,7 @@ function UploadDrawer() {
                 placeholder="콘티에 이름을 붙여주세요!"
                 onKeyDown={handleKeyPress}
               />
-              {isTitleEmpty && (
+              {errors.title && (
                 <WarningMessage>타이틀을 추가해야 합니다!</WarningMessage>
               )}
             </ListItem>
