@@ -7,7 +7,7 @@ interface OptionsPosition {
   y: number;
 }
 
-interface ContiDetailState {
+export interface ContiDetailState {
   activeOptions: number | null;
   optionsPosition: OptionsPosition;
   contiData: ContiType | undefined;
@@ -101,36 +101,7 @@ const useContiDetailState = (cid: number, uid: number) => {
     }));
   };
 
-  // Delete Confirmation Modal
-  const deleteSong = useCallback(
-    async (sid: number | undefined) => {
-      const token = localStorage["accessToken"];
-      updateState({ activeOptions: null });
-
-      const res = await fetch(
-        `${SERVER_URL}/api/song/${sid}?cid=${cid}&uid=${uid}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setState((prevState) => ({
-          ...prevState,
-          songs: prevState.songs.filter((song) => song.id !== sid),
-          contiData: data,
-        }));
-      }
-    },
-    [cid, uid]
-  );
-
-  return { state, updateState, onDragEnd, songOptionsClick, deleteSong };
+  return { state, updateState, onDragEnd, songOptionsClick };
 };
 
 export default useContiDetailState;

@@ -1,8 +1,8 @@
 import React from "react";
 import { ModalContentContainer, ModalTitle } from "../../styles/Modal.styles";
-import { ContiDetailState } from "../../Routes/ContiDetail";
 import { styled } from "styled-components";
 import { setFontStyle } from "../../styles/UploadDrawer.styles";
+import { ContiDetailState } from "../../hooks/useContiDetailState";
 
 const KeywordEditorContainer = styled.div`
   display: flex;
@@ -41,30 +41,25 @@ const KeyEditInput = styled.input`
 `;
 
 type props = {
+  id: { cid: string | undefined; uid: string | undefined };
   state: ContiDetailState;
-  setState: React.Dispatch<React.SetStateAction<ContiDetailState>>;
+  updateState: (updates: Partial<ContiDetailState>) => void;
 };
 
-function ModifyKeywords({ state, setState }: props) {
+function ModifyKeywords({ id, state, updateState }: props) {
   // Setting Keyword Default Values ​​in Edit Modal
   const startKeywordEditing = (index: number, keyword: string) => {
-    setState((prevState) => ({
-      ...prevState,
-      ...{
-        editKeywordIndex: index,
-        editValue: keyword,
-      },
-    }));
+    updateState({
+      editKeywordIndex: index,
+      editValue: keyword,
+    });
   };
 
   // Edit Keywords in Edit Modal
   const changeKeywordEditing = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState((prevState) => ({
-      ...prevState,
-      ...{
-        editValue: event.target.value,
-      },
-    }));
+    updateState({
+      editValue: event.target.value,
+    });
   };
 
   // Press Enter in the Edit Modal
@@ -75,14 +70,11 @@ function ModifyKeywords({ state, setState }: props) {
     if (event.key === "Enter" && state.contiData) {
       const newKeywords = [...state.contiData.keywords];
       newKeywords[index] = state.editValue;
-      setState((prevState) => ({
-        ...prevState,
-        ...{
-          contiData: { ...state.contiData!, keywords: newKeywords },
-          editKeywordIndex: null,
-          editValue: "",
-        },
-      }));
+      updateState({
+        contiData: { ...state.contiData!, keywords: newKeywords },
+        editKeywordIndex: null,
+        editValue: "",
+      });
     }
   };
 
@@ -92,12 +84,9 @@ function ModifyKeywords({ state, setState }: props) {
       const newKeywords = state.contiData.keywords.filter(
         (_, idx) => idx !== index
       );
-      setState((prevState) => ({
-        ...prevState,
-        ...{
-          contiData: { ...state.contiData!, keywords: newKeywords },
-        },
-      }));
+      updateState({
+        contiData: { ...state.contiData!, keywords: newKeywords },
+      });
     }
   };
 
@@ -109,13 +98,10 @@ function ModifyKeywords({ state, setState }: props) {
       state.contiData.keywords.length < 3
     ) {
       const newKeywords = [...state.contiData.keywords, keyword];
-      setState((prevState) => ({
-        ...prevState,
-        ...{
-          contiData: { ...state.contiData!, keywords: newKeywords },
-          editKeywordIndex: null,
-        },
-      }));
+      updateState({
+        contiData: { ...state.contiData!, keywords: newKeywords },
+        editKeywordIndex: null,
+      });
     }
   };
 
@@ -155,34 +141,21 @@ function ModifyKeywords({ state, setState }: props) {
             {state.showNewKeywordInput ? (
               <KeyEditInput
                 value={state.editValue}
-                onChange={(e) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    ...{ editValue: e.target.value },
-                  }))
-                }
+                onChange={(e) => updateState({ editValue: e.target.value })}
                 onKeyDown={(event: { key: string }) => {
                   if (event.key === "Enter" && state.editValue.trim() !== "") {
                     addNewKeyword(state.editValue);
-                    setState((prevState) => ({
-                      ...prevState,
-                      ...{
-                        editValue: "",
-                        showNewKeywordInput: false,
-                      },
-                    }));
+                    updateState({
+                      editValue: "",
+                      showNewKeywordInput: false,
+                    });
                   }
                 }}
                 autoFocus
               />
             ) : (
               <KeyEditButton
-                onClick={() =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    ...{ showNewKeywordInput: true },
-                  }))
-                }
+                onClick={() => updateState({ showNewKeywordInput: true })}
               >
                 +
               </KeyEditButton>

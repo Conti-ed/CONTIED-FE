@@ -3,14 +3,15 @@ import { ModalButton, ModalTitle } from "../../styles/Modal.styles";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
 import { SERVER_URL } from "../../api";
-import { ContiDetailState } from "../../Routes/ContiDetail";
+import { ContiDetailState } from "../../hooks/useContiDetailState";
 
 type props = {
   id: { cid: string | undefined; uid: string | undefined };
-  setState: React.Dispatch<React.SetStateAction<ContiDetailState>>;
+  state: ContiDetailState;
+  updateState: (updates: Partial<ContiDetailState>) => void;
 };
 
-function ConfirmDeleteSong({ id, setState }: props) {
+function ConfirmDeleteSong({ id, state, updateState }: props) {
   const { cid, uid } = id;
   const [modal, setModal] = useRecoilState(modalAtom);
 
@@ -34,11 +35,11 @@ function ConfirmDeleteSong({ id, setState }: props) {
       const data = await res.json();
 
       if (res.ok) {
-        setState((prevState) => ({
-          ...prevState,
-          songs: prevState.songs.filter((song) => song.id !== modal.id),
+        updateState({
+          songs: state.songs.filter((song) => song.id !== modal.id),
           contiData: data,
-        }));
+        });
+        closeModal();
       }
     }
   };

@@ -29,7 +29,8 @@ function ConfirmDeleteConti({ id }: props) {
       });
 
       if (res.ok) {
-        navigate(-1);
+        navigate("/feed");
+        closeModal();
       }
     }
   };

@@ -20,15 +20,14 @@ const ContiList = styled.ul`
   margin-bottom: 20px;
 `;
 
-const ContiItem = styled.li<{ isSelected: boolean }>`
+const ContiItem = styled.li<{ selected: boolean }>`
   ${setFontStyle}
   padding: 10px 20px;
   border-radius: 10px;
   transition: 0.2s background-color;
   font-size: 15px;
   text-align: left;
-  background-color: ${({ isSelected }) =>
-    isSelected ? "#e9f5ff" : "transparent"};
+  background-color: ${({ selected }) => (selected ? "#e9f5ff" : "transparent")};
   cursor: pointer;
   &:hover {
     background-color: lightgray;
@@ -79,8 +78,9 @@ function AddToMyConti() {
         <ContiList>
           {data?.map((conti, i) => (
             <ContiItem
+              key={i}
               onClick={() => setContiToAdd(conti)}
-              isSelected={contiToAdd?.id === conti!.id}
+              selected={contiToAdd?.id === conti!.id}
             >
               {conti?.title}
             </ContiItem>
