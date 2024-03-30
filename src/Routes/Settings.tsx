@@ -55,7 +55,7 @@ const Settings = () => {
         </SectionTitle>
         <MenuItem>
           <MenuTitle>내 콘티의 모든 것</MenuTitle>
-          <ChevronRightIcon />
+          <ChevronRightIcon onClick={() => navigate(`/myconti`)} />
         </MenuItem>
         <MenuItem>
           <MenuTitle>프로필 수정</MenuTitle>

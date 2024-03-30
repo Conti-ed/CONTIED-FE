@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { InputFileUploadRef } from "./components/UploadDrawer";
+import { InputFileUploadRef } from "../components/UploadDrawer";
 
 const useFormReset = (
   reset: () => void,

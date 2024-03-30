@@ -12,19 +12,8 @@ import {
   SectionBody,
   HomeVariants,
 } from "../styles/Home.styles";
-import {
-  ArtistAndDuration,
-  SongArtist,
-  SongDetails,
-  SongDuration,
-  SongInfo,
-  SongItem,
-  SongList,
-  SongNumber,
-  SongTitle,
-  IconContainer,
-} from "./ContiDetail";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { SongList } from "./ContiDetail";
+import { SongItem } from "../components/SongItem";
 import { styled } from "styled-components";
 
 const SectionSubTitle = styled.h1`
@@ -43,27 +32,9 @@ function Search() {
       queryFn: () => getContiesByKeyword(query!),
     }
   );
-  const { data: songs, isLoading: songsLoading } = useQuery<SongType[]>(
-    ["songs", query],
-    {
-      queryFn: () => getSongsByKeyword(query!),
-    }
-  );
-
-  const formatDuration = (duration: number) => {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = duration % 60;
-
-    const formattedMinutes = minutes.toString().padStart(2, "0");
-    const formattedSeconds = seconds.toString().padStart(2, "0");
-
-    if (hours > 0) {
-      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
-    } else {
-      return `${minutes}:${formattedSeconds}`;
-    }
-  };
+  const { data: songs } = useQuery<SongType[]>(["songs", query], {
+    queryFn: () => getSongsByKeyword(query!),
+  });
 
   return (
     <Container
@@ -89,30 +60,17 @@ function Search() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
-      {query ? (
-        <SectionSubTitle>" {query} 관련 찬양들 "</SectionSubTitle>
-      ) : null}
+      {query ? <SectionSubTitle>" {query} 관련 곡들 "</SectionSubTitle> : null}
       <SongList>
         {songs &&
           songs.map((s, i) => (
-            <SongItem key={i}>
-              <SongNumber>{i + 1}.</SongNumber>
-              <SongInfo>
-                <SongTitle>{s.title}</SongTitle>
-                <SongDetails>
-                  <ArtistAndDuration>
-                    <SongArtist>{s.artist}</SongArtist>
-                    <span>•</span>
-                    <SongDuration>
-                      {s?.duration ? formatDuration(s.duration) : "0:00"}
-                    </SongDuration>
-                  </ArtistAndDuration>
-                </SongDetails>
-              </SongInfo>
-              <IconContainer>
-                <MoreVertIcon />
-              </IconContainer>
-            </SongItem>
+            <div key={i}>
+              <SongItem
+                song={s}
+                index={i}
+                onOptionsClick={() => null}
+              ></SongItem>
+            </div>
           ))}
       </SongList>
     </Container>

@@ -1,23 +1,28 @@
 import { useQuery, useQueryClient } from "react-query";
 import { SERVER_URL, getConti } from "../api";
-import { ContiType, SongType } from "../types";
+import { ContiType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { setFontStyle } from "../styles/UploadDrawer.styles";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import useContiDetailState from "../hooks/useContiDetailState";
 import {
   DragDropContext,
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
-  DropResult,
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
+import { LoadingSpinner } from "../styles/LoadingSpinner";
+import {
+  formatTotalDuration,
+  parseLocalDateString,
+} from "../utils/formatDuration";
+import SongItem from "../components/SongItem";
 import Modal from "../components/Modal";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../atoms";
@@ -26,21 +31,6 @@ const PageContainer = styled(motion.div)`
   padding-top: 35px;
   padding: 10px;
   padding-bottom: 100px;
-`;
-
-const LoadingAnimation = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const LoadingSpinner = styled.div`
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #333;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: ${LoadingAnimation} 2s linear infinite;
-  margin-top: 10px;
 `;
 
 const CenteredContainer = styled.div`
@@ -82,13 +72,20 @@ const PageHeader = styled.div`
   margin-bottom: 20px;
 `;
 
-const BackButton = styled.button`
+const BackButtonContainer = styled.button`
   display: flex;
   align-items: center;
   background-color: transparent;
   gap: 5px;
   border-radius: 10px;
   border: none;
+`;
+
+const BackButton = styled.span`
+  text-decoration: "underline";
+  font-weight: "bold";
+  font-size: "18px";
+  color: "#8ab1e8";
 `;
 
 const OwnerInfoPanel = styled.div`
@@ -113,48 +110,71 @@ const InfoContainer = styled.div`
   margin-top: 5px;
   margin-right: 10px;
 `;
+
+const TitleEditInput = styled.input`
+  ${setFontStyle}
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+`;
+
+const TitleEditButton = styled.button`
+  margin-top: 20px;
+  padding: 8px 12px;
+  background-color: #388ee9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
+const KeywordEditorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 13px;
+`;
+
+const KeywordDisplay = styled.span`
+  font-size: 16px;
+  color: black;
+  font-weight: bold;
+`;
+
+const KeyEditButton = styled.button`
+  ${setFontStyle}
+  background-color: #10769b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin-left: 10px;
+`;
+
+const KeyEditInput = styled.input`
+  ${setFontStyle}
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 90%;
+  box-sizing: border-box;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+`;
+
 const DetailItem = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 0.9rem;
   color: #6c757d;
-`;
-
-export const SongList = styled.div`
-  text-align: left;
-  font-size: 15px;
-  margin-left: 10px;
-`;
-
-export const SongItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 20px 10px 20px 0px;
-`;
-
-export const SongNumber = styled.span`
-  min-width: 20px;
-  margin-right: 8px;
-`;
-
-export const SongInfo = styled.span`
-  padding: 0px 30px 0px 0px;
-`;
-
-export const SongTitle = styled.span`
-  font-weight: 700;
-  flex: 1;
-`;
-
-export const SongArtist = styled.span``;
-
-export const SongDuration = styled.span``;
-
-export const SongDetails = styled.div`
-  color: #6c757d;
-  font-size: 13px;
-  margin-top: 5px;
 `;
 
 export const ArtistAndDuration = styled(DetailItem)`
@@ -262,45 +282,16 @@ const optionsVariants = {
   },
 };
 
-interface OptionsPosition {
-  x: number;
-  y: number;
-}
-
-export interface ContiDetailState {
-  activeOptions: number | null;
-  optionsPosition: OptionsPosition;
-  contiData: ContiType | undefined;
-  isOwner: boolean;
-  songs: SongType[];
-  editKeywordIndex: number | null;
-  editValue: string;
-  showOwnerMenu: boolean;
-  ownerPosition: OptionsPosition;
-  showNewKeywordInput: boolean;
-}
-
-const initialState: ContiDetailState = {
-  activeOptions: null,
-  optionsPosition: { x: 0, y: 0 },
-  contiData: undefined,
-  isOwner: false,
-  songs: [],
-  editKeywordIndex: null,
-  editValue: "",
-  showOwnerMenu: false,
-  ownerPosition: { x: 0, y: 0 },
-  showNewKeywordInput: false,
-};
-
 function ContiDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [state, setState] = useState<ContiDetailState>(initialState);
+  // const [state, setState] = useState<ContiDetailState>(initialState);
   const optionsMenuRef = useRef<HTMLDivElement | null>(null);
   const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
+  const { state, setState, onDragEnd, songOptionsClick, deleteSong } =
+    useContiDetailState(Number(cid), uid);
   const [modal, setModal] = useRecoilState(modalAtom);
 
   // When the Conti was First Uploaded
@@ -317,6 +308,7 @@ function ContiDetail() {
             ? data.owner.id === JSON.parse(localStorage["user_info"]).id
             : false,
         },
+        editTitleValue: data!.title,
       }));
     },
     refetchOnWindowFocus: true,
@@ -327,59 +319,85 @@ function ContiDetail() {
     queryClient.refetchQueries(["conties", "conti", cid]);
   }, [cid, queryClient]);
 
-  // When a Song is Dragged and Dropped
-  const onDragEnd = async ({ source, destination }: DropResult) => {
-    if (!destination || destination.index === source.index) return;
-
-    setState((prevState) => {
-      const newSongs = Array.from(prevState.songs);
-      const [reorderedItem] = newSongs.splice(source.index, 1);
-      newSongs.splice(destination.index, 0, reorderedItem);
-
-      return { ...prevState, songs: newSongs };
-    });
-
-    try {
-      const response = await fetch(
-        `${SERVER_URL}/api/order?cid=${cid}&uid=${uid}&start=${source.index}&end=${destination.index}`,
-        {
-          method: "PUT",
-        }
-      );
-      const data = await response.json();
-      console.log(response.status, data);
-    } catch (error) {
-      console.error("Failed to update song order", error);
-    }
-  };
-
   // When the More Button is Pressed
-  const songOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOptionsClick = (
+    event: React.MouseEvent<HTMLElement>,
+    isOwnerMenu: boolean,
+    optionsGetter: (event: React.MouseEvent<HTMLElement>) => {
+      x: number;
+      y: number;
+    }
+  ) => {
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
     const newActiveOptions = parseInt(event.currentTarget.id);
 
-    setState((prevState) => ({
-      ...prevState,
-      ...{
-        optionsPosition: { x: rect.left - 88, y: rect.top + 10 },
-        activeOptions:
-          state.activeOptions === newActiveOptions ? null : newActiveOptions,
-      },
-    }));
+    if (isOwnerMenu) {
+      updateState({
+        ownerPosition: { x, y },
+        showOwnerMenu: !state.showOwnerMenu,
+      });
+    } else {
+      const activeOptionId = parseInt(event.currentTarget.id, 10);
+      updateState({
+        optionsPosition: { x, y },
+        activeOptions: isNaN(activeOptionId) ? null : activeOptionId,
+      });
+    }
   };
 
-  // When the Owner Button is Pressed
   const ownerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
-    setState((prevState) => ({
-      ...prevState,
-      ...{
-        ownerPosition: { x: rect.left - 100, y: rect.top + 10 },
-        showOwnerMenu: true,
-      },
-    }));
+    handleOptionsClick(event, true, (event) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      return { x: rect.left - 100, y: rect.top + 10 };
+    });
+  };
+
+  // Modal Management
+  const toggleModal = (
+    modalName: keyof Omit<ContiDetailState, "contiData" | "songs">,
+    isVisible: boolean
+  ) => {
+    updateState({ [modalName]: isVisible });
+  };
+
+  // Open Keyword Modal
+  const openKeywordModal = () => {
+    toggleModal("showKeywordModal", true);
+    updateState({
+      editKeywordIndex: null,
+    });
+  };
+
+  // Close Keyword Modal
+  const closeKeywordModal = async () => {
+    toggleModal("showKeywordModal", false);
+    updateState({
+      editKeywordIndex: null,
+    });
+
+    const formData = new FormData();
+    formData.append("keywords", JSON.stringify(state.contiData?.keywords));
+    const token = localStorage["accessToken"];
+
+    try {
+      const response = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Keywords updated successfully", data);
+      } else {
+        console.error("Failed to update keywords", data);
+      }
+    } catch (error) {
+      console.error("Error updating keywords", error);
+    }
   };
 
   // When Clicking Outside the Options Modal
@@ -408,66 +426,120 @@ function ContiDetail() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [state.showOwnerMenu, state.activeOptions, ownerMenuRef, optionsMenuRef]);
+  }, [state.showOwnerMenu, state.activeOptions, updateState]);
 
-  // Set Duration
-  const formatDuration = (duration: number) => {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = duration % 60;
-
-    const formattedMinutes = minutes.toString().padStart(2, "0");
-    const formattedSeconds = seconds.toString().padStart(2, "0");
-
-    if (hours > 0) {
-      return `${hours}:${formattedMinutes}:${formattedSeconds}`;
-    } else {
-      return `${minutes}:${formattedSeconds}`;
-    }
-  };
-
-  // Set Overall Duration
-  const formatTotalDuration = (duration: number) => {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}시간 ${minutes}분`;
-    } else {
-      return `${minutes}분`;
-    }
-  };
-
-  // Adjust Date by Region upon Registration
-  const parseLocalDateString = (dateString: string): string => {
-    const [datePart, timePart] = dateString.split(" ");
-    const [month, day, year] = datePart.split("/").map(Number);
-    const [hourString, minuteString] = timePart.slice(0, -2).split(":");
-    const ampm = timePart.slice(-2).toLowerCase();
-
-    let hour = parseInt(hourString);
-    const minute = parseInt(minuteString);
-
-    if (ampm === "pm" && hour !== 12) {
-      hour += 12;
-    } else if (ampm === "am" && hour === 12) {
-      hour = 0;
-    }
-
-    const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
-
-    return utcDate.toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
+  // Setting Keyword Default Values ​​in Edit Modal
+  const startKeywordEditing = (index: number, keyword: string) => {
+    updateState({
+      editKeywordIndex: index,
+      editValue: keyword,
     });
   };
 
+  // Edit Keywords in Edit Modal
+  const changeKeywordEditing = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateState({
+      editValue: event.target.value,
+    });
+  };
+
+  // Press Enter in the Edit Modal
+  const submitKeywordEdit = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (event.key === "Enter" && state.contiData) {
+      const newKeywords = [...state.contiData.keywords];
+      newKeywords[index] = state.editValue;
+      updateState({
+        contiData: { ...state.contiData, keywords: newKeywords },
+        editKeywordIndex: null,
+        editValue: "",
+      });
+    }
+  };
+
+  // Delete Keyword from Edit Modal
+  const removeKeyword = (index: number) => {
+    if (state.contiData) {
+      const newKeywords = state.contiData.keywords.filter(
+        (_, idx) => idx !== index
+      );
+      updateState({
+        contiData: { ...state.contiData, keywords: newKeywords },
+      });
+    }
+  };
+
+  // Add Keyword from Edit Modal
+  const addNewKeyword = (keyword: string) => {
+    if (
+      keyword.trim() !== "" &&
+      state.contiData &&
+      state.contiData.keywords.length < 3
+    ) {
+      const newKeywords = [...state.contiData.keywords, keyword];
+      updateState({
+        contiData: { ...state.contiData, keywords: newKeywords },
+        editKeywordIndex: null,
+      });
+    }
+  };
+
+  // Delete Conti
+  const deleteConti = async () => {
+    const token = localStorage["accessToken"];
+    const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.ok) {
+      navigate(-1);
+    }
+  };
+
+  // When the Delete Conti Button is Pressed
+  const deleteContiClick = () => {
+    toggleModal("showDeleteConfirmModal", true);
+    updateState({
+      mode: "conti",
+    });
+  };
+
+  // When the Delete Song Button is Pressed
+  const deleteSongClick = (songId: number) => {
+    toggleModal("showDeleteConfirmModal", true);
+    updateState({
+      deletingSongId: songId,
+      mode: "song",
+    });
+  };
+
+  const titlePrefix =
+    state.mode === "conti" ? "콘티를" : state.mode === "song" ? "곡을" : "";
+  const modalTitle = `해당 ${titlePrefix} 삭제할까요?`;
+
+  // Confirm Delete Song & Conti
+  const handleConfirmDelete = async (mode: string) => {
+    if (mode === "song" && state.deletingSongId !== null) {
+      await deleteSong(state.deletingSongId);
+    }
+    if (mode === "conti") {
+      deleteConti();
+    }
+    updateState({ showDeleteConfirmModal: false });
+  };
+
+  // Cancel Delete Song & Conti
+  const handleCancelDelete = () => {
+    updateState({ showDeleteConfirmModal: false });
+  };
+
   return (
-    <DragDropContext onDragEnd={onDragEnd} key={cid}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <PageContainer
         variants={detailVariants}
         initial="initial"
@@ -476,13 +548,13 @@ function ContiDetail() {
       >
         {isLoading ? (
           <CenteredContainer>
-            <div>잠시만요...</div>
+            <div style={{ marginBottom: "10px" }}>잠시만요...</div>
             <LoadingSpinner />
           </CenteredContainer>
         ) : (
           <div>
             <TitleHeader>
-              <Title>{state.contiData?.title}</Title>
+              <Title>{state.editTitleValue}</Title>
               <EditIconContainer
                 onClick={(event) => {
                   ownerOptionsClick(event);
@@ -503,6 +575,11 @@ function ContiDetail() {
                   animate="animate"
                   exit="exit"
                 >
+                  {state.isOwner && (
+                    <OptionItem onClick={() => console.log("타이틀 수정")}>
+                      타이틀 수정
+                    </OptionItem>
+                  )}
                   <OptionItem
                     onClick={() =>
                       setModal({
@@ -531,9 +608,9 @@ function ContiDetail() {
               )}
             </TitleHeader>
             <PageHeader>
-              <BackButton onClick={() => navigate(-1)}>
+              <BackButtonContainer onClick={() => navigate(-1)}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
-                <span
+                <BackButton
                   style={{
                     textDecoration: "underline",
                     fontWeight: "bold",
@@ -542,8 +619,8 @@ function ContiDetail() {
                   }}
                 >
                   이전
-                </span>
-              </BackButton>
+                </BackButton>
+              </BackButtonContainer>
               <OwnerInfoPanel>
                 <InfoContainer>
                   <OwnerName>{state.contiData?.owner.name}</OwnerName>
@@ -555,13 +632,9 @@ function ContiDetail() {
                 </InfoContainer>
               </OwnerInfoPanel>
             </PageHeader>
-            <Droppable droppableId={`songs-${cid}`} key={`droppable-${cid}`}>
+            <Droppable droppableId={cid!.toString()}>
               {(provided: DroppableProvided) => (
-                <SongList
-                  className={`songs-${cid}`}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
+                <SongList {...provided.droppableProps} ref={provided.innerRef}>
                   {state.songs.map((song, index) => (
                     <Draggable
                       key={song.id}
@@ -573,10 +646,9 @@ function ContiDetail() {
                         provided: DraggableProvided,
                         snapshot: DraggableStateSnapshot
                       ) => (
-                        <SongItem
-                          ref={provided.innerRef}
+                        <div
                           {...provided.draggableProps}
-                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
                           style={{
                             ...provided.draggableProps.style,
                             cursor:
@@ -585,33 +657,14 @@ function ContiDetail() {
                                 : "grab",
                           }}
                         >
-                          <SongNumber>{index + 1}.</SongNumber>
-                          <SongInfo>
-                            <SongTitle>{song.title}</SongTitle>
-                            <SongDetails>
-                              <ArtistAndDuration>
-                                <SongArtist>{song.artist}</SongArtist>
-                                <span>•</span>
-                                <SongDuration>
-                                  {song.duration
-                                    ? formatDuration(song.duration)
-                                    : "0:00"}
-                                </SongDuration>
-                              </ArtistAndDuration>
-                            </SongDetails>
-                          </SongInfo>
-                          <IconContainer
-                            onClick={(event) => {
-                              songOptionsClick(event);
-                              setState((prevState) => ({
-                                ...prevState,
-                                activeOptions:
-                                  song.id !== undefined ? song.id : null,
-                              }));
-                            }}
-                          >
-                            <MoreVertIcon />
-                          </IconContainer>
+                          <SongItem
+                            song={song}
+                            index={index}
+                            onOptionsClick={(songId, event) =>
+                              songOptionsClick(songId, event)
+                            }
+                            dragHandleProps={provided.dragHandleProps}
+                          />
                           {state.activeOptions === song.id && (
                             <OptionsMenu
                               ref={optionsMenuRef}
@@ -647,20 +700,22 @@ function ContiDetail() {
                                   삭제하기
                                 </OptionItem>
                               )}
-                              <OptionItem
-                                onClick={() =>
-                                  setModal({
-                                    isShow: true,
-                                    modalType: "AddToMyConti",
-                                    id: song.id,
-                                  })
-                                }
-                              >
-                                가져오기
-                              </OptionItem>
+                              {!state.isOwner && (
+                                <OptionItem
+                                  onClick={() =>
+                                    setModal({
+                                      isShow: true,
+                                      modalType: "AddToMyConti",
+                                      id: song.id,
+                                    })
+                                  }
+                                >
+                                  가져오기
+                                </OptionItem>
+                              )}
                             </OptionsMenu>
                           )}
-                        </SongItem>
+                        </div>
                       )}
                     </Draggable>
                   ))}

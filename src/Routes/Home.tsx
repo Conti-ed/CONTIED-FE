@@ -17,11 +17,14 @@ import { ContiType, KeywordType } from "../types";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../atoms";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [contiesByKey, setContiesByKey] = useState<ContiType[]>([]);
   const [randomKeyword, setRandomKeyword] = useState("");
+  const [randomKeywords, setRandomKeywords] = useState<KeywordType[]>([]);
   const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
+  const navigate = useNavigate();
 
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
     ["myConti"],
@@ -50,6 +53,13 @@ function Home() {
   });
 
   useEffect(() => {
+    if (keywords && keywords.length > 0) {
+      let shuffled = [...keywords].sort(() => 0.5 - Math.random());
+      setRandomKeywords(shuffled.slice(0, 10));
+    }
+  }, [keywords]);
+
+  useEffect(() => {
     localStorage.getItem("user_info") &&
       JSON.parse(localStorage.getItem("user_info")!).id &&
       setIsLogin(true);
@@ -64,15 +74,22 @@ function Home() {
     >
       <KeywordContainer>
         {!keywordsLoading &&
-          keywords
-            ?.slice(0, 10)
-            .map((k) => <Keyword key={k.id}>{k.name}</Keyword>)}
+          randomKeywords?.slice(0, 10).map((k) => (
+            <Keyword
+              key={k.id}
+              onClick={() => navigate(`/search?query=${k.name}`)}
+            >
+              {k.name}
+            </Keyword>
+          ))}
       </KeywordContainer>
       {isLogin && (
         <SectionContainer>
           <SectionHeader>
             <SectionTitle>My Conti</SectionTitle>
-            <SectionMore>더보기</SectionMore>
+            <SectionMore onClick={() => navigate(`/myconti`)}>
+              더보기
+            </SectionMore>
           </SectionHeader>
           <SectionBody>
             {myContiIsLoading
@@ -81,6 +98,8 @@ function Home() {
                 ))
               : myConti &&
                 myConti
+                  .slice()
+                  .reverse()
                   .slice(0, 20)
                   .map((conti, index) => (
                     <Conti key={index} contiData={conti} />
@@ -91,7 +110,11 @@ function Home() {
       <SectionContainer>
         <SectionHeader>
           <SectionTitle>{randomKeyword}</SectionTitle>
-          <SectionMore>더보기</SectionMore>
+          <SectionMore
+            onClick={() => navigate(`/search?query=${randomKeyword}`)}
+          >
+            더보기
+          </SectionMore>
         </SectionHeader>
         <SectionBody>
           {keywordsLoading

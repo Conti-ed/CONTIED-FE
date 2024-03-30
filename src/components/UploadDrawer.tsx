@@ -6,7 +6,7 @@ import { SERVER_URL, refreshToken } from "../api";
 import { ContiType } from "../types";
 import InputFileUpload from "./InputFileUpload";
 import HashtagComponent from "./HashtagComponent";
-import useHashtags from "../useHashtags";
+import useHashtags from "../hooks/useHashtags";
 import {
   Button,
   Divider,
@@ -20,8 +20,8 @@ import {
   StyledDrawer,
   WarningMessage,
 } from "../styles/UploadDrawer.styles";
-import { Spinner } from "../styles/Feed.styles";
-import useFormReset from "../useFormReset";
+import { LoadingSpinner } from "../styles/LoadingSpinner";
+import useFormReset from "../hooks/useFormReset";
 
 export type FormValues = {
   title: string;
@@ -38,6 +38,7 @@ function UploadDrawer() {
     handleSubmit,
     register,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormValues>();
 
@@ -55,14 +56,19 @@ function UploadDrawer() {
   const resetAllFields = useFormReset(reset, setHashtags, inputFileUploadRef);
 
   const [open, setOpen] = useRecoilState(isDrawerOpenAtom);
+  const [isTitleEmpty, setIsTitleEmpty] = useState(false);
   const [isHashtagEmpty, setIsHashtagEmpty] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
 
   const file = useRecoilValue(fileUploadAtom);
   const setConties = useSetRecoilState(contiesAtom);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const contiTitle = watch("title");
 
   useEffect(() => {
+    setIsTitleEmpty(!contiTitle);
+    setIsHashtagEmpty(false);
+
     const handleBodyClick = (e: MouseEvent) => {
       if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -73,7 +79,7 @@ function UploadDrawer() {
     return () => {
       document.body.removeEventListener("mousedown", handleBodyClick);
     };
-  }, [setOpen]);
+  }, [contiTitle, hashtags, setOpen, drawerRef]);
 
   const handleKeyPress = useCallback((event: React.KeyboardEvent) => {
     if (event.keyCode === 13) {
@@ -83,11 +89,16 @@ function UploadDrawer() {
 
   const handleFormSubmit = useCallback(
     async (data: FormValues) => {
-      if (hashtags.length === 0) {
-        setIsHashtagEmpty(true);
+      const isTitleValid = !!data.title;
+      const areHashtagsValid = hashtags.length > 0;
+
+      setIsTitleEmpty(!isTitleValid);
+      setIsHashtagEmpty(!areHashtagsValid);
+
+      if (!isTitleValid || !areHashtagsValid) {
+        // Early return if validation fails
         return;
       }
-      setIsHashtagEmpty(false);
       setIsFetching(true);
       try {
         setIsFetching(true);
@@ -157,11 +168,11 @@ function UploadDrawer() {
                 {...register("title", {
                   required: "타이틀은 필수입니다!",
                 })}
-                placeholder="타이틀"
+                placeholder="콘티에 이름을 붙여주세요!"
                 onKeyDown={handleKeyPress}
               />
-              {errors.playlist_url && (
-                <WarningMessage>{errors.playlist_url.message}</WarningMessage>
+              {isTitleEmpty && (
+                <WarningMessage>타이틀을 추가해야 합니다!</WarningMessage>
               )}
             </ListItem>
             <ListItem>
@@ -200,7 +211,7 @@ function UploadDrawer() {
               </ListSubheader>
               <Input
                 {...register("playlist_url")}
-                placeholder="https://www.youtube.com/playlist?list=..."
+                placeholder="재생목록 링크를 통해 곡을 가져올 수 있어요!"
                 onKeyDown={handleKeyPress}
               />
               {errors.playlist_url && (
@@ -232,7 +243,7 @@ function UploadDrawer() {
           <List>
             <ListItem>
               <Button type="submit" disabled={isFetching}>
-                {isFetching ? <Spinner /> : <>콘티 공유하기</>}
+                {isFetching ? <LoadingSpinner /> : <>콘티 공유하기</>}
               </Button>
             </ListItem>
           </List>

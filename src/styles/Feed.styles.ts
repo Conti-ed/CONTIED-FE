@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 export const Container = styled(motion.div)`
   display: grid;
@@ -11,20 +11,6 @@ export const Container = styled(motion.div)`
   margin-bottom: 30px;
   overflow-x: hidden;
   overflow-y: auto;
-`;
-
-export const Spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-export const Spinner = styled.div`
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #333;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  animation: ${Spin} 2s linear infinite;
 `;
 
 export const CenteredContainer = styled.div`
