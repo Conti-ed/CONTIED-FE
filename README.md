@@ -112,7 +112,7 @@ $ npm start
 ├── README.md
 ├── package-lock.json
 ├── package.json
-├── public : 
+├── public
 │   ├── images : 로고 및 기타 이미지 저장 폴더
 │   │   ├── logo.png
 │   │   ├── placeholder.png
@@ -128,7 +128,14 @@ $ npm start
     │   ├── SongRegister.tsx
     │   ├── InputFileUpload.tsx
     │   ├── SongItem.tsx : 곡 상세 정보
-    │   └── ConfirmModal.tsx : 확인 모달 창
+    │   ├── Modal.tsx : 옵션에 따른 모달
+    │   ├── ConfirmModal.tsx : 확인 모달
+    │   └── Modals : 모달 관련
+    │       ├── ModifyTitle.tsx : 타이틀 수정
+    │       ├── ModifyKeywords.tsx : 키워드 수정
+    │       ├── AddToMyConti.tsx : 내 콘티로 가져오기
+    │       ├── ConfirmDeleteConti.tsx : 콘티 삭제
+    │       └── ConfirmDeleteSong.tsx : 곡 삭제
     ├── Routes
     │   ├── Login.tsx : 로그인
     │   ├── Home.tsx : 메인
@@ -144,16 +151,22 @@ $ npm start
     │   └── useContiDetailState.ts : 상세 페이지 state 관리
     ├── utils
     │   └── formatDuration.ts : 시간 포맷 설정
-    └── styles
-        ├── Header.styles.ts
-        ├── Conti.styles.ts
-        ├── Home.styles.ts
-        ├── TabBar.styles.ts
-        ├── Feed.styles.ts
-        ├── Upload.styles.ts
-        ├── UploadDrawer.styles.ts
-        ├── Settings.styles.ts
-        └── LoadingSpinner.styles.ts : 로딩 시 출력되는 화면
+    ├── styles
+    │   ├── Header.styles.ts
+    │   ├── Conti.styles.ts
+    │   ├── Home.styles.ts
+    │   ├── TabBar.styles.ts
+    │   ├── Feed.styles.ts
+    │   ├── Upload.styles.ts
+    │   ├── UploadDrawer.styles.ts
+    │   ├── Settings.styles.ts
+    │   └── LoadingSpinner.styles.ts : 로딩 시 출력되는 화면
+    ├── Router.tsx : 이동 로직 관리
+    ├── Root.tsx
+    ├── index.tsx
+    ├── api.ts
+    ├── atoms.ts
+    └── types.ts
 
 ```
 ---
