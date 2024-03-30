@@ -111,70 +111,18 @@ const InfoContainer = styled.div`
   margin-right: 10px;
 `;
 
-const TitleEditInput = styled.input`
-  ${setFontStyle}
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  padding: 8px 12px;
-  width: 100%;
-  box-sizing: border-box;
-  color: black;
-  font-weight: bold;
-  font-size: 14px;
-`;
-
-const TitleEditButton = styled.button`
-  margin-top: 20px;
-  padding: 8px 12px;
-  background-color: #388ee9;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-const KeywordEditorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 13px;
-`;
-
-const KeywordDisplay = styled.span`
-  font-size: 16px;
-  color: black;
-  font-weight: bold;
-`;
-
-const KeyEditButton = styled.button`
-  ${setFontStyle}
-  background-color: #10769b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 5px 10px;
-  margin-left: 10px;
-`;
-
-const KeyEditInput = styled.input`
-  ${setFontStyle}
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  padding: 8px 12px;
-  width: 90%;
-  box-sizing: border-box;
-  color: black;
-  font-weight: bold;
-  font-size: 14px;
-`;
-
 const DetailItem = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 0.9rem;
   color: #6c757d;
+`;
+
+export const SongList = styled.div`
+  text-align: left;
+  font-size: 15px;
+  margin-left: 10px;
 `;
 
 export const ArtistAndDuration = styled(DetailItem)`
@@ -285,31 +233,27 @@ const optionsVariants = {
 function ContiDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  // const [state, setState] = useState<ContiDetailState>(initialState);
   const optionsMenuRef = useRef<HTMLDivElement | null>(null);
   const ownerMenuRef = useRef<HTMLDivElement | null>(null);
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
-  const { state, setState, onDragEnd, songOptionsClick, deleteSong } =
+  const { state, updateState, onDragEnd, songOptionsClick } =
     useContiDetailState(Number(cid), uid);
   const [modal, setModal] = useRecoilState(modalAtom);
 
-  // When the Conti was First Uploaded
+  // fetch conti data
   const { isLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
     onSuccess: (data) => {
-      setState((prevState) => ({
-        ...prevState,
-        ...{
-          contiData: data,
-          songs: data ? data.songs.sort((a, b) => a.order - b.order) : [],
-          isOwner: data
-            ? data.owner.id === JSON.parse(localStorage["user_info"]).id
-            : false,
-        },
+      updateState({
+        contiData: data,
+        songs: data ? data.songs.sort((a, b) => a.order - b.order) : [],
+        isOwner: data
+          ? data.owner.id === JSON.parse(localStorage["user_info"]).id
+          : false,
         editTitleValue: data!.title,
-      }));
+      });
     },
     refetchOnWindowFocus: true,
   });
@@ -329,9 +273,7 @@ function ContiDetail() {
     }
   ) => {
     event.stopPropagation();
-    const rect = event.currentTarget.getBoundingClientRect();
-    const newActiveOptions = parseInt(event.currentTarget.id);
-
+    const { x, y } = optionsGetter(event);
     if (isOwnerMenu) {
       updateState({
         ownerPosition: { x, y },
@@ -353,53 +295,6 @@ function ContiDetail() {
     });
   };
 
-  // Modal Management
-  const toggleModal = (
-    modalName: keyof Omit<ContiDetailState, "contiData" | "songs">,
-    isVisible: boolean
-  ) => {
-    updateState({ [modalName]: isVisible });
-  };
-
-  // Open Keyword Modal
-  const openKeywordModal = () => {
-    toggleModal("showKeywordModal", true);
-    updateState({
-      editKeywordIndex: null,
-    });
-  };
-
-  // Close Keyword Modal
-  const closeKeywordModal = async () => {
-    toggleModal("showKeywordModal", false);
-    updateState({
-      editKeywordIndex: null,
-    });
-
-    const formData = new FormData();
-    formData.append("keywords", JSON.stringify(state.contiData?.keywords));
-    const token = localStorage["accessToken"];
-
-    try {
-      const response = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
-        method: "PUT",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Keywords updated successfully", data);
-      } else {
-        console.error("Failed to update keywords", data);
-      }
-    } catch (error) {
-      console.error("Error updating keywords", error);
-    }
-  };
-
   // When Clicking Outside the Options Modal
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -408,17 +303,14 @@ function ContiDetail() {
         ownerMenuRef.current &&
         !ownerMenuRef.current.contains(event.target as Node)
       ) {
-        setState((prevState) => ({
-          ...prevState,
-          ...{ showOwnerMenu: false },
-        }));
+        updateState({ showOwnerMenu: false });
       }
       if (
         state.activeOptions !== null &&
         optionsMenuRef.current &&
         !optionsMenuRef.current.contains(event.target as Node)
       ) {
-        setState((prevState) => ({ ...prevState, ...{ activeOptions: null } }));
+        updateState({ activeOptions: null });
       }
     };
 
@@ -427,116 +319,6 @@ function ContiDetail() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [state.showOwnerMenu, state.activeOptions, updateState]);
-
-  // Setting Keyword Default Values ​​in Edit Modal
-  const startKeywordEditing = (index: number, keyword: string) => {
-    updateState({
-      editKeywordIndex: index,
-      editValue: keyword,
-    });
-  };
-
-  // Edit Keywords in Edit Modal
-  const changeKeywordEditing = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateState({
-      editValue: event.target.value,
-    });
-  };
-
-  // Press Enter in the Edit Modal
-  const submitKeywordEdit = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (event.key === "Enter" && state.contiData) {
-      const newKeywords = [...state.contiData.keywords];
-      newKeywords[index] = state.editValue;
-      updateState({
-        contiData: { ...state.contiData, keywords: newKeywords },
-        editKeywordIndex: null,
-        editValue: "",
-      });
-    }
-  };
-
-  // Delete Keyword from Edit Modal
-  const removeKeyword = (index: number) => {
-    if (state.contiData) {
-      const newKeywords = state.contiData.keywords.filter(
-        (_, idx) => idx !== index
-      );
-      updateState({
-        contiData: { ...state.contiData, keywords: newKeywords },
-      });
-    }
-  };
-
-  // Add Keyword from Edit Modal
-  const addNewKeyword = (keyword: string) => {
-    if (
-      keyword.trim() !== "" &&
-      state.contiData &&
-      state.contiData.keywords.length < 3
-    ) {
-      const newKeywords = [...state.contiData.keywords, keyword];
-      updateState({
-        contiData: { ...state.contiData, keywords: newKeywords },
-        editKeywordIndex: null,
-      });
-    }
-  };
-
-  // Delete Conti
-  const deleteConti = async () => {
-    const token = localStorage["accessToken"];
-    const res = await fetch(`${SERVER_URL}/api/conti/${cid}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (res.ok) {
-      navigate(-1);
-    }
-  };
-
-  // When the Delete Conti Button is Pressed
-  const deleteContiClick = () => {
-    toggleModal("showDeleteConfirmModal", true);
-    updateState({
-      mode: "conti",
-    });
-  };
-
-  // When the Delete Song Button is Pressed
-  const deleteSongClick = (songId: number) => {
-    toggleModal("showDeleteConfirmModal", true);
-    updateState({
-      deletingSongId: songId,
-      mode: "song",
-    });
-  };
-
-  const titlePrefix =
-    state.mode === "conti" ? "콘티를" : state.mode === "song" ? "곡을" : "";
-  const modalTitle = `해당 ${titlePrefix} 삭제할까요?`;
-
-  // Confirm Delete Song & Conti
-  const handleConfirmDelete = async (mode: string) => {
-    if (mode === "song" && state.deletingSongId !== null) {
-      await deleteSong(state.deletingSongId);
-    }
-    if (mode === "conti") {
-      deleteConti();
-    }
-    updateState({ showDeleteConfirmModal: false });
-  };
-
-  // Cancel Delete Song & Conti
-  const handleCancelDelete = () => {
-    updateState({ showDeleteConfirmModal: false });
-  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -554,7 +336,7 @@ function ContiDetail() {
         ) : (
           <div>
             <TitleHeader>
-              <Title>{state.editTitleValue}</Title>
+              <Title>{state.contiData?.title}</Title>
               <EditIconContainer
                 onClick={(event) => {
                   ownerOptionsClick(event);
@@ -576,7 +358,15 @@ function ContiDetail() {
                   exit="exit"
                 >
                   {state.isOwner && (
-                    <OptionItem onClick={() => console.log("타이틀 수정")}>
+                    <OptionItem
+                      onClick={() =>
+                        setModal({
+                          isShow: true,
+                          modalType: "ModifyTitle",
+                          id: Number(cid),
+                        })
+                      }
+                    >
                       타이틀 수정
                     </OptionItem>
                   )}
@@ -608,7 +398,7 @@ function ContiDetail() {
               )}
             </TitleHeader>
             <PageHeader>
-              <BackButtonContainer onClick={() => navigate(-1)}>
+              <BackButtonContainer onClick={() => navigate("/feed")}>
                 <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
                 <BackButton
                   style={{
@@ -751,7 +541,7 @@ function ContiDetail() {
           </StyledLink>
         )}
       </PageContainer>
-      {modal.isShow && <Modal state={state} setState={setState} />}
+      {modal.isShow && <Modal state={state} updateState={updateState} />}
     </DragDropContext>
   );
 }

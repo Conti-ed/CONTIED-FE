@@ -4,18 +4,19 @@ import { useRecoilState } from "recoil";
 import { modalAtom } from "../atoms";
 import { useParams } from "react-router-dom";
 import ConfirmDeleteSong from "./Modals/ConfirmDeleteSong";
-import { ContiDetailState } from "../Routes/ContiDetail";
 import ConfirmDeleteConti from "./Modals/ConfirmDeleteConti";
 import ModifyKeywords from "./Modals/ModifyKeywords";
 import { SERVER_URL } from "../api";
 import AddToMyConti from "./Modals/AddToMyConti";
+import { ContiDetailState } from "../hooks/useContiDetailState";
+import ModifyTitle from "./Modals/ModifyTitle";
 
 interface IModal {
   state: ContiDetailState;
-  setState: React.Dispatch<React.SetStateAction<ContiDetailState>>;
+  updateState: (updates: Partial<ContiDetailState>) => void;
 }
 
-function Modal({ state, setState }: IModal) {
+function Modal({ state, updateState }: IModal) {
   const { id: cid } = useParams();
   const uid = JSON.parse(localStorage["user_info"]).id;
   const [modal, setModal] = useRecoilState(modalAtom);
@@ -64,11 +65,25 @@ function Modal({ state, setState }: IModal) {
         onClick={handleContainerClick}
       >
         {modal.modalType === "ConfirmDeleteSong" ? (
-          <ConfirmDeleteSong id={{ uid, cid }} setState={setState} />
+          <ConfirmDeleteSong
+            id={{ uid, cid }}
+            state={state}
+            updateState={updateState}
+          />
         ) : modal.modalType === "ConfirmDeleteConti" ? (
           <ConfirmDeleteConti id={{ cid, uid }} />
         ) : modal.modalType === "ModifyKeywords" ? (
-          <ModifyKeywords state={state} setState={setState} />
+          <ModifyKeywords
+            id={{ cid, uid }}
+            state={state}
+            updateState={updateState}
+          />
+        ) : modal.modalType === "ModifyTitle" ? (
+          <ModifyTitle
+            id={{ cid, uid }}
+            state={state}
+            updateState={updateState}
+          />
         ) : modal.modalType === "AddToMyConti" ? (
           <AddToMyConti />
         ) : null}
