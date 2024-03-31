@@ -86,9 +86,9 @@ $ npm start
 ## 화면 구성 📺
 | Main Page  |  My Conti Page   | Conti Detail Page   |
 | :-------------------------------------------: | :------------: | :------------: |
-| <img height="550" borderRadius="5px" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/homePage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/myContiPage.png"/>| <img height="550" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/contiDetailPage.png"/>|
+| <img height="550" borderRadius="5px" src="https://github.com/Conti-ed/client/blob/main/public/images/homePage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/main/public/images/myContiPage.png"/>| <img height="550" src="https://github.com/Conti-ed/client/blob/main/public/images/contiDetailPage.png"/>|
 | **Upload Page** | **Search Page** | **Settings Page** |  
-| <img height="550" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/uploadPage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/searchPage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/1c18d19de2f1055cca057e11a45da4b5f861ad8f/public/images/settingsPage.png"/> |
+| <img height="550" src="https://github.com/Conti-ed/client/blob/main/public/images/uploadPage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/main/public/images/searchPage.png"/> | <img height="550" src="https://github.com/Conti-ed/client/blob/main/public/images/settingsPage.png"/> |
 
 
 ---
