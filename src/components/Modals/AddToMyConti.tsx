@@ -12,7 +12,7 @@ import React from "react";
 
 const ContiList = styled.ul`
   display: flex;
-  overflow: auto;
+  overflow-y: auto;
   flex-direction: column;
   color: black;
   min-width: 200px;
