@@ -24,13 +24,18 @@ function Conti({ contiData }: IConti) {
     navigate(`/conti/${contiData?.id}`);
   };
 
+  const displayTitle =
+    contiData && contiData.title.length > 6
+      ? `${contiData.title.slice(0, 6)}...`
+      : contiData?.title;
+
   return (
     <Container onClick={onclick}>
       <ContiImgAndKeywords>
         <ContiImage src={contiData?.thumbnail} alt="재생목록 썸네일" />
         {contiData && (
           <CenteredContainer>
-            <CenteredKeyword>{contiData.title}</CenteredKeyword>
+            <CenteredKeyword>{displayTitle}</CenteredKeyword>
           </CenteredContainer>
         )}
       </ContiImgAndKeywords>
