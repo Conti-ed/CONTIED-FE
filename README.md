@@ -37,6 +37,7 @@ These features will aid team leaders who struggle with creating Conti by generat
 ### Requirements
 For building and running the application you need:
 
+- [React 18.2.0]
 - [Django 5.0]
 - [ytmusicapi 1.4.2]
 
