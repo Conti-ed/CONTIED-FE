@@ -33,6 +33,10 @@ export async function getSongsByKeyword(keyword: string) {
   return (await fetch(`${SERVER_URL}/api/song?keyword=${keyword}`)).json();
 }
 
+export async function getSavedConties(uid: number) {
+  return (await fetch(`${SERVER_URL}/api/save?uid=${uid}`)).json();
+}
+
 export async function refreshToken() {
   try {
     const response = await fetch(`${SERVER_URL}/token/refresh`, {

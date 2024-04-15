@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "react-query";
-import { SERVER_URL, getConti } from "../api";
+import { SERVER_URL, getConti, getSavedConties } from "../api";
 import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { css, keyframes } from "styled-components";
@@ -234,6 +234,18 @@ function ContiDetail() {
     },
     refetchOnWindowFocus: true,
   });
+
+  const { data: savedConties } = useQuery<Number[]>({
+    queryKey: ["saved"],
+    queryFn: () => getSavedConties(uid),
+    onSuccess: (data) => {
+      if (data.find((c) => c === Number(cid))) {
+        updateState({ isFavorite: true });
+      }
+    },
+  });
+  console.log(savedConties);
+  console.log(state.isFavorite);
 
   // Refetch conti data
   useEffect(() => {

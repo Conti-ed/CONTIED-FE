@@ -49,7 +49,6 @@ const initialState: ContiDetailState = {
 
 const useContiDetailState = (cid: number, uid: number) => {
   const [state, setState] = useState<ContiDetailState>(initialState);
-
   const updateState = (updates: Partial<ContiDetailState>) => {
     setState((prevState) => ({ ...prevState, ...updates }));
   };
@@ -87,12 +86,18 @@ const useContiDetailState = (cid: number, uid: number) => {
     [cid, uid]
   );
 
-  const toggleFavorite = (event: React.MouseEvent<HTMLElement>) => {
+  const toggleFavorite = async (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     setState((prevState) => ({
       ...prevState,
       isFavorite: !prevState.isFavorite,
     }));
+    const res = await fetch(`${SERVER_URL}/api/save?uid=${uid}&cid=${cid}`, {
+      method: "POST",
+    });
+    const data = await res.json();
+
+    console.log(res.status, data);
   };
 
   const songOptionsClick = (
