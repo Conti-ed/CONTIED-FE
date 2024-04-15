@@ -8,7 +8,7 @@ import {
 } from "../styles/Home.styles";
 import Conti from "../components/Conti";
 import { ContiType, SongType } from "../types";
-import { getConti, getMyConties } from "../api";
+import { getConti, getMyConties, getSavedConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { styled } from "styled-components";
 import { useEffect, useState } from "react";
@@ -33,9 +33,21 @@ const SongsSubTitle = styled.h1`
 
 function MyConti() {
   const { id: cid } = useParams();
-  const uid = JSON.parse(localStorage["user_info"]).id;
+  const uid = localStorage["user_info"]
+    ? JSON.parse(localStorage["user_info"]).id
+    : null;
   const { state, updateState } = useContiDetailState(Number(cid), uid);
   const [myContiDetails, setMyContiDetails] = useState<ContiType[]>([]);
+
+  // fetch saved conties
+  const { data: savedConties, isLoading: savedConteisLoading } = useQuery<
+    ContiType[]
+  >({
+    queryKey: ["saved"],
+    queryFn: () => getSavedConties(uid),
+  });
+
+  console.log(savedConties);
 
   // Fetch My Conties
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
@@ -105,6 +117,22 @@ function MyConti() {
               ))
             : myConti &&
               myConti
+                .slice()
+                .reverse()
+                .map((conti, index) => <Conti key={index} contiData={conti} />)}
+        </SectionBody>
+      </SectionContainer>
+      <SectionContainer>
+        <SectionHeader>
+          <ContiSubTitle>"내가 저장한 콘티들"</ContiSubTitle>
+        </SectionHeader>
+        <SectionBody>
+          {savedConteisLoading
+            ? Array.from({ length: 20 }).map((_, index) => (
+                <ContiPlaceholder key={index} size={115} />
+              ))
+            : savedConties &&
+              savedConties
                 .slice()
                 .reverse()
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
