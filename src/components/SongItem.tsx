@@ -53,6 +53,7 @@ interface SongItemProps {
     event: React.MouseEvent<HTMLElement>
   ) => void;
   dragHandleProps?: any;
+  children?: React.ReactNode;
 }
 
 export const SongItem: React.FC<SongItemProps> = ({
@@ -60,6 +61,7 @@ export const SongItem: React.FC<SongItemProps> = ({
   index,
   onOptionsClick,
   dragHandleProps,
+  children,
 }) => {
   return (
     <SongItemContainer>
@@ -79,6 +81,7 @@ export const SongItem: React.FC<SongItemProps> = ({
       <IconContainer onClick={(event) => onOptionsClick(song.id, event)}>
         <MoreVertIcon />
       </IconContainer>
+      {children}
     </SongItemContainer>
   );
 };

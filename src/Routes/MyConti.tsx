@@ -7,13 +7,16 @@ import {
   SectionHeader,
 } from "../styles/Home.styles";
 import Conti from "../components/Conti";
-import { ContiType } from "../types";
+import { ContiType, SongType } from "../types";
 import { getConti, getMyConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { styled } from "styled-components";
 import { useEffect, useState } from "react";
 import { SongList } from "./ContiDetail";
 import SongItem from "../components/SongItem";
+import OptionsMenu, { IMenuItem } from "../components/OptionsMenu";
+import useContiDetailState from "../hooks/useContiDetailState";
+import { useParams } from "react-router-dom";
 
 const ContiSubTitle = styled.h1`
   font-size: 20px;
@@ -29,6 +32,9 @@ const SongsSubTitle = styled.h1`
 `;
 
 function MyConti() {
+  const { id: cid } = useParams();
+  const uid = JSON.parse(localStorage["user_info"]).id;
+  const { state, updateState } = useContiDetailState(Number(cid), uid);
   const [myContiDetails, setMyContiDetails] = useState<ContiType[]>([]);
 
   // Fetch My Conties
@@ -57,6 +63,30 @@ function MyConti() {
 
   const allSongs = myContiDetails.flatMap((conti) => conti!.songs || []);
 
+  const getMenuItems = (song: SongType): IMenuItem[] => {
+    return [
+      {
+        label: "들어보기",
+        link: `https://www.youtube.com/results?search_query=${song.title.replace(
+          " ",
+          "+"
+        )}`,
+      },
+    ];
+  };
+
+  const handleOptionsClick = (
+    songId: number,
+    event: React.MouseEvent<HTMLElement>
+  ): void => {
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    updateState({
+      optionsPosition: { x: rect.left - 83, y: rect.top + 10 },
+      activeOptions: songId,
+    });
+  };
+
   return (
     <Container
       variants={HomeVariants}
@@ -82,9 +112,18 @@ function MyConti() {
       </SectionContainer>
       <SongsSubTitle>"내가 업로드한 곡들"</SongsSubTitle>
       <SongList>
-        {allSongs.map((s, i) => (
+        {allSongs.map((song, i) => (
           <div key={i}>
-            <SongItem song={s} index={i} onOptionsClick={() => null}></SongItem>
+            <SongItem song={song} index={i} onOptionsClick={handleOptionsClick}>
+              {state.activeOptions === song.id && (
+                <OptionsMenu
+                  x={state.optionsPosition.x}
+                  y={state.optionsPosition.y}
+                  onClose={() => updateState({ activeOptions: null })}
+                  menuItems={getMenuItems(song)}
+                />
+              )}
+            </SongItem>
           </div>
         ))}
       </SongList>
