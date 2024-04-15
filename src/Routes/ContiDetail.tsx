@@ -235,11 +235,11 @@ function ContiDetail() {
     refetchOnWindowFocus: true,
   });
 
-  const { data: savedConties } = useQuery<Number[]>({
+  const {} = useQuery<ContiType[]>({
     queryKey: ["saved"],
     queryFn: () => getSavedConties(uid),
     onSuccess: (data) => {
-      if (data && data.find((c) => c === Number(cid))) {
+      if (data && data.find((c) => c?.id === Number(cid))) {
         updateState({ isFavorite: true });
       }
     },

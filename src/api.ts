@@ -34,7 +34,7 @@ export async function getSongsByKeyword(keyword: string) {
 }
 
 export async function getSavedConties(uid: number) {
-  return (await fetch(`${SERVER_URL}/api/save?uid=${uid}`)).json();
+  return uid ? (await fetch(`${SERVER_URL}/api/save?uid=${uid}`)).json() : null;
 }
 
 export async function refreshToken() {
