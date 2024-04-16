@@ -47,7 +47,7 @@ function MyConti() {
     queryFn: () => getSavedConties(uid),
   });
 
-  console.log(savedConties);
+  // console.log(savedConties);
 
   // Fetch My Conties
   const { data: myConti, isLoading: myContiIsLoading } = useQuery<ContiType[]>(
@@ -108,7 +108,7 @@ function MyConti() {
     >
       <SectionContainer>
         <SectionHeader>
-          <ContiSubTitle>"내가 업로드한 콘티들"</ContiSubTitle>
+          <ContiSubTitle>내가 업로드한 콘티</ContiSubTitle>
         </SectionHeader>
         <SectionBody>
           {myContiIsLoading
@@ -124,7 +124,7 @@ function MyConti() {
       </SectionContainer>
       <SectionContainer>
         <SectionHeader>
-          <ContiSubTitle>"내가 저장한 콘티들"</ContiSubTitle>
+          <ContiSubTitle>내가 '좋아요'한 콘티</ContiSubTitle>
         </SectionHeader>
         <SectionBody>
           {savedConteisLoading
@@ -138,7 +138,7 @@ function MyConti() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
-      <SongsSubTitle>"내가 업로드한 곡들"</SongsSubTitle>
+      <SongsSubTitle>내가 업로드한 곡</SongsSubTitle>
       <SongList>
         {allSongs.map((song, i) => (
           <div key={i}>
