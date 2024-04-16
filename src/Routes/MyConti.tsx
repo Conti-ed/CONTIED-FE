@@ -108,7 +108,7 @@ function MyConti() {
     >
       <SectionContainer>
         <SectionHeader>
-          <ContiSubTitle>내가 업로드한 콘티</ContiSubTitle>
+          <ContiSubTitle>" 내가 업로드한 콘티 "</ContiSubTitle>
         </SectionHeader>
         <SectionBody>
           {myContiIsLoading
@@ -124,7 +124,7 @@ function MyConti() {
       </SectionContainer>
       <SectionContainer>
         <SectionHeader>
-          <ContiSubTitle>내가 '좋아요'한 콘티</ContiSubTitle>
+          <ContiSubTitle>" 내가 '좋아요' 한 콘티 "</ContiSubTitle>
         </SectionHeader>
         <SectionBody>
           {savedConteisLoading
@@ -138,7 +138,7 @@ function MyConti() {
                 .map((conti, index) => <Conti key={index} contiData={conti} />)}
         </SectionBody>
       </SectionContainer>
-      <SongsSubTitle>내가 업로드한 곡</SongsSubTitle>
+      <SongsSubTitle>" 내가 업로드한 곡 "</SongsSubTitle>
       <SongList>
         {allSongs.map((song, i) => (
           <div key={i}>

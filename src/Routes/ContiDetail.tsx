@@ -221,7 +221,7 @@ function ContiDetail() {
   const [modal, setModal] = useRecoilState(modalAtom);
 
   // fetch conti data
-  const { isLoading } = useQuery<ContiType>({
+  const { isLoading: contiLoading } = useQuery<ContiType>({
     queryKey: ["conties", "conti", cid],
     queryFn: () => getConti(Number(cid)),
     onSuccess: (data) => {
@@ -235,7 +235,7 @@ function ContiDetail() {
     refetchOnWindowFocus: true,
   });
 
-  const {} = useQuery<ContiType[]>({
+  const { isLoading: savedLoading } = useQuery<ContiType[]>({
     queryKey: ["saved"],
     queryFn: () => getSavedConties(uid),
     onSuccess: (data) => {
@@ -346,7 +346,7 @@ function ContiDetail() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {isLoading ? (
+        {contiLoading || savedLoading ? (
           <CenteredContainer>
             <div style={{ marginBottom: "10px" }}>잠시만요...</div>
             <LoadingSpinner />
