@@ -29,7 +29,7 @@ function ConfirmDeleteConti({ id }: props) {
       });
 
       if (res.ok) {
-        navigate("/home");
+        navigate("/");
         closeModal();
       }
     }
