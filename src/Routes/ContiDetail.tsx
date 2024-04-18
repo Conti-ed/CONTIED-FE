@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "react-query";
+import { useQueries, useQueryClient } from "react-query";
 import { SERVER_URL, getConti, getSavedConties } from "../api";
 import { ContiType, SongType } from "../types";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -220,30 +220,32 @@ function ContiDetail() {
     useContiDetailState(Number(cid), uid);
   const [modal, setModal] = useRecoilState(modalAtom);
 
-  // fetch conti data
-  const { isLoading: contiLoading } = useQuery<ContiType>({
-    queryKey: ["conties", "conti", cid],
-    queryFn: () => getConti(Number(cid)),
-    onSuccess: (data) => {
-      updateState({
-        contiData: data,
-        songs: data ? data.songs.sort((a, b) => a.order - b.order) : [],
-        isOwner: data ? data.owner.id === uid : false,
-        editTitleValue: data!.title,
-      });
+  const queryResults = useQueries([
+    {
+      queryKey: ["conties", "conti", cid],
+      queryFn: () => getConti(Number(cid)),
+      onSuccess: (data: ContiType) => {
+        updateState({
+          contiData: data,
+          songs: data!.songs.sort((a, b) => a.order - b.order),
+          isOwner: data!.owner.id === uid,
+          editTitleValue: data!.title,
+        });
+      },
+      refetchOnWindowFocus: true,
     },
-    refetchOnWindowFocus: true,
-  });
+    {
+      queryKey: ["saved"],
+      queryFn: () => getSavedConties(uid),
+      onSuccess: (data: ContiType[]) => {
+        if (data.find((c) => c?.id === Number(cid))) {
+          updateState({ isFavorite: true });
+        }
+      },
+    },
+  ]);
 
-  const { isLoading: savedLoading } = useQuery<ContiType[]>({
-    queryKey: ["saved"],
-    queryFn: () => getSavedConties(uid),
-    onSuccess: (data) => {
-      if (data && data.find((c) => c?.id === Number(cid))) {
-        updateState({ isFavorite: true });
-      }
-    },
-  });
+  const isLoading = queryResults.some((result) => result.isLoading);
 
   // Refetch conti data
   useEffect(() => {
@@ -346,7 +348,7 @@ function ContiDetail() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {contiLoading || savedLoading ? (
+        {isLoading ? (
           <CenteredContainer>
             <div style={{ marginBottom: "10px" }}>잠시만요...</div>
             <LoadingSpinner />
