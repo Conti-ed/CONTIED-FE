@@ -75,6 +75,10 @@ export const SongItem: React.FC<SongItemProps> = ({
             <span>
               {song.duration ? formatDuration(song.duration) : "0:00"}
             </span>
+            <span>•</span>
+            <span>
+              {`${song.tempo} bpm • ${song.key_scale} • ${song.danceability}`}
+            </span>
           </ArtistAndDuration>
         </SongDetails>
       </SongInfo>

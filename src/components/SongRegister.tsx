@@ -37,6 +37,9 @@ function SongRegister() {
       lyrics: data.lyrics,
       duration: data.duration,
       order: 0,
+      tempo: 0,
+      key_scale: "",
+      danceability: 0,
     };
     setSongs((prev) => [...prev, newSong]);
     setOpen(false);

@@ -21,6 +21,9 @@ export type SongType = {
   lyrics?: string;
   duration: number;
   order: number;
+  tempo: number;
+  key_scale: string;
+  danceability: number;
 };
 
 export type SheetType = {
