@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import Start from "./Routes/Start";
-import Home from "./Routes/Home";
+// import Home from "./Routes/Home";
 import Search from "./Routes/Search";
 import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";

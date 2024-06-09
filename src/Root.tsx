@@ -52,19 +52,19 @@ footer, header, hgroup, main, menu, nav, section {
 }
 @font-face {
       font-family: 'Gong Gothic';
-      src: url('/fonts/ESAMANRU-BOLD.TTF') format('truetype');
+      src: url('/fonts/ESAMANRU BOLD.TTF') format('truetype');
       font-weight: bold;
       font-style: normal;
   }
 @font-face {
     font-family: 'Gong Gothic';
-    src: url('/fonts/ESAMANRU-MEDIUM.TTF') format('truetype');
+    src: url('/fonts/ESAMANRU MEDIUM.TTF') format('truetype');
     font-weight: 500;
     font-style: normal;
 }
 @font-face {
     font-family: 'Gong Gothic';
-    src: url('/fonts/ESAMANRU-LIGHT.TTF') format('truetype');
+    src: url('/fonts/ESAMANRU LIGHT.TTF') format('truetype');
     font-weight: 300;
     font-style: normal;
 }
