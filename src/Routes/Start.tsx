@@ -1,8 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
-const StartPage = styled.div`
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.9;
+  }
+`;
+
+const StartPage = styled.div<{ $isFading: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -10,6 +19,11 @@ const StartPage = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: #92b5f0; /* 배경 색상 */
+  ${({ $isFading }) =>
+    $isFading &&
+    css`
+      animation: ${fadeOut} 0.1s forwards;
+    `}
 `;
 
 const LogoContainer = styled.div`
@@ -20,15 +34,14 @@ const LogoContainer = styled.div`
 `;
 
 const Logo = styled.img`
-  width: 300px; /* 로고 이미지 크기 */
+  width: 250px; /* 로고 이미지 크기 */
   height: auto;
-  border-radius: 30px; /* border-radius 적용 */
-  margin-bottom: 20px; /* 로고 이미지 - 로그인 버튼 간격 */
+  margin-bottom: 50px; /* 로고 이미지 - 로그인 버튼 간격 */
 `;
 
 const ButtonContainer = styled.div`
   position: absolute;
-  bottom: 200px; /* 로그인 버튼 페이지 하단에 고정 */
+  bottom: 160px; /* 로그인 버튼 페이지 하단에 고정 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,7 +69,7 @@ const IconContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  left: 20px; /* 카카오 아이콘 왼쪽으로 붙이기 */
+  left: 15px; /* 카카오 아이콘 왼쪽으로 붙이기 */
 `;
 
 const TextContainer = styled.span`
@@ -91,14 +104,18 @@ const KakaoIcon = () => (
 );
 
 const Start: React.FC = () => {
+  const [isFading, setIsFading] = React.useState(false);
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate("/login");
+    setIsFading(true);
+    setTimeout(() => {
+      navigate("/waiting");
+    }, 100); // 애니메이션 지속 시간과 일치하도록 설정
   };
 
   return (
-    <StartPage>
+    <StartPage $isFading={isFading}>
       <LogoContainer>
         <Logo src="/images/StartLogov2.png" alt="Contied Logo" />
       </LogoContainer>
