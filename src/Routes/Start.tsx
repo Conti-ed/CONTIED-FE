@@ -9,7 +9,7 @@ const StartPage = styled.div`
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background-color: #92b5f0; /* 배경 색상 설정 */
+  background-color: #92b5f0; /* 배경 색상 */
 `;
 
 const LogoContainer = styled.div`
@@ -20,15 +20,15 @@ const LogoContainer = styled.div`
 `;
 
 const Logo = styled.img`
-  width: 300px; /* 로고 크기 설정 */
+  width: 300px; /* 로고 이미지 크기 */
   height: auto;
   border-radius: 30px; /* border-radius 적용 */
-  margin-bottom: 20px; /* 로고 이미지와 버튼 사이의 간격 */
+  margin-bottom: 20px; /* 로고 이미지 - 로그인 버튼 간격 */
 `;
 
 const ButtonContainer = styled.div`
   position: absolute;
-  bottom: 200px; /* 버튼을 페이지 하단에 고정 */
+  bottom: 200px; /* 로그인 버튼 페이지 하단에 고정 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,20 +39,16 @@ const StartButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffe812; /* 노란색 버튼 색상 */
+  background-color: #ffe812; /* 로그인 버튼 색상 */
   color: #000;
   border: none;
-  padding: 15px 90px; /* 버튼 높이 조정 */
-  font-size: 13px; /* 글자 크기 증가 */
+  padding: 15px 90px; /* 로그인 버튼 높이 조정 */
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   border-radius: 4px;
   outline: none;
-  position: relative; /* 텍스트 중앙 정렬을 위해 추가 */
-
-  &:hover {
-    background-color: #ffc300;
-  }
+  position: relative; /* 폰트 중앙 정렬을 위해 */
 `;
 
 const IconContainer = styled.div`
@@ -60,14 +56,15 @@ const IconContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  left: 20px; /* 아이콘을 왼쪽으로 붙이기 위한 설정 */
+  left: 20px; /* 카카오 아이콘 왼쪽으로 붙이기 */
 `;
 
 const TextContainer = styled.span`
-  margin-left: 10px; /* 텍스트와 아이콘 사이의 간격 설정 */
+  margin-left: 10px; /* Text와 Icon 사이의 간격 */
 `;
 
 const KakaoIcon = () => (
+  /* 카카오 아이콘 */
   <svg
     width="32"
     height="32"
