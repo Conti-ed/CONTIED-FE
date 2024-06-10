@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import Start from "./Routes/Start";
 import Wait from "./Routes/Wait";
-// import Home from "./Routes/Home";
+import Home from "./Routes/Home";
 import Search from "./Routes/Search";
 import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Start /> },
       { path: "waiting", element: <Wait /> },
-      //{ path: "", element: <Home /> },
+      { path: "home", element: <Home /> },
       { path: "search", element: <Search /> },
       { path: "feed", element: <Feed /> },
       { path: "upload", element: <Upload /> },

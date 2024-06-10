@@ -1,11 +1,4 @@
 import { useQuery } from "react-query";
-import {
-  Container,
-  HomeVariants,
-  SectionBody,
-  SectionContainer,
-  SectionHeader,
-} from "../styles/Home.styles";
 import Conti from "../components/Conti";
 import { ContiType, SongType } from "../types";
 import { getConti, getMyConties, getSavedConties } from "../api";
@@ -100,62 +93,63 @@ function MyConti() {
   };
 
   return (
-    <Container
-      variants={HomeVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-    >
-      <SectionContainer>
-        <SectionHeader>
-          <ContiSubTitle>" 내가 업로드한 콘티 "</ContiSubTitle>
-        </SectionHeader>
-        <SectionBody>
-          {myContiIsLoading
-            ? Array.from({ length: 20 }).map((_, index) => (
-                <ContiPlaceholder key={index} size={115} />
-              ))
-            : myConti &&
-              myConti
-                .slice()
-                .reverse()
-                .map((conti, index) => <Conti key={index} contiData={conti} />)}
-        </SectionBody>
-      </SectionContainer>
-      <SectionContainer>
-        <SectionHeader>
-          <ContiSubTitle>" 내가 '좋아요' 한 콘티 "</ContiSubTitle>
-        </SectionHeader>
-        <SectionBody>
-          {savedConteisLoading
-            ? Array.from({ length: 20 }).map((_, index) => (
-                <ContiPlaceholder key={index} size={115} />
-              ))
-            : savedConties &&
-              savedConties
-                .slice()
-                .reverse()
-                .map((conti, index) => <Conti key={index} contiData={conti} />)}
-        </SectionBody>
-      </SectionContainer>
-      <SongsSubTitle>" 내가 업로드한 곡 "</SongsSubTitle>
-      <SongList>
-        {allSongs.map((song, i) => (
-          <div key={i}>
-            <SongItem song={song} index={i} onOptionsClick={handleOptionsClick}>
-              {state.activeOptions === song.id && (
-                <OptionsMenu
-                  x={state.optionsPosition.x}
-                  y={state.optionsPosition.y}
-                  onClose={() => updateState({ activeOptions: null })}
-                  menuItems={getMenuItems(song)}
-                />
-              )}
-            </SongItem>
-          </div>
-        ))}
-      </SongList>
-    </Container>
+    // <Container
+    //   variants={HomeVariants}
+    //   initial="initial"
+    //   animate="animate"
+    //   exit="exit"
+    // >
+    //   <SectionContainer>
+    //     <SectionHeader>
+    //       <ContiSubTitle>" 내가 업로드한 콘티 "</ContiSubTitle>
+    //     </SectionHeader>
+    //     <SectionBody>
+    //       {myContiIsLoading
+    //         ? Array.from({ length: 20 }).map((_, index) => (
+    //             <ContiPlaceholder key={index} size={115} />
+    //           ))
+    //         : myConti &&
+    //           myConti
+    //             .slice()
+    //             .reverse()
+    //             .map((conti, index) => <Conti key={index} contiData={conti} />)}
+    //     </SectionBody>
+    //   </SectionContainer>
+    //   <SectionContainer>
+    //     <SectionHeader>
+    //       <ContiSubTitle>" 내가 '좋아요' 한 콘티 "</ContiSubTitle>
+    //     </SectionHeader>
+    //     <SectionBody>
+    //       {savedConteisLoading
+    //         ? Array.from({ length: 20 }).map((_, index) => (
+    //             <ContiPlaceholder key={index} size={115} />
+    //           ))
+    //         : savedConties &&
+    //           savedConties
+    //             .slice()
+    //             .reverse()
+    //             .map((conti, index) => <Conti key={index} contiData={conti} />)}
+    //     </SectionBody>
+    //   </SectionContainer>
+    //   <SongsSubTitle>" 내가 업로드한 곡 "</SongsSubTitle>
+    //   <SongList>
+    //     {allSongs.map((song, i) => (
+    //       <div key={i}>
+    //         <SongItem song={song} index={i} onOptionsClick={handleOptionsClick}>
+    //           {state.activeOptions === song.id && (
+    //             <OptionsMenu
+    //               x={state.optionsPosition.x}
+    //               y={state.optionsPosition.y}
+    //               onClose={() => updateState({ activeOptions: null })}
+    //               menuItems={getMenuItems(song)}
+    //             />
+    //           )}
+    //         </SongItem>
+    //       </div>
+    //     ))}
+    //   </SongList>
+    // </Container>
+    null
   );
 }
 
