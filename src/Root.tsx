@@ -3,7 +3,6 @@ import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
 import Header from "./components/Header";
-import StatusBar from "./components/StatusBar";
 import { Outlet } from "react-router-dom";
 import TabBar from "./components/TabBar";
 
@@ -13,7 +12,6 @@ function Root() {
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-        <StatusBar />
         {/* <Header /> */}
         <Outlet />
         {/* <TabBar /> */}
@@ -99,6 +97,11 @@ a {
   color: inherit;
 }
 button {
+  font-family: 'Gong Gothic', 'Noto Sans KR', sans-serif;
+  background-color:${(props) => props.theme.bgColor};
+  color:${(props) => props.theme.textColor};
+}
+input {
   font-family: 'Gong Gothic', 'Noto Sans KR', sans-serif;
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.textColor};

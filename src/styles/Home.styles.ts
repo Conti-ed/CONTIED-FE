@@ -6,14 +6,14 @@ export const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px;
   background-color: #ffffff;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   position: relative;
 `;
 
-export const Content = styled(motion.div)`
+export const Content = styled.div`
   flex: 1;
   width: 100%;
   overflow-y: auto;
@@ -135,7 +135,7 @@ export const Button = styled.button<ButtonProps>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5cd;
+  background-color: #f5f5f5;
   border: none;
   padding: 10px;
   font-size: 16px;
@@ -168,58 +168,4 @@ export const Button = styled.button<ButtonProps>`
     margin-bottom: 12px;
     transition: fill 0.3s ease, stroke 0.3s ease;
   }
-`;
-
-export const Footer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 53px;
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-  position: absolute;
-  bottom: 134px;
-`;
-
-interface FooterButtonProps {
-  $active?: boolean;
-}
-
-export const FooterButton = styled.button<FooterButtonProps>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  border: none;
-  padding: 0;
-  font-size: 12px;
-  font-weight: 300;
-  color: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 0 40px;
-  &:hover {
-    color: #94b4ed;
-    svg path {
-      fill: #94b4ed;
-    }
-  }
-  & svg {
-    margin-bottom: 3px;
-    width: 23px;
-    height: 23px;
-    path {
-      fill: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
-    }
-  }
-`;
-
-export const SafariSpace = styled.div`
-  width: 100%;
-  height: 129px;
-  border-radius: 15px;
-  background-color: #e7f0fc;
 `;
