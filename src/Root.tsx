@@ -3,6 +3,7 @@ import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
 import Header from "./components/Header";
+import StatusBar from "./components/StatusBar";
 import { Outlet } from "react-router-dom";
 import TabBar from "./components/TabBar";
 
@@ -12,6 +13,7 @@ function Root() {
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
+        <StatusBar />
         {/* <Header /> */}
         <Outlet />
         {/* <TabBar /> */}

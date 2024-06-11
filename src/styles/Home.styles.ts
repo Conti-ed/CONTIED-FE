@@ -23,13 +23,6 @@ export const Content = styled(motion.div)`
   padding-bottom: 50px;
 `;
 
-export const StatusBar = styled.div`
-  width: 100%;
-  height: 42px;
-  border-radius: 15px;
-  background-color: #e7f0fc;
-`;
-
 export const Header = styled.div`
   display: flex;
   align-items: center;

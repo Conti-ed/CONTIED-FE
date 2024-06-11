@@ -3,7 +3,6 @@ import React from "react";
 import {
   Container,
   Content,
-  StatusBar,
   Header,
   Logo,
   UserName,
@@ -55,7 +54,6 @@ const Home: React.FC = () => {
         exit="out"
         variants={pageVariants}
       >
-        <StatusBar />
         <Content>
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
