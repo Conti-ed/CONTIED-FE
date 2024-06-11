@@ -1,14 +1,19 @@
 import styled from "styled-components";
 
-const SafariSpaceContainer = styled.div`
+interface SafariSpaceProps {
+  $isFocused: boolean;
+}
+
+const SafariSpaceContainer = styled.div<SafariSpaceProps>`
   width: 100%;
-  height: 134px;
+  height: ${(props) => (props.$isFocused ? "0" : "134px")};
   background-color: #e7f0fc;
   position: relative;
-  display: flex;
+  display: ${(props) => (props.$isFocused ? "none" : "flex")};
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  transition: height 0.3s ease, display 0.3s ease;
   padding: 10px 0;
 `;
 
@@ -54,9 +59,9 @@ const BottomBar = styled.div`
   margin-top: 10px;
 `;
 
-const SafariSpace: React.FC = () => {
+const SafariSpace: React.FC<SafariSpaceProps> = ({ $isFocused }) => {
   return (
-    <SafariSpaceContainer>
+    <SafariSpaceContainer $isFocused={$isFocused}>
       <AddressBar>
         <AddressText>contied.com</AddressText>
       </AddressBar>

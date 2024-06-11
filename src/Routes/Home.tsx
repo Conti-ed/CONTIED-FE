@@ -186,7 +186,7 @@ const Home: React.FC = () => {
           </ButtonGroup>
         </Content>
         <TabBar />
-        <SafariSpace />
+        <SafariSpace $isFocused={false} />
       </Container>
     </AnimatePresence>
   );
