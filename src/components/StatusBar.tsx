@@ -15,7 +15,7 @@ const StatusBarContainer = styled.div`
 
 const TopBar = styled.div`
   width: 130px;
-  height: 30px;
+  height: 25px;
   background-color: black;
   border-radius: 20px;
   position: absolute;

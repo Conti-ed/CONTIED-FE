@@ -20,18 +20,6 @@ import {
 import TabBar from "../components/TabBar";
 import SafariSpace from "../components/SafariSpace";
 
-const pageVariants = {
-  initial: {
-    opacity: 0,
-  },
-  in: {
-    opacity: 1,
-  },
-  out: {
-    opacity: 0,
-  },
-};
-
 const Home: React.FC = () => {
   const userName = "준석"; // 사용자 이름
   const albumTitle = "동계수련회"; // 앨범 제목
@@ -46,12 +34,7 @@ const Home: React.FC = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <Container
-        initial="initial"
-        animate="in"
-        exit="out"
-        variants={pageVariants}
-      >
+      <Container>
         <StatusBar />
         <Content>
           <Header>
