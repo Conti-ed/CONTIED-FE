@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import StatusBar from "../components/StatusBar";
+import SafariSpace from "../components/SafariSpace";
 
 const changeColor = keyframes`
   0%, 100% {
@@ -22,12 +24,18 @@ const fadeIn = keyframes`
   }
 `;
 
-const Container = styled.div<{ $isFading: boolean }>`
+const Container = styled.div`
+  height: 100vh;
+  //position: relative;
+`;
+
+const Content = styled.div<{ $isFading: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 663px;
+  width: 100%;
   background-color: #fff;
   ${({ $isFading }) =>
     $isFading &&
@@ -71,9 +79,13 @@ const Wait: React.FC = () => {
   }, [navigate]);
 
   return (
-    <Container $isFading={isFading}>
-      <Image src="/images/WaitforLogin.png" alt="Loading" />
-      <Text>{text}</Text>
+    <Container>
+      <StatusBar />
+      <Content $isFading={isFading}>
+        <Image src="/images/WaitforLogin.png" alt="Loading" />
+        <Text>{text}</Text>
+      </Content>
+      <SafariSpace $isFocused={false} />
     </Container>
   );
 };
