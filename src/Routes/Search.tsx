@@ -214,7 +214,7 @@ const Search: React.FC = () => {
         )}
       </Content>
       <TabBarWrapper $isFocused={isFocused}>
-        <TabBar />
+        <TabBar onHomeClick={() => setIsFocused(false)} />
         <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
       {isFocused && <Keyboard />}

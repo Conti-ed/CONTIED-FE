@@ -49,7 +49,11 @@ const Button = styled.button<ButtonProps>`
   }
 `;
 
-function TabBar() {
+interface TabBarProps {
+  onHomeClick?: () => void;
+}
+
+const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,15 +70,17 @@ function TabBar() {
     setActiveButton(getActiveButton());
   }, [location.pathname]);
 
+  const handleHomeClick = () => {
+    if (onHomeClick) {
+      onHomeClick();
+    }
+    setActiveButton("home");
+    navigate("/home");
+  };
+
   return (
     <Container>
-      <Button
-        $active={activeButton === "home"}
-        onClick={() => {
-          setActiveButton("home");
-          navigate("/home");
-        }}
-      >
+      <Button $active={activeButton === "home"} onClick={handleHomeClick}>
         <svg
           width="22"
           height="23"
@@ -136,6 +142,6 @@ function TabBar() {
       </Button>
     </Container>
   );
-}
+};
 
 export default TabBar;

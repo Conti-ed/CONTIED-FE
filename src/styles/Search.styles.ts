@@ -120,7 +120,7 @@ export const RecentSearchContainer = styled.div`
   position: absolute;
   top: 18%; /* 위치를 조금 더 아래로 조정합니다 */
   width: 90%;
-  max-height: 30%; /* 최대 높이를 설정하여 스크롤 가능하게 합니다 */
+  max-height: 33%; /* 최대 높이를 설정하여 스크롤 가능하게 합니다 */
   overflow-y: auto; /* 스크롤 가능하게 설정 */
 `;
 

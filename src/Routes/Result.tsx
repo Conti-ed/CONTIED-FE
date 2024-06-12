@@ -72,6 +72,7 @@ const Result: React.FC = () => {
     if (query.trim() !== "") {
       setIsLoading(true); // 로딩 시작
       setIsFocused(false);
+      saveRecentSearch(query); // 검색어 저장
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate("/result", { state: { query } }); // 결과 페이지로 이동
@@ -83,6 +84,16 @@ const Result: React.FC = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const saveRecentSearch = (searchQuery: string) => {
+    const storedSearches = localStorage.getItem("recentSearches");
+    let recentSearches = storedSearches ? JSON.parse(storedSearches) : [];
+    recentSearches = [
+      searchQuery,
+      ...recentSearches.filter((item: string) => item !== searchQuery),
+    ];
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
   };
 
   const renderEmptyState = () => {
@@ -123,6 +134,7 @@ const Result: React.FC = () => {
           <SearchInput
             ref={inputRef}
             value={query}
+            placeholder="콘티, 노래 또는 가사 등"
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown} // Enter 키 이벤트 추가
             onFocus={() => setIsFocused(true)} // 포커스 상태 업데이트
@@ -171,7 +183,7 @@ const Result: React.FC = () => {
         )}
       </Content>
       <TabBarWrapper $isFocused={isFocused}>
-        <TabBar />
+        <TabBar onHomeClick={() => setIsFocused(false)} />
         <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
       {isFocused && <Keyboard />}
