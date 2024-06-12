@@ -24,10 +24,10 @@ const router = createBrowserRouter([
       { path: "result", element: <Result /> },
       { path: "feed", element: <Feed /> },
       { path: "upload", element: <Upload /> },
+      { path: "conti-detail", element: <ContiDetail /> },
       { path: "settings", element: <Settings /> },
       { path: "login", element: <Login /> },
       { path: "myconti", element: <MyConti /> },
-      { path: "conti/:id", element: <ContiDetail /> },
     ],
   },
 ]);

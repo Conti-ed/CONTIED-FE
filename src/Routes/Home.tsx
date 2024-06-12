@@ -19,10 +19,12 @@ import {
 } from "../styles/Home.styles";
 import TabBar from "../components/TabBar";
 import SafariSpace from "../components/SafariSpace";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const userName = "준석"; // 사용자 이름
   const albumTitle = "동계수련회"; // 앨범 제목
+  const navigate = useNavigate();
 
   const [hoveredButton, setHoveredButton] = React.useState<string | null>(null);
   const handleMouseEnter = (buttonName: string) => {
@@ -30,6 +32,9 @@ const Home: React.FC = () => {
   };
   const handleMouseLeave = () => {
     setHoveredButton(null);
+  };
+  const handleAlbumClick = () => {
+    navigate("/conti-detail");
   };
 
   return (
@@ -45,7 +50,7 @@ const Home: React.FC = () => {
             <br />
             콘티 리스트
           </UserName>
-          <AlbumContainer>
+          <AlbumContainer onClick={handleAlbumClick}>
             <ContiPlaceholder size={360} />
             <Mask />
             <RoundLogo>

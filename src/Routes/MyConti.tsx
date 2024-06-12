@@ -5,7 +5,7 @@ import { getConti, getMyConties, getSavedConties } from "../api";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { styled } from "styled-components";
 import { useEffect, useState } from "react";
-import { SongList } from "./ContiDetail";
+// import { SongList } from "./ContiDetail";
 import SongItem from "../components/SongItem";
 import OptionsMenu, { IMenuItem } from "../components/OptionsMenu";
 import useContiDetailState from "../hooks/useContiDetailState";

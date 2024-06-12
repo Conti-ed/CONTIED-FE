@@ -1,501 +1,210 @@
-import { useQueries, useQueryClient } from "react-query";
-import { SERVER_URL, getConti, getSavedConties } from "../api";
-import { ContiType, SongType } from "../types";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import styled, { css, keyframes } from "styled-components";
-import { MdKeyboardArrowLeft } from "react-icons/md";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { setFontStyle } from "../styles/UploadDrawer.styles";
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import useContiDetailState from "../hooks/useContiDetailState";
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  DraggableStateSnapshot,
-  Droppable,
-  DroppableProvided,
-} from "react-beautiful-dnd";
-import { LoadingSpinner } from "../styles/LoadingSpinner";
-import {
-  formatTotalDuration,
-  parseLocalDateString,
-} from "../utils/formatDuration";
-import SongItem from "../components/SongItem";
-import Modal from "../components/Modal";
-import { useRecoilState } from "recoil";
-import { modalAtom } from "../atoms";
-import OptionsMenu, { IMenuItem } from "../components/OptionsMenu";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+import StatusBar from "../components/StatusBar";
+import SafariSpace from "../components/SafariSpace";
 
-const PageContainer = styled(motion.div)`
-  padding-top: 35px;
-  padding: 10px;
-  padding-bottom: 100px;
-`;
-
-const CenteredContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-color: #ffffff;
   height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 `;
 
-const TitleHeader = styled.div`
-  position: relative;
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  height: 67px;
+  width: 100%;
+  border-bottom: 0.7px solid #d9d9d9;
+`;
+
+const Content = styled.div`
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const IconContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  margin-right: 9px;
+  gap: 10px;
+`;
+
+const HeartIcon = () => (
+  <svg
+    width="17"
+    height="14"
+    viewBox="0 0 17 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M1.73582 1.30738C2.49233 0.54952 3.51824 0.123781 4.58794 0.123781C5.65765 0.123781 6.68356 0.54952 7.44007 1.30738L8.62206 2.49082L9.80406 1.30738C10.1762 0.921274 10.6213 0.613306 11.1135 0.401441C11.6057 0.189577 12.1351 0.0780591 12.6707 0.0733948C13.2063 0.0687305 13.7376 0.171013 14.2333 0.374275C14.7291 0.577536 15.1795 0.877706 15.5583 1.25727C15.9371 1.63683 16.2366 2.08819 16.4395 2.585C16.6423 3.08181 16.7444 3.61413 16.7397 4.15089C16.7351 4.68765 16.6238 5.21811 16.4124 5.71132C16.2009 6.20452 15.8936 6.65059 15.5083 7.0235L8.62206 13.9251L1.73582 7.0235C0.979542 6.26542 0.554688 5.23737 0.554688 4.16544C0.554688 3.09351 0.979542 2.06546 1.73582 1.30738Z"
+      fill="#4F8EEC"
+    />
+  </svg>
+);
+
+const OptionsIcon = () => (
+  <svg
+    width="15"
+    height="3"
+    viewBox="0 0 15 3"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M1.49999 1.99998C1.77612 1.99998 1.99998 1.77612 1.99998 1.49999C1.99998 1.22385 1.77612 1 1.49999 1C1.22385 1 1 1.22385 1 1.49999C1 1.77612 1.22385 1.99998 1.49999 1.99998ZM1.49999 2.99998C2.32841 2.99998 2.99998 2.32841 2.99998 1.49999C2.99998 0.671567 2.32841 0 1.49999 0C0.671567 0 0 0.671567 0 1.49999C0 2.32841 0.671567 2.99998 1.49999 2.99998ZM7.67638 2.00012C7.95251 2.00012 8.17636 1.77626 8.17636 1.50013C8.17636 1.22399 7.95251 1.00014 7.67638 1.00014C7.40024 1.00014 7.17639 1.22399 7.17639 1.50013C7.17639 1.77626 7.40024 2.00012 7.67638 2.00012ZM7.67638 3.00012C8.5048 3.00012 9.17636 2.32855 9.17636 1.50013C9.17636 0.671707 8.5048 0.000139432 7.67638 0.000139432C6.84796 0.000139432 6.17639 0.671707 6.17639 1.50013C6.17639 2.32855 6.84796 3.00012 7.67638 3.00012ZM14.0003 1.50013C14.0003 1.77626 13.7765 2.00012 13.5003 2.00012C13.2242 2.00012 13.0004 1.77626 13.0004 1.50013C13.0004 1.22399 13.2242 1.00014 13.5003 1.00014C13.7765 1.00014 14.0003 1.22399 14.0003 1.50013ZM15.0003 1.50013C15.0003 2.32855 14.3288 3.00012 13.5003 3.00012C12.6719 3.00012 12.0004 2.32855 12.0004 1.50013C12.0004 0.671707 12.6719 0.000139432 13.5003 0.000139432C14.3288 0.000139432 15.0003 0.671707 15.0003 1.50013Z"
+      fill="#171A1F"
+      fillOpacity="0.5"
+    />
+  </svg>
+);
+
+const BackButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+`;
+
+const AlbumDetailContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const AlbumImage = styled.img`
+  width: 80px;
+  height: 80px;
   margin-bottom: 10px;
 `;
 
-const Spacer = styled.div`
-  width: 32px;
-`;
-
-const Title = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  flex-grow: 1;
-  text-align: center;
-`;
-
-export const EditIconContainer = styled.div`
-  width: 32px;
-  margin-left: auto;
-`;
-
-const fillHeart = keyframes`
-  from {
-    transform: scale(0.7);
-    opacity: 0.5;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-`;
-
-const HeartIcon = styled.svg<{ $isFavorite: boolean }>`
-  width: 24px;
-  height: 24px;
-  fill: ${({ $isFavorite }) => ($isFavorite ? "lightcoral" : "transparent")};
-  stroke: lightcoral;
-  stroke-width: 2px;
-  transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out;
-  ${({ $isFavorite }) =>
-    $isFavorite &&
-    css`
-      animation: ${fillHeart} 0.6s ease forwards;
-    `}
-`;
-
-const PageHeader = styled.div`
+const AlbumInfo = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 `;
 
-const BackButtonContainer = styled.button`
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  gap: 5px;
-  border-radius: 10px;
-  border: none;
-`;
-
-const BackButton = styled.span`
-  text-decoration: "underline";
-  font-weight: "bold";
-  font-size: "18px";
-  color: "#8ab1e8";
-`;
-
-const OwnerInfoPanel = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-`;
-
-const OwnerName = styled.div`
-  font-weight: bold;
-  margin-bottom: 4px;
-`;
-
-const CreatedAt = styled.div`
-  font-size: 0.8rem;
-  color: #6c757d;
-  line-height: 1;
-`;
-
-const InfoContainer = styled.div`
-  text-align: right;
-  margin-top: 5px;
-  margin-right: 10px;
-`;
-
-const DetailItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.9rem;
-  color: #6c757d;
-`;
-
-export const SongList = styled.div`
-  text-align: left;
-  font-size: 15px;
+const InfoText = styled.div`
   margin-left: 10px;
 `;
 
-export const ArtistAndDuration = styled(DetailItem)`
+const Title = styled.h1`
+  font-size: 18px;
+  font-weight: 500;
+  color: #323743;
+  margin-bottom: 10px;
+`;
+
+const Subtitle = styled.h2`
+  font-size: 13px;
+  font-weight: 300;
+  color: #171a1f;
+  margin-bottom: 9px;
+`;
+
+const SongInfo = styled.div`
+  font-size: 10px;
+  font-weight: 300;
+  color: #9095a1;
+  margin-bottom: 20px;
+`;
+
+const SongList = styled.ul`
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-width: 600px;
+`;
+
+const SongItem = styled.li`
   display: flex;
-  align-items: center;
-  gap: 5px;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+
+  & > div {
+    font-size: 16px;
+  }
 `;
 
-export const TotalDurationContainer = styled(DetailItem)`
-  justify-content: center;
-  margin-top: 25px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #c1c8ce;
-`;
-
-export const IconContainer = styled.div`
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-`;
-
-const Keywords = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-  align-items: center;
-  justify-content: center;
-`;
-
-const KeywordItem = styled.div`
-  font-weight: bold;
-  color: #c1c8ce;
-  padding: 5px;
-  border-radius: 5px;
-`;
-
-const StyledLink = styled(Link)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 5px;
-`;
-
-const SheetButton = styled.button`
-  ${setFontStyle}
-  font-weight: bold;
-  border-radius: 10px;
-  background-color: transparent;
-  padding: 5px;
-  color: #c1c8ce;
-  margin: 0 auto;
-`;
-
-function ContiDetail() {
+const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { id: cid } = useParams();
-  const uid = localStorage["user_info"]
-    ? JSON.parse(localStorage["user_info"]).id
-    : null;
-  const { state, updateState, onDragEnd, toggleFavorite, songOptionsClick } =
-    useContiDetailState(Number(cid), uid);
-  const [modal, setModal] = useRecoilState(modalAtom);
 
-  const queryResults = useQueries([
-    {
-      queryKey: ["conties", "conti", cid],
-      queryFn: () => getConti(Number(cid)),
-      onSuccess: (data: ContiType) => {
-        updateState({
-          contiData: data,
-          songs: data!.songs.sort((a, b) => a.order - b.order),
-          isOwner: data!.owner.id === uid,
-          editTitleValue: data!.title,
-        });
-      },
-      refetchOnWindowFocus: true,
-    },
-    {
-      queryKey: ["saved"],
-      queryFn: () => getSavedConties(uid),
-      onSuccess: (data: ContiType[]) => {
-        if (data.find((c) => c?.id === Number(cid))) {
-          updateState({ isFavorite: true });
-        }
-      },
-    },
-  ]);
-
-  const isLoading = queryResults.some((result) => result.isLoading);
-
-  // Refetch conti data
-  useEffect(() => {
-    queryClient.refetchQueries(["conties", "conti", cid]);
-  }, [cid, queryClient]);
-
-  // When the More Button is Pressed
-  const handleOptionsClick = (
-    event: React.MouseEvent<HTMLElement>,
-    isOwnerMenu: boolean,
-    optionsGetter: (event: React.MouseEvent<HTMLElement>) => {
-      x: number;
-      y: number;
-    }
-  ) => {
-    event.stopPropagation();
-    const { x, y } = optionsGetter(event);
-    if (isOwnerMenu) {
-      updateState({
-        ownerPosition: { x, y },
-        showOwnerMenu: !state.showOwnerMenu,
-      });
-    } else {
-      const activeOptionId = parseInt(event.currentTarget.id, 10);
-      updateState({
-        optionsPosition: { x, y },
-        activeOptions: isNaN(activeOptionId) ? null : activeOptionId,
-      });
-    }
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
-  const ownerOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    handleOptionsClick(event, true, (event) => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      return { x: rect.left - 100, y: rect.top + 10 };
-    });
-  };
-
-  const ownerMenuItems = [
-    {
-      label: "타이틀 수정",
-      onClick: () =>
-        setModal({ isShow: true, modalType: "ModifyTitle", id: Number(cid) }),
-    },
-    {
-      label: "콘티 삭제",
-      onClick: () =>
-        setModal({
-          isShow: true,
-          modalType: "ConfirmDeleteConti",
-          id: Number(cid),
-        }),
-    },
-    {
-      label: "키워드 수정",
-      onClick: () =>
-        setModal({
-          isShow: true,
-          modalType: "ModifyKeywords",
-          id: Number(cid),
-        }),
-    },
+  const albumTitle = "동계 수련회 콘티";
+  const albumSubtitle = "준석";
+  const albumDate = "2024.02.13";
+  const albumDuration = "26분";
+  const songs = [
+    { title: "은혜 아래 있네", artist: "아이자야씩스티원" },
+    { title: "I’m Not Ashamed", artist: "아이자야씩스티원" },
+    { title: "Celebrate (Live)", artist: "아이자야씩스티원" },
+    { title: "온 우주 전에", artist: "아이자야씩스티원" },
   ];
 
-  const getMenuItems = (song: SongType) => {
-    const items: IMenuItem[] = [
-      {
-        label: "들어보기",
-        link: `https://www.youtube.com/results?search_query=${song.title.replace(
-          " ",
-          "+"
-        )}`,
-      },
-    ];
-    if (state.isOwner) {
-      items.push({
-        label: "삭제하기",
-        onClick: () =>
-          setModal({
-            isShow: true,
-            modalType: "ConfirmDeleteSong",
-            id: song.id,
-          }),
-      });
-    } else if (!state.isOwner) {
-      items.push({
-        label: "추가하기",
-        onClick: () =>
-          setModal({ isShow: true, modalType: "AddToMyConti", id: song.id }),
-      });
-    }
-
-    return items;
-  };
-
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <PageContainer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        {isLoading ? (
-          <CenteredContainer>
-            <div style={{ marginBottom: "10px" }}>잠시만요...</div>
-            <LoadingSpinner />
-          </CenteredContainer>
-        ) : (
-          <div>
-            <TitleHeader>
-              <Spacer />
-              <Title>{state.contiData?.title}</Title>
-              <EditIconContainer
-                onClick={(event) => {
-                  if (state.isOwner) ownerOptionsClick(event);
-                  else toggleFavorite(event);
-                }}
-              >
-                {state.isOwner ? (
-                  <BorderColorIcon />
-                ) : (
-                  uid && (
-                    <HeartIcon
-                      $isFavorite={state.isFavorite}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      stroke="lightcoral"
-                    >
-                      <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
-                    </HeartIcon>
-                  )
-                )}
-              </EditIconContainer>
-              {state.showOwnerMenu && (
-                <OptionsMenu
-                  x={state.ownerPosition.x}
-                  y={state.ownerPosition.y}
-                  onClose={() => updateState({ showOwnerMenu: false })}
-                  menuItems={ownerMenuItems}
-                />
-              )}
-            </TitleHeader>
-            <PageHeader>
-              <BackButtonContainer onClick={() => navigate(-1)}>
-                <MdKeyboardArrowLeft size="25" color="#8ab1e8" />
-                <BackButton
-                  style={{
-                    textDecoration: "underline",
-                    fontWeight: "bold",
-                    color: "#8ab1e8",
-                    fontSize: "18px",
-                  }}
-                >
-                  이전
-                </BackButton>
-              </BackButtonContainer>
-              <OwnerInfoPanel>
-                <InfoContainer>
-                  <OwnerName>{state.contiData?.owner.name}</OwnerName>
-                  <CreatedAt>
-                    {state.contiData?.created_at
-                      ? parseLocalDateString(state.contiData.created_at)
-                      : "Loading..."}
-                  </CreatedAt>
-                </InfoContainer>
-              </OwnerInfoPanel>
-            </PageHeader>
-            <Droppable droppableId={cid!.toString()}>
-              {(provided: DroppableProvided) => (
-                <SongList {...provided.droppableProps} ref={provided.innerRef}>
-                  {state.songs.map((song, index) => (
-                    <Draggable
-                      key={index}
-                      draggableId={index + ""}
-                      index={index}
-                      isDragDisabled={!state.isOwner}
-                    >
-                      {(
-                        provided: DraggableProvided,
-                        snapshot: DraggableStateSnapshot
-                      ) => (
-                        <div
-                          {...provided.draggableProps}
-                          ref={provided.innerRef}
-                          style={{
-                            ...provided.draggableProps.style,
-                            cursor:
-                              !state.isOwner && !snapshot.isDragging
-                                ? "default"
-                                : "grab",
-                          }}
-                        >
-                          <SongItem
-                            song={song}
-                            index={index}
-                            onOptionsClick={(songId, event) =>
-                              songOptionsClick(songId, event)
-                            }
-                            dragHandleProps={provided.dragHandleProps}
-                          />
-                          {state.activeOptions === song.id && (
-                            <OptionsMenu
-                              x={state.optionsPosition.x}
-                              y={state.optionsPosition.y}
-                              onClose={() =>
-                                updateState({ activeOptions: null })
-                              }
-                              menuItems={getMenuItems(song)}
-                            />
-                          )}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </SongList>
-              )}
-            </Droppable>
-            <TotalDurationContainer>
-              <span>총 {state.contiData?.songs.length}개의 곡</span>
-              <span>•</span>
-              <span>
-                {state.contiData?.duration
-                  ? formatTotalDuration(state.contiData.duration)
-                  : "0분"}
-              </span>
-            </TotalDurationContainer>
-            <Keywords>
-              {state.contiData?.keywords.map((k, i) => (
-                <KeywordItem key={i}>#{k}</KeywordItem>
+    <AnimatePresence mode="wait">
+      <Container>
+        <StatusBar />
+        <Header>
+          <BackButton onClick={handleBackClick}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M15 6L9 12L15 18"
+                stroke="#545F71"
+                strokeWidth="1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </BackButton>
+          <IconContainer>
+            <HeartIcon />
+            <OptionsIcon />
+          </IconContainer>
+        </Header>
+        <Content>
+          <AlbumDetailContainer>
+            <AlbumInfo>
+              <AlbumImage src="/images/WhitePiano.png" alt="Album Image" />
+              <InfoText>
+                <Title>{albumTitle}</Title>
+                <Subtitle>{albumSubtitle}</Subtitle>
+                <SongInfo>{`${songs.length}곡 • ${albumDuration} • ${albumDate}`}</SongInfo>
+              </InfoText>
+            </AlbumInfo>
+            <SongList>
+              {songs.map((song, index) => (
+                <SongItem key={index}>
+                  <div>{song.title}</div>
+                  <div>{song.artist}</div>
+                </SongItem>
               ))}
-            </Keywords>
-          </div>
-        )}
-        {state.contiData?.sheet && (
-          <StyledLink
-            to={`${SERVER_URL}/api/sheet/${state.contiData.sheet.id}`}
-          >
-            <SheetButton>
-              {state.contiData.sheet.filename}{" "}
-              {Math.floor((state.contiData.sheet.size / 1024 / 1024) * 10) / 10}
-              MB
-            </SheetButton>
-          </StyledLink>
-        )}
-      </PageContainer>
-      {modal.isShow && <Modal state={state} updateState={updateState} />}
-    </DragDropContext>
+            </SongList>
+          </AlbumDetailContainer>
+        </Content>
+        <SafariSpace $isFocused={false} />
+      </Container>
+    </AnimatePresence>
   );
-}
+};
 
 export default ContiDetail;
