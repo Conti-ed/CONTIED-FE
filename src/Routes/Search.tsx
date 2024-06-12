@@ -22,6 +22,8 @@ import {
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
 import SafariSpace from "../components/SafariSpace";
+import InputSafariSpace from "../components/InputSafariSpace";
+import Keyboard from "../components/Keyboard";
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -104,7 +106,9 @@ const Search: React.FC = () => {
       </Content>
       <TabBarWrapper $isFocused={isFocused}>
         <TabBar />
+        <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
+      {isFocused && <Keyboard />}
       <SafariSpace $isFocused={isFocused} />
     </Container>
   );

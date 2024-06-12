@@ -26,7 +26,6 @@ const fadeIn = keyframes`
 
 const Container = styled.div`
   height: 100vh;
-  //position: relative;
 `;
 
 const Content = styled.div<{ $isFading: boolean }>`

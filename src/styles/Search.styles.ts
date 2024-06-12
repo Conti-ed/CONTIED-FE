@@ -103,7 +103,7 @@ export const EmptyStateContainer = styled.div`
   flex-direction: column;
   align-items: center;
   position: absolute;
-  top: 38%;
+  top: 35%;
   transform: translateY(-50%);
 `;
 
@@ -128,7 +128,7 @@ export const EmptyStateText2 = styled.div`
 
 export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
   position: absolute;
-  bottom: ${(props) => (props.$isFocused ? "150px" : "0px")};
+  bottom: ${(props) => (props.$isFocused ? "210px" : "0px")};
   width: 100%;
   display: flex;
   justify-content: center;

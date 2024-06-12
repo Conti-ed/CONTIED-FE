@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
-import StatusBar from "../components/StatusBar";
 
 const fadeOut = keyframes`
   from {
