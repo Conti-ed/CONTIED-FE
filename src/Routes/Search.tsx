@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom"; // useNavigate, useLocation hook
+import { useNavigate, useLocation } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
 import {
@@ -15,8 +15,12 @@ import {
   BackIcon,
   SearchBar,
   Content,
-  SearchPageText,
   TabBarWrapper,
+  SearchPageText,
+  RecentSearchContainer,
+  RecentSearchesHeader,
+  ClearAllButton,
+  RecentSearchItem,
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
 import EmptyState from "../components/EmptyState";
@@ -28,6 +32,7 @@ const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,10 +45,21 @@ const Search: React.FC = () => {
   }, [location.state]);
 
   useEffect(() => {
+    const storedSearches = localStorage.getItem("recentSearches");
+    if (storedSearches) {
+      setRecentSearches(JSON.parse(storedSearches));
+    }
+  }, []);
+
+  useEffect(() => {
     if (isFocused && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+  }, [recentSearches]);
 
   const handleClearSearch = () => {
     setSearchQuery("");
@@ -56,10 +72,14 @@ const Search: React.FC = () => {
     if (searchQuery.trim() !== "") {
       setIsFocused(false); // 포커스 해제
       setIsLoading(true); // 로딩 시작
+      setRecentSearches((prevSearches) => [
+        searchQuery,
+        ...prevSearches.filter((item) => item !== searchQuery),
+      ]); // 검색어 저장 및 중복 제거
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate("/result", { state: { query: searchQuery } }); // 결과 페이지로 이동
-      }, 1000); // 3초 후에 로딩 종료
+      }, 1000); // 1초 후에 로딩 종료
     }
   };
 
@@ -69,9 +89,43 @@ const Search: React.FC = () => {
     }
   };
 
-  const renderEmptyState = () => {
-    return <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />;
+  const handleClearAll = () => {
+    setRecentSearches([]);
   };
+
+  const handleRemoveRecentSearch = (search: string) => {
+    setRecentSearches((prevSearches) =>
+      prevSearches.filter((item) => item !== search)
+    );
+  };
+
+  const renderRecentSearches = () => (
+    <RecentSearchContainer>
+      <RecentSearchesHeader>
+        <span>최근 검색어</span>
+        <ClearAllButton onClick={handleClearAll}>전체삭제</ClearAllButton>
+      </RecentSearchesHeader>
+      {recentSearches.map((search) => (
+        <RecentSearchItem key={search}>
+          <span onClick={() => setSearchQuery(search)}>{search}</span>
+          <svg
+            onClick={() => handleRemoveRecentSearch(search)}
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+          >
+            <path
+              d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
+              stroke="#545F71"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </RecentSearchItem>
+      ))}
+    </RecentSearchContainer>
+  );
 
   return (
     <Container>
@@ -151,14 +205,12 @@ const Search: React.FC = () => {
       <Content>
         {isLoading ? (
           <Loading />
+        ) : isFocused && recentSearches.length > 0 ? (
+          renderRecentSearches()
+        ) : isFocused ? (
+          <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />
         ) : (
-          <>
-            {isFocused ? (
-              renderEmptyState()
-            ) : (
-              <SearchPageText>Search Page</SearchPageText>
-            )}
-          </>
+          <SearchPageText>Search Page</SearchPageText>
         )}
       </Content>
       <TabBarWrapper $isFocused={isFocused}>

@@ -106,34 +106,6 @@ export const SearchPageText = styled.h2`
   margin-bottom: 40px;
 `;
 
-export const EmptyStateContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  top: 35%;
-  transform: translateY(-50%);
-`;
-
-export const EmptyStateImage = styled.img`
-  margin-bottom: 8px;
-`;
-
-export const EmptyStateText1 = styled.div`
-  font-size: 15px;
-  font-weight: 300;
-  color: #171a1f;
-  text-align: center;
-  margin-bottom: 9px;
-`;
-
-export const EmptyStateText2 = styled.div`
-  font-size: 12px;
-  font-weight: 300;
-  color: #828282;
-  text-align: center;
-`;
-
 export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
   position: absolute;
   bottom: ${(props) => (props.$isFocused ? "210px" : "0px")};
@@ -142,4 +114,57 @@ export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
   justify-content: center;
   align-items: center;
   transition: bottom 0.3s ease;
+`;
+
+export const RecentSearchContainer = styled.div`
+  position: absolute;
+  top: 18%; /* 위치를 조금 더 아래로 조정합니다 */
+  width: 90%;
+  max-height: 30%; /* 최대 높이를 설정하여 스크롤 가능하게 합니다 */
+  overflow-y: auto; /* 스크롤 가능하게 설정 */
+`;
+
+export const RecentSearchesHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 300;
+  color: #525252;
+  background: #fff;
+  position: sticky; /* 컨테이너 내에서 고정 */
+  top: 0;
+  z-index: 10;
+`;
+
+export const ClearAllButton = styled.button`
+  font-size: 12px;
+  font-weight: 400;
+  color: #545f71;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+
+export const RecentSearchItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 3px;
+  font-size: 14px;
+  color: #171a1f;
+  border-bottom: 1px solid #e0e0e0;
+
+  span {
+    cursor: pointer;
+    flex: 1;
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #545f71;
+  }
 `;
