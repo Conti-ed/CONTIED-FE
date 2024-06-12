@@ -2,9 +2,9 @@ import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-import Header from "./components/Header";
+// import Header from "./components/Header";
 import { Outlet } from "react-router-dom";
-import TabBar from "./components/TabBar";
+// import TabBar from "./components/TabBar";
 
 function Root() {
   const isDark = useRecoilValue(isDarkAtom);

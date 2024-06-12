@@ -16,13 +16,10 @@ import {
   SearchBar,
   Content,
   SearchPageText,
-  EmptyStateContainer,
-  EmptyStateImage,
-  EmptyStateText1,
-  EmptyStateText2,
   TabBarWrapper,
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
+import EmptyState from "../components/EmptyState";
 import SafariSpace from "../components/SafariSpace";
 import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
@@ -62,7 +59,7 @@ const Search: React.FC = () => {
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate("/result", { state: { query: searchQuery } }); // 결과 페이지로 이동
-      }, 3000); // 3초 후에 로딩 종료
+      }, 1000); // 3초 후에 로딩 종료
     }
   };
 
@@ -70,6 +67,10 @@ const Search: React.FC = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const renderEmptyState = () => {
+    return <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />;
   };
 
   return (
@@ -153,14 +154,7 @@ const Search: React.FC = () => {
         ) : (
           <>
             {isFocused ? (
-              <EmptyStateContainer>
-                <EmptyStateImage
-                  src="images/WhitePiano.png"
-                  alt="Empty state"
-                />
-                <EmptyStateText1>앗!</EmptyStateText1>
-                <EmptyStateText2>최근 검색한 기록이 없어요.</EmptyStateText2>
-              </EmptyStateContainer>
+              renderEmptyState()
             ) : (
               <SearchPageText>Search Page</SearchPageText>
             )}

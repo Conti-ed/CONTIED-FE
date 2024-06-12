@@ -11,7 +11,6 @@ import {
   BackIcon,
   SearchBar,
   Content,
-  SearchPageText,
   TabBarWrapper,
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
@@ -22,6 +21,8 @@ import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
 import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
+import SectionTabs from "../components/SectionTabs";
+import EmptyState from "../components/EmptyState";
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -30,7 +31,13 @@ const Result: React.FC = () => {
   const [query, setQuery] = useState(initialQuery);
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
   const [isFocused, setIsFocused] = useState(false); // 포커스 상태 추가
+  const [selectedTab, setSelectedTab] = useState("전체"); // 선택된 탭 상태 추가
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // 컴포넌트가 처음 로드될 때 및 매번 렌더링될 때 포커스를 해제합니다.
+    setIsFocused(false);
+  }, [location]);
 
   useEffect(() => {
     if (isFocused && inputRef.current) {
@@ -39,27 +46,36 @@ const Result: React.FC = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    // 컴포넌트가 처음 로드될 때 포커스를 해제합니다.
-    setIsFocused(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  useEffect(() => {
-    // query 값이 변경될 때 포커스를 해제합니다.
-    setIsFocused(false);
-  }, [query]);
-
   const handleClearSearch = () => {
-    navigate("/search", { state: { query: "", isFocused: true } });
+    setQuery("");
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const handleSearch = () => {
     if (query.trim() !== "") {
-      setIsFocused(false); // 포커스 해제
       setIsLoading(true); // 로딩 시작
+      setIsFocused(false);
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate("/result", { state: { query } }); // 결과 페이지로 이동
-      }, 3000); // 3초 후에 로딩 종료
+      }, 1000); // 1초 후에 로딩 종료
     }
   };
 
@@ -67,6 +83,14 @@ const Result: React.FC = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  const renderEmptyState = () => {
+    const tabText =
+      selectedTab === "전체"
+        ? "검색 결과가 없어요."
+        : `${selectedTab} 검색 결과가 없어요.`;
+    return <EmptyState message={tabText} top="49.5%" />;
   };
 
   return (
@@ -103,20 +127,22 @@ const Result: React.FC = () => {
             onKeyDown={handleKeyDown} // Enter 키 이벤트 추가
             onFocus={() => setIsFocused(true)} // 포커스 상태 업데이트
           />
-          <ClearIcon
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            onClick={handleClearSearch}
-          >
-            <path
-              d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
-              stroke="#545F71"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </ClearIcon>
+          {query && (
+            <ClearIcon
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              onClick={handleClearSearch}
+            >
+              <path
+                d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
+                stroke="#545F71"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </ClearIcon>
+          )}
           <SearchIcon
             width="18"
             height="18"
@@ -136,14 +162,12 @@ const Result: React.FC = () => {
         </SearchInputWrapper>
         <SearchBar />
       </SearchInputContainer>
+      <SectionTabs selectedTab={selectedTab} onSelectTab={setSelectedTab} />
       <Content>
         {isLoading ? (
           <Loading /> // 로딩 상태일 때 로딩 컴포넌트를 표시
         ) : (
-          <SearchPageText>
-            {initialQuery}
-            <br />에 대한 검색 결과
-          </SearchPageText>
+          renderEmptyState()
         )}
       </Content>
       <TabBarWrapper $isFocused={isFocused}>
