@@ -55,6 +55,7 @@ function TabBar() {
 
   const getActiveButton = () => {
     if (location.pathname === "/search") return "search";
+    if (location.pathname === "/result") return "search";
     // if (location.pathname === "/my") return "my";
     return "home";
   };

@@ -4,6 +4,7 @@ import Start from "./Routes/Start";
 import Wait from "./Routes/Wait";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
+import Result from "./Routes/Result";
 import Feed from "./Routes/Feed";
 import Upload from "./Routes/Upload";
 import Settings from "./Routes/Settings";
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: "waiting", element: <Wait /> },
       { path: "home", element: <Home /> },
       { path: "search", element: <Search /> },
+      { path: "result", element: <Result /> },
       { path: "feed", element: <Feed /> },
       { path: "upload", element: <Upload /> },
       { path: "settings", element: <Settings /> },
