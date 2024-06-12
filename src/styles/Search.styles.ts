@@ -71,6 +71,14 @@ export const SearchInput = styled.input`
 export const ClearIcon = styled.svg`
   margin-right: 10px;
   cursor: pointer;
+  z-index: 10; /* Ensure ClearIcon is clickable */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Optional: For testing the click area */
+  border-radius: 50%; /* Optional: For better UI */
 `;
 
 export const SearchIcon = styled.svg`

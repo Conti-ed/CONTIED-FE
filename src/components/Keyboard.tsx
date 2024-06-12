@@ -148,7 +148,7 @@ const Keyboard: React.FC = () => {
             </svg>
           </IconWrapper>
         </IconContainer>
-        <span>완료</span>
+        <span style={{ fontSize: "15px" }}>완료</span>
       </KeyboardTopBar>
       <KeyContainer>
         {keyboardLayout.map((row, rowIndex) => (

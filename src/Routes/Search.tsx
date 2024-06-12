@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
 import {
@@ -27,6 +27,15 @@ import Keyboard from "../components/Keyboard";
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <Container>
@@ -61,9 +70,11 @@ const Search: React.FC = () => {
       <SearchInputContainer>
         <SearchInputWrapper>
           <SearchInput
+            ref={inputRef}
             placeholder="콘티, 노래 또는 가사 등"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
           />
           {isFocused && (
             <ClearIcon
@@ -71,7 +82,7 @@ const Search: React.FC = () => {
               height="18"
               viewBox="0 0 18 18"
               fill="none"
-              onClick={() => setIsFocused(false)}
+              onClick={handleClearSearch}
             >
               <path
                 d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
