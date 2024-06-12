@@ -11,22 +11,27 @@ export const Container = styled(motion.div)`
   overflow: hidden;
 `;
 
-export const Header = styled.div<{ $isFocused: boolean }>`
+export const Header = styled.div`
   width: 100%;
   margin-top: 23px;
-  margin-left: 35px;
   display: flex;
-  justify-content: ${({ $isFocused }) =>
-    $isFocused ? "space-between" : "flex-start"};
+  justify-content: space-between;
   align-items: center;
+  position: relative;
+`;
+
+export const BackIcon = styled(motion.svg)`
+  margin-right: 10px;
+  cursor: pointer;
 `;
 
 export const Title = styled.h1<{ $isFocused: boolean }>`
-  font-size: 23px;
+  font-size: ${(props) => (props.$isFocused ? "18px" : "23px")};
   font-weight: 500;
   color: #171a1f;
-  transform: ${({ $isFocused }) =>
-    $isFocused ? "translateX(-50%)" : "translateX(0)"};
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 export const SearchInputContainer = styled.div`
@@ -63,18 +68,13 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const SearchIcon = styled.svg`
-  margin-right: 3px;
-`;
-
 export const ClearIcon = styled.svg`
   margin-right: 10px;
   cursor: pointer;
 `;
 
-export const BackIcon = styled.svg`
-  margin-right: 10px;
-  cursor: pointer;
+export const SearchIcon = styled.svg`
+  margin-right: 3px;
 `;
 
 export const SearchBar = styled.div`
@@ -102,18 +102,27 @@ export const EmptyStateContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: absolute;
+  top: 38%;
+  transform: translateY(-50%);
 `;
 
 export const EmptyStateImage = styled.img`
-  width: 86px;
-  height: 110px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 `;
 
-export const EmptyStateText = styled.div`
-  font-size: 18px;
-  font-weight: 500;
+export const EmptyStateText1 = styled.div`
+  font-size: 15px;
+  font-weight: 300;
   color: #171a1f;
+  text-align: center;
+  margin-bottom: 9px;
+`;
+
+export const EmptyStateText2 = styled.div`
+  font-size: 12px;
+  font-weight: 300;
+  color: #828282;
   text-align: center;
 `;
 
