@@ -136,11 +136,13 @@ export const RecentSearchesHeader = styled.div`
   position: sticky; /* 컨테이너 내에서 고정 */
   top: 0;
   z-index: 10;
+  margin-bottom: 10px;
 `;
 
 export const ClearAllButton = styled.button`
   font-size: 12px;
   font-weight: 400;
+  text-decoration: underline;
   color: #545f71;
   background: none;
   border: none;
