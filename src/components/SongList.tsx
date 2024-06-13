@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import SongItem from "./SongItem";
 
@@ -6,7 +5,6 @@ const Container = styled.ul`
   list-style: none;
   padding: 0;
   width: 100%;
-  max-width: 600px;
 `;
 
 const SongList = ({

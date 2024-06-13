@@ -26,9 +26,9 @@ const Header = styled.header`
 
 const Content = styled.div`
   flex: 1;
-  padding: 20px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 `;
 
 const IconContainer = styled.div`
@@ -90,8 +90,9 @@ const AlbumInfo = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 42px;
-  margin-bottom: 42px;
+  margin-top: 19px;
+  margin-bottom: 19px;
+  padding: 23px;
 `;
 
 const AlbumImageWrapper = styled.div`
@@ -102,6 +103,7 @@ const AlbumImageWrapper = styled.div`
   border: 1px solid #9dbbe9;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: sticky;
 `;
 
 const AlbumImage = styled.img`
@@ -150,22 +152,22 @@ const ContiDetail: React.FC = () => {
     {
       title: "은혜 아래 있네",
       artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/WhitePiano.png",
+      image: "/images/SongImage1.png",
     },
     {
       title: "I’m Not Ashamed",
       artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/WhitePiano.png",
+      image: "/images/SongImage2.png",
     },
     {
       title: "Celebrate (Live)",
       artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/WhitePiano.png",
+      image: "/images/SongImage3.png",
     },
     {
       title: "온 우주 전에",
       artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/WhitePiano.png",
+      image: "/images/SongImage4.png",
     },
   ];
 

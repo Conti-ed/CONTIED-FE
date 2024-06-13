@@ -1,29 +1,36 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
-import ContiPlaceholder from "./ContiPlaceholder";
 
 const SongItemContainer = styled.li`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #ddd;
+
+  &:first-of-type {
+    border-top: 1px solid #ddd;
+  }
 `;
 
 const SongImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 15px; /* InfoText와의 간격 */
+  margin-left: 23px;
+  margin-right: 20px; /* InfoText와의 간격 */
   border: 1px solid #9dbbe9;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: sticky;
 `;
 
 const SongInfo = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  height: 53px;
+  padding-left: 20px;
+  padding-right: 20px;
 
   & > div {
     display: flex;
@@ -44,8 +51,9 @@ const SongInfo = styled.div`
   }
 
   img {
-    width: 25px;
+    width: 42px;
     height: auto;
+    border-radius: 10px;
   }
 `;
 
@@ -87,7 +95,7 @@ const SongImage = styled.img`
 `;
 
 const SongSummary = styled.div`
-  margin-left: 0px;
+  margin-left: 11px;
 `;
 
 const SongTitle = styled.div`
@@ -119,7 +127,6 @@ const SongItem = ({
       <SongInfo>
         <div>
           <SongImageWrapper>
-            <ContiPlaceholder size={42} />
             <SongImage src={song.image} alt="Song Image" />
           </SongImageWrapper>
           <SongSummary className="song-info">

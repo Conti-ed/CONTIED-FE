@@ -51,26 +51,26 @@ footer, header, hgroup, main, menu, nav, section {
     display: none;
 }
 @font-face {
-      font-family: 'Gong Gothic';
-      src: url('/fonts/ESAMANRU BOLD.TTF') format('truetype');
-      font-weight: bold;
-      font-style: normal;
-  }
+    font-family: 'GongGothic';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicBold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
 @font-face {
-    font-family: 'Gong Gothic';
-    src: url('/fonts/ESAMANRU MEDIUM.TTF') format('truetype');
+    font-family: 'GongGothic';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicMedium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
 }
 @font-face {
-    font-family: 'Gong Gothic';
-    src: url('/fonts/ESAMANRU LIGHT.TTF') format('truetype');
+    font-family: 'GongGothic';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicLight.woff') format('woff');
     font-weight: 300;
     font-style: normal;
 }
 body {
   line-height: 1;
-  font-family: 'Gong Gothic', 'Noto Sans KR', sans-serif;
+  font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.textColor};
 }
@@ -97,12 +97,12 @@ a {
   color: inherit;
 }
 button {
-  font-family: 'Gong Gothic', 'Noto Sans KR', sans-serif;
+  font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.textColor};
 }
 input {
-  font-family: 'Gong Gothic', 'Noto Sans KR', sans-serif;
+  font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.textColor};
 }
