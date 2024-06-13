@@ -60,7 +60,7 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
   const getActiveButton = () => {
     if (location.pathname === "/search") return "search";
     if (location.pathname === "/result") return "search";
-    // if (location.pathname === "/my") return "my";
+    if (location.pathname === "/my") return "my";
     return "home";
   };
 
@@ -122,7 +122,10 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
       </Button>
       <Button
         $active={activeButton === "my"}
-        onClick={() => setActiveButton("my")}
+        onClick={() => {
+          setActiveButton("my");
+          navigate("/my");
+        }}
       >
         <svg
           width="30"
