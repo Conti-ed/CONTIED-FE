@@ -4,6 +4,8 @@ import { AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
+import ContiPlaceholder from "../components/ContiPlaceholder";
+import SongList from "../components/SongList";
 
 const Container = styled.div`
   display: flex;
@@ -32,7 +34,7 @@ const Content = styled.div`
 const IconContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 9px;
+  margin-right: 10px;
   gap: 10px;
 `;
 
@@ -41,7 +43,6 @@ const HeartIcon = () => (
     width="17"
     height="14"
     viewBox="0 0 17 14"
-    fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
@@ -81,26 +82,37 @@ const BackButton = styled.button`
 `;
 
 const AlbumDetailContainer = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-`;
-
-const AlbumImage = styled.img`
-  width: 80px;
-  height: 80px;
-  margin-bottom: 10px;
 `;
 
 const AlbumInfo = styled.div`
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 20px;
+  margin-top: 42px;
+  margin-bottom: 42px;
+`;
+
+const AlbumImageWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px; /* InfoText와의 간격 */
+  border: 1px solid #9dbbe9;
+  border-radius: 20px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+`;
+
+const AlbumImage = styled.img`
+  position: absolute;
+  width: auto;
+  height: 69px;
 `;
 
 const InfoText = styled.div`
-  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Title = styled.h1`
@@ -121,25 +133,6 @@ const SongInfo = styled.div`
   font-size: 10px;
   font-weight: 300;
   color: #9095a1;
-  margin-bottom: 20px;
-`;
-
-const SongList = styled.ul`
-  list-style: none;
-  padding: 0;
-  width: 100%;
-  max-width: 600px;
-`;
-
-const SongItem = styled.li`
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-
-  & > div {
-    font-size: 16px;
-  }
 `;
 
 const ContiDetail: React.FC = () => {
@@ -154,10 +147,26 @@ const ContiDetail: React.FC = () => {
   const albumDate = "2024.02.13";
   const albumDuration = "26분";
   const songs = [
-    { title: "은혜 아래 있네", artist: "아이자야씩스티원" },
-    { title: "I’m Not Ashamed", artist: "아이자야씩스티원" },
-    { title: "Celebrate (Live)", artist: "아이자야씩스티원" },
-    { title: "온 우주 전에", artist: "아이자야씩스티원" },
+    {
+      title: "은혜 아래 있네",
+      artist: "아이자야씩스티원(Isaiah6tyOne)",
+      image: "/images/WhitePiano.png",
+    },
+    {
+      title: "I’m Not Ashamed",
+      artist: "아이자야씩스티원(Isaiah6tyOne)",
+      image: "/images/WhitePiano.png",
+    },
+    {
+      title: "Celebrate (Live)",
+      artist: "아이자야씩스티원(Isaiah6tyOne)",
+      image: "/images/WhitePiano.png",
+    },
+    {
+      title: "온 우주 전에",
+      artist: "아이자야씩스티원(Isaiah6tyOne)",
+      image: "/images/WhitePiano.png",
+    },
   ];
 
   return (
@@ -184,21 +193,17 @@ const ContiDetail: React.FC = () => {
         <Content>
           <AlbumDetailContainer>
             <AlbumInfo>
-              <AlbumImage src="/images/WhitePiano.png" alt="Album Image" />
+              <AlbumImageWrapper>
+                <ContiPlaceholder size={129} />
+                <AlbumImage src="/images/WhitePiano.png" alt="Album Image" />
+              </AlbumImageWrapper>
               <InfoText>
                 <Title>{albumTitle}</Title>
                 <Subtitle>{albumSubtitle}</Subtitle>
                 <SongInfo>{`${songs.length}곡 • ${albumDuration} • ${albumDate}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
-            <SongList>
-              {songs.map((song, index) => (
-                <SongItem key={index}>
-                  <div>{song.title}</div>
-                  <div>{song.artist}</div>
-                </SongItem>
-              ))}
-            </SongList>
+            <SongList songs={songs} />
           </AlbumDetailContainer>
         </Content>
         <SafariSpace $isFocused={false} />
