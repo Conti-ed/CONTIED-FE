@@ -24,7 +24,7 @@ import { LoadingSpinner } from "../styles/LoadingSpinner";
 
 const Home: React.FC = () => {
   const userName = "준석"; // 사용자 이름
-  const albumTitle = "동계수련회"; // 앨범 제목
+  const albumTitle = "동계 수련회 콘티"; // 앨범 제목
   const navigate = useNavigate();
 
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   };
 
   const handleAlbumClick = () => {
-    navigate("/conti-detail");
+    navigate(`/conti-detail/동계%20수련회%20콘티-1718363217799`);
   };
 
   const handleButtonClick = (buttonName: string) => {

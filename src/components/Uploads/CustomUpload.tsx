@@ -1,5 +1,16 @@
 import React, { useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // react-router-dom 사용
+
+const blink = keyframes`
+  0%, 100% {
+    border-color: #ea8c8c;
+  }
+  50% {
+    border-color: #ffffff;
+  }
+`;
 
 const Container = styled.div`
   width: 100%;
@@ -28,9 +39,10 @@ const InputWrapper = styled.div`
   align-items: center;
   width: 100%;
   flex-direction: row;
+  position: relative;
 `;
 
-const Input = styled.input`
+const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   width: 90%;
   border-radius: 10px;
   border: 2px solid #94b4ed;
@@ -39,9 +51,16 @@ const Input = styled.input`
   color: #171a1f;
   background-color: transparent;
   padding: 10px 10px;
+  ${(props) =>
+    props.$hasError &&
+    css`
+      animation: ${blink} 0.2s step-end 2;
+      border-color: #ea8c8c;
+    `}
 
   &:focus {
     outline: none;
+    background-color: rgba(148, 180, 237, 0.2);
     font-weight: 300;
   }
 
@@ -53,11 +72,9 @@ const Input = styled.input`
 
 const ClearIcon = styled.svg`
   position: absolute;
-  right: 63px;
+  right: 44px;
   cursor: pointer;
   z-index: 10;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
 `;
 
 const NextButton = styled.div`
@@ -70,29 +87,63 @@ const NextButton = styled.div`
   cursor: pointer;
 `;
 
-const Bar = styled.div`
-  margin-top: 6px;
+const CompleteButton = styled(motion.div)`
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #4f8eec;
+  border: 2px solid #94b4ed;
+  border-radius: 10px;
+  padding: 10px 10px;
   width: 100%;
-  border-bottom: 2px solid #171a1f;
 `;
 
 const CustomUpload = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [contiTitle, setContiTitle] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [showCompleteButton, setShowCompleteButton] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   const handleClearSearch = () => {
+    setContiTitle("");
     if (inputRef.current) {
-      setSearchQuery("");
       inputRef.current.focus();
     }
   };
 
   const handleSearch = () => {
-    // 검색 로직
+    if (contiTitle.trim() === "") {
+      setHasError(true);
+      setTimeout(() => {
+        setHasError(false);
+      }, 2000); // 애니메이션 지속 시간 조정
+    } else {
+      setShowCompleteButton(true);
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleComplete = () => {
+    const contiData = {
+      id: `${contiTitle}-${Date.now()}`,
+      title: contiTitle,
+      ownerName: "준석",
+      createdDate: new Date().toISOString().split("T")[0],
+      duration: 0,
+      songs: [],
+      thumbnail: "/images/WhitePiano.png",
+    };
+    localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+    navigate(`/conti-detail/${contiData.id}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
@@ -103,15 +154,24 @@ const CustomUpload = () => {
       <Title>제목만으로도 콘티가 생성되요!</Title>
       <InputContainer>
         <InputWrapper>
-          <Input
+          <MotionInput
             ref={inputRef}
-            placeholder="타이틀을 입력해주세요!"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="제목을 입력해주세요!"
+            value={contiTitle}
+            onChange={(e) => setContiTitle(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onKeyDown={handleKeyDown}
+            $hasError={hasError}
+            animate={{
+              borderColor: hasError ? "#ea8c8c" : "#94b4ed",
+              transition: {
+                duration: 0.2,
+                repeat: hasError ? 2 : 0,
+                repeatType: "reverse",
+              },
+            }}
           />
-          {searchQuery && isFocused && (
+          {contiTitle && isFocused && (
             <ClearIcon
               width="18"
               height="18"
@@ -127,9 +187,18 @@ const CustomUpload = () => {
               />
             </ClearIcon>
           )}
-          <NextButton>다음</NextButton>
+          <NextButton onClick={handleSearch}>다음</NextButton>
         </InputWrapper>
-        <Bar />
+        {showCompleteButton && (
+          <CompleteButton
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleComplete}
+          >
+            완료!
+          </CompleteButton>
+        )}
       </InputContainer>
     </Container>
   );

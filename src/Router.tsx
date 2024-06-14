@@ -24,7 +24,7 @@ const router = createBrowserRouter([
       { path: "result", element: <Result /> },
       // { path: "feed", element: <Feed /> },
       { path: "upload", element: <Upload /> },
-      { path: "conti-detail", element: <ContiDetail /> },
+      { path: "conti-detail/:contiId", element: <ContiDetail /> },
       // { path: "settings", element: <Settings /> },
       { path: "login", element: <Login /> },
       { path: "my", element: <MyPage /> },

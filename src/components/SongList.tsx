@@ -7,11 +7,13 @@ const Container = styled.ul`
   width: 100%;
 `;
 
-const SongList = ({
-  songs,
-}: {
-  songs: { title: string; artist: string; image: string }[];
-}) => (
+interface Song {
+  title: string;
+  artist: string;
+  image: string;
+}
+
+const SongList = ({ songs }: { songs: Song[] }) => (
   <Container>
     {songs.map((song, index) => (
       <SongItem key={index} song={song} />

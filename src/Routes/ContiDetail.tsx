@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
@@ -25,13 +25,7 @@ import {
 } from "../styles/ContiDetail.styles";
 
 const OptionsIcon = () => (
-  <svg
-    width="15"
-    height="3"
-    viewBox="0 0 15 3"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="15" height="3" viewBox="0 0 15 3" fill="none">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -44,7 +38,22 @@ const OptionsIcon = () => (
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { contiId } = useParams<{ contiId: string }>();
+  const [contiData, setContiData] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const storedConti = localStorage.getItem(`conti_${contiId}`);
+    if (storedConti) {
+      setContiData(JSON.parse(storedConti));
+    } else {
+      console.error("Conti not found");
+    }
+  }, [contiId]);
+
+  if (!contiData) {
+    return <div>콘티가 존재하지 않는 것 같아요...</div>;
+  }
 
   const handleHeartClick = () => {
     setIsFavorite(!isFavorite);
@@ -53,33 +62,6 @@ const ContiDetail: React.FC = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
-
-  const albumTitle = "동계 수련회 콘티";
-  const albumSubtitle = "준석";
-  const albumDate = "2024.02.13";
-  const albumDuration = "26분";
-  const songs = [
-    {
-      title: "은혜 아래 있네",
-      artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/SongImage1.png",
-    },
-    {
-      title: "I’m Not Ashamed",
-      artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/SongImage2.png",
-    },
-    {
-      title: "Celebrate (Live)",
-      artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/SongImage3.png",
-    },
-    {
-      title: "온 우주 전에",
-      artist: "아이자야씩스티원(Isaiah6tyOne)",
-      image: "/images/SongImage4.png",
-    },
-  ];
 
   return (
     <AnimatePresence mode="wait">
@@ -120,15 +102,15 @@ const ContiDetail: React.FC = () => {
             <AlbumInfo>
               <AlbumImageWrapper>
                 <ContiPlaceholder size={129} />
-                <AlbumImage src="/images/WhitePiano.png" alt="Album Image" />
+                <AlbumImage src={contiData.thumbnail} alt="Album Image" />
               </AlbumImageWrapper>
               <InfoText>
-                <Title>{albumTitle}</Title>
-                <Subtitle>{albumSubtitle}</Subtitle>
-                <SongInfo>{`${songs.length}곡 • ${albumDuration} • ${albumDate}`}</SongInfo>
+                <Title>{contiData.title}</Title>
+                <Subtitle>{contiData.ownerName}</Subtitle>
+                <SongInfo>{`${contiData.songs.length}곡 • ${contiData.duration}분 • ${contiData.createdDate}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
-            <SongList songs={songs} />
+            <SongList songs={contiData.songs} />
             <AddSongContainer>
               <AddIcon width="10" height="10" viewBox="0 0 10 10" fill="none">
                 <path
