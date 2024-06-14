@@ -1,58 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import styled from "styled-components";
+import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import SongList from "../components/SongList";
-
-const Container = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  height: 100vh;
-`;
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 12px;
-  height: 67px;
-  width: 100%;
-  border-bottom: 0.7px solid #d9d9d9;
-`;
-
-const Content = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-`;
-
-const IconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
-  gap: 10px;
-`;
-
-const HeartIcon = () => (
-  <svg
-    width="17"
-    height="14"
-    viewBox="0 0 17 14"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M1.73582 1.30738C2.49233 0.54952 3.51824 0.123781 4.58794 0.123781C5.65765 0.123781 6.68356 0.54952 7.44007 1.30738L8.62206 2.49082L9.80406 1.30738C10.1762 0.921274 10.6213 0.613306 11.1135 0.401441C11.6057 0.189577 12.1351 0.0780591 12.6707 0.0733948C13.2063 0.0687305 13.7376 0.171013 14.2333 0.374275C14.7291 0.577536 15.1795 0.877706 15.5583 1.25727C15.9371 1.63683 16.2366 2.08819 16.4395 2.585C16.6423 3.08181 16.7444 3.61413 16.7397 4.15089C16.7351 4.68765 16.6238 5.21811 16.4124 5.71132C16.2009 6.20452 15.8936 6.65059 15.5083 7.0235L8.62206 13.9251L1.73582 7.0235C0.979542 6.26542 0.554688 5.23737 0.554688 4.16544C0.554688 3.09351 0.979542 2.06546 1.73582 1.30738Z"
-      fill="#4F8EEC"
-    />
-  </svg>
-);
+import {
+  AddIcon,
+  AddSongContainer,
+  AlbumDetailContainer,
+  AlbumImage,
+  AlbumImageWrapper,
+  AlbumInfo,
+  BackButton,
+  Container,
+  Content,
+  Header,
+  HeartIcon,
+  IconContainer,
+  InfoText,
+  SongInfo,
+  Subtitle,
+  Title,
+} from "../styles/ContiDetail.styles";
 
 const OptionsIcon = () => (
   <svg
@@ -72,73 +42,13 @@ const OptionsIcon = () => (
   </svg>
 );
 
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-`;
-
-const AlbumDetailContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const AlbumInfo = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-top: 19px;
-  margin-bottom: 19px;
-  padding: 23px;
-`;
-
-const AlbumImageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px; /* InfoText와의 간격 */
-  border: 1px solid #9dbbe9;
-  border-radius: 20px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  position: sticky;
-`;
-
-const AlbumImage = styled.img`
-  position: absolute;
-  width: auto;
-  height: 69px;
-`;
-
-const InfoText = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Title = styled.h1`
-  font-size: 18px;
-  font-weight: 500;
-  color: #323743;
-  margin-bottom: 10px;
-`;
-
-const Subtitle = styled.h2`
-  font-size: 13px;
-  font-weight: 300;
-  color: #171a1f;
-  margin-bottom: 9px;
-`;
-
-const SongInfo = styled.div`
-  font-size: 10px;
-  font-weight: 300;
-  color: #9095a1;
-`;
-
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleHeartClick = () => {
+    setIsFavorite(!isFavorite);
+  };
 
   const handleBackClick = () => {
     navigate(-1);
@@ -193,7 +103,15 @@ const ContiDetail: React.FC = () => {
             </svg>
           </BackButton>
           <IconContainer>
-            <HeartIcon />
+            <HeartIcon
+              $isFavorite={isFavorite}
+              onClick={handleHeartClick}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#4F8EEC"
+            >
+              <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
+            </HeartIcon>
             <OptionsIcon />
           </IconContainer>
         </Header>
@@ -211,6 +129,18 @@ const ContiDetail: React.FC = () => {
               </InfoText>
             </AlbumInfo>
             <SongList songs={songs} />
+            <AddSongContainer>
+              <AddIcon width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path
+                  d="M5 1V9M9 5L1 5"
+                  stroke="#9095A1"
+                  strokeOpacity="0.631373"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </AddIcon>
+              곡 추가
+            </AddSongContainer>
           </AlbumDetailContainer>
         </Content>
         <SafariSpace $isFocused={false} />

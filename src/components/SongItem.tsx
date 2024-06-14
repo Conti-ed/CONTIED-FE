@@ -69,6 +69,7 @@ const Option = styled.div`
   flex-direction: column;
   align-items: center;
   font-size: 10px;
+  font-weight: 300;
   color: #8c8c8c;
   gap: 6px; /* 아이콘과 텍스트 간의 간격 */
   width: 110px;
