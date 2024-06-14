@@ -23,6 +23,7 @@ import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
 import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
+import ContiTab from "../components/Tabs/ContiTab"; // Import the new ContiTab component
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -35,7 +36,6 @@ const Result: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // 컴포넌트가 처음 로드될 때 및 매번 렌더링될 때 포커스를 해제합니다.
     setIsFocused(false);
   }, [location]);
 
@@ -70,13 +70,15 @@ const Result: React.FC = () => {
 
   const handleSearch = () => {
     if (query.trim() !== "") {
-      setIsLoading(true); // 로딩 시작
+      setIsLoading(true);
       setIsFocused(false);
-      saveRecentSearch(query); // 검색어 저장
+      saveRecentSearch(query);
       setTimeout(() => {
-        setIsLoading(false); // 로딩 종료
-        navigate("/result", { state: { query } }); // 결과 페이지로 이동
-      }, 1000); // 1초 후에 로딩 종료
+        setIsLoading(false);
+        navigate(`/result?query=${encodeURIComponent(query)}`, {
+          state: { query },
+        });
+      }, 1000);
     }
   };
 
@@ -136,8 +138,8 @@ const Result: React.FC = () => {
             value={query}
             placeholder="콘티, 노래 또는 가사 등"
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown} // Enter 키 이벤트 추가
-            onFocus={() => setIsFocused(true)} // 포커스 상태 업데이트
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
           />
           {query && (
             <ClearIcon
@@ -160,7 +162,7 @@ const Result: React.FC = () => {
             height="18"
             viewBox="0 0 18 18"
             fill="none"
-            onClick={handleSearch} // 검색 아이콘 클릭 이벤트 추가
+            onClick={handleSearch}
             style={{ cursor: "pointer" }}
           >
             <path
@@ -177,7 +179,11 @@ const Result: React.FC = () => {
       <SectionTabs selectedTab={selectedTab} onSelectTab={setSelectedTab} />
       <Content>
         {isLoading ? (
-          <Loading /> // 로딩 상태일 때 로딩 컴포넌트를 표시
+          <Loading />
+        ) : query.trim() === "" ? (
+          renderEmptyState()
+        ) : selectedTab === "콘티" ? (
+          <ContiTab searchQuery={query} />
         ) : (
           renderEmptyState()
         )}
