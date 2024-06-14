@@ -4,6 +4,9 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
+import CustomUpload from "../components/Uploads/CustomUpload";
+import AIUpload from "../components/Uploads/AIUpload";
+import YouTubeUpload from "../components/Uploads/YouTubeUpload";
 
 const Container = styled.div`
   width: 100vw;
@@ -40,17 +43,25 @@ const BackIcon = styled.svg`
   cursor: pointer;
 `;
 
-const spring = {
-  type: "spring",
-  stiffness: 500,
-  damping: 30,
-};
+const Title = styled.h1`
+  font-size: 16px;
+  font-weight: 500;
+  color: #171a1f;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+`;
 
-function Upload() {
+const Upload: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
+  const spring = {
+    type: "spring",
+    stiffness: 500,
+    damping: 30,
+  };
 
   const renderContent = () => {
     switch (source) {
@@ -61,7 +72,7 @@ function Upload() {
             animate={{ y: 0, opacity: 1 }}
             transition={spring}
           >
-            내가? 버튼을 눌렀을 때의 페이지
+            <CustomUpload />
           </Content>
         );
       case "AI가?":
@@ -71,7 +82,7 @@ function Upload() {
             animate={{ y: 0, opacity: 1 }}
             transition={spring}
           >
-            AI가? 버튼을 눌렀을 때의 페이지
+            <AIUpload />
           </Content>
         );
       case "유튜브가?":
@@ -81,7 +92,7 @@ function Upload() {
             animate={{ y: 0, opacity: 1 }}
             transition={spring}
           >
-            유튜브가? 버튼을 눌렀을 때의 페이지
+            <YouTubeUpload />
           </Content>
         );
       default:
@@ -94,6 +105,19 @@ function Upload() {
             잘못된 접근입니다.
           </Content>
         );
+    }
+  };
+
+  const renderTitle = () => {
+    switch (source) {
+      case "내가?":
+        return "내게 맡겨!";
+      case "AI가?":
+        return "AI에게 맡겨!";
+      case "유튜브가?":
+        return "유튜브에게 맡겨!";
+      default:
+        return "잘못된 접근입니다.";
     }
   };
 
@@ -115,11 +139,12 @@ function Upload() {
             strokeLinejoin="round"
           />
         </BackIcon>
+        <Title>{renderTitle()}</Title>
       </Header>
       {renderContent()}
       <SafariSpace $isFocused={false} />
     </Container>
   );
-}
+};
 
 export default Upload;
