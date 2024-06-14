@@ -44,6 +44,7 @@ const ContiDetail: React.FC = () => {
 
   useEffect(() => {
     const storedConti = localStorage.getItem(`conti_${contiId}`);
+    console.log(storedConti);
     if (storedConti) {
       setContiData(JSON.parse(storedConti));
     } else {

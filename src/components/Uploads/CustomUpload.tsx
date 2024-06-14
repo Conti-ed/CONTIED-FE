@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // react-router-dom 사용
+import { useNavigate } from "react-router-dom";
 
 const blink = keyframes`
   0%, 100% {
@@ -131,7 +131,7 @@ const CustomUpload = () => {
 
   const handleComplete = () => {
     const contiData = {
-      id: `${contiTitle}-${Date.now()}`,
+      id: `${Date.now()}`,
       title: contiTitle,
       ownerName: "준석",
       createdDate: new Date().toISOString().split("T")[0],

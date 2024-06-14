@@ -34,6 +34,7 @@ const Search: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recentSearchesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -61,6 +62,33 @@ const Search: React.FC = () => {
     localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
   }, [recentSearches]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (recentSearches.length > 0) {
+        if (
+          inputRef.current &&
+          !inputRef.current.contains(event.target as Node) &&
+          recentSearchesRef.current &&
+          !recentSearchesRef.current.contains(event.target as Node)
+        ) {
+          setIsFocused(false);
+        }
+      } else {
+        if (
+          inputRef.current &&
+          !inputRef.current.contains(event.target as Node)
+        ) {
+          setIsFocused(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [recentSearches]);
+
   const handleClearSearch = () => {
     setSearchQuery("");
     if (inputRef.current) {
@@ -78,7 +106,9 @@ const Search: React.FC = () => {
       ]); // 검색어 저장 및 중복 제거
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
-        navigate("/result", { state: { query: searchQuery } }); // 결과 페이지로 이동
+        navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
+          state: { query: searchQuery },
+        }); // 결과 페이지로 이동
       }, 1000); // 1초 후에 로딩 종료
     }
   };
@@ -93,6 +123,13 @@ const Search: React.FC = () => {
     setRecentSearches([]);
   };
 
+  const handleRecentSearchClick = (search: string) => {
+    setSearchQuery(search);
+    navigate(`/result?query=${encodeURIComponent(search)}`, {
+      state: { query: search },
+    });
+  };
+
   const handleRemoveRecentSearch = (search: string) => {
     setRecentSearches((prevSearches) =>
       prevSearches.filter((item) => item !== search)
@@ -100,14 +137,14 @@ const Search: React.FC = () => {
   };
 
   const renderRecentSearches = () => (
-    <RecentSearchContainer>
+    <RecentSearchContainer ref={recentSearchesRef}>
       <RecentSearchesHeader>
         <span>최근 검색어</span>
         <ClearAllButton onClick={handleClearAll}>전체삭제</ClearAllButton>
       </RecentSearchesHeader>
       {recentSearches.map((search) => (
         <RecentSearchItem key={search}>
-          <span onClick={() => setSearchQuery(search)}>{search}</span>
+          <span onClick={() => handleRecentSearchClick(search)}>{search}</span>
           <svg
             onClick={() => handleRemoveRecentSearch(search)}
             width="18"

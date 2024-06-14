@@ -103,21 +103,21 @@ export const InfoText = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 500;
   color: #323743;
   margin-bottom: 10px;
 `;
 
 export const Subtitle = styled.h2`
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 300;
   color: #171a1f;
   margin-bottom: 9px;
 `;
 
 export const SongInfo = styled.div`
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 300;
   color: #9095a1;
 `;

@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   };
 
   const handleAlbumClick = () => {
-    navigate(`/conti-detail/동계%20수련회%20콘티-1718363217799`);
+    navigate(`/conti-detail/1718367896540`);
   };
 
   const handleButtonClick = (buttonName: string) => {
