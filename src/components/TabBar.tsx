@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
@@ -57,18 +57,18 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getActiveButton = () => {
+  const getActiveButton = useCallback(() => {
     if (location.pathname === "/search") return "search";
     if (location.pathname === "/result") return "search";
     if (location.pathname === "/my") return "my";
     return "home";
-  };
+  }, [location.pathname]);
 
   const [activeButton, setActiveButton] = React.useState(getActiveButton);
 
   useEffect(() => {
     setActiveButton(getActiveButton());
-  }, [location.pathname]);
+  }, [location.pathname, getActiveButton]);
 
   const handleHomeClick = () => {
     if (onHomeClick) {
