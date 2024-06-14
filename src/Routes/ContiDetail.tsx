@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import styled from "styled-components";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import SongList from "../components/SongList";
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
@@ -173,7 +173,12 @@ const ContiDetail: React.FC = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <Container>
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <StatusBar />
         <Header>
           <BackButton onClick={handleBackClick}>
