@@ -1,4 +1,3 @@
-// StyledComponents.ts
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
@@ -128,9 +127,11 @@ interface ButtonProps {
   $hoverFillPath?: boolean;
   $hoverColor?: string;
   $isHovered: boolean;
+  $isClicked?: boolean; // 클릭 시 상태를 나타내는 속성 추가
 }
 
 export const Button = styled.button<ButtonProps>`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;

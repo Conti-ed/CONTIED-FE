@@ -110,7 +110,7 @@ function AddToMyConti() {
       <ModalTitle>어떤 콘티에 추가할까요?</ModalTitle>
       <hr></hr>
       {isLoading ? (
-        <LoadingSpinner />
+        <LoadingSpinner color="#E61414" />
       ) : (
         <ContiList>
           {data

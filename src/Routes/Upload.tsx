@@ -1,138 +1,123 @@
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import {
-  Container,
-  Form,
-  Input,
-  SubmitButton,
-  SongContainer,
-} from '../styles/Upload.styles';
-import {
-  Autocomplete,
-  List,
-  ListItem,
-  ListItemButton,
-  IconButton,
-} from '@mui/joy';
-import { Delete, KeyboardCommandKey } from '@mui/icons-material';
-import { useQuery } from 'react-query';
-import { useRecoilValue } from 'recoil';
-import { SERVER_URL, getKeywords } from '../api';
-import { KeywordType } from '../types';
-import { songsAtom } from '../atoms';
-import SongRegister from '../components/SongRegister';
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import StatusBar from "../components/StatusBar";
+import SafariSpace from "../components/SafariSpace";
 
-type FormValues = {
-  description: string;
-  image_url: string;
-  keywords: string[];
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const Content = styled(motion.div)`
+  width: 100%;
+  font-size: 24px;
+  color: #000;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+`;
+
+const Header = styled.div`
+  width: 100%;
+  margin-top: 23px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+`;
+
+const BackIcon = styled.svg`
+  margin-left: 26px;
+  cursor: pointer;
+`;
+
+const spring = {
+  type: "spring",
+  stiffness: 500,
+  damping: 30,
 };
 
 function Upload() {
-  const { register, handleSubmit, control } = useForm<FormValues>();
-  const [keywords, setKeywords] = useState<KeywordType[]>([]);
-  const songs = useRecoilValue(songsAtom);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const source = queryParams.get("source");
 
-  const { data: allKeywords, isLoading } = useQuery<KeywordType[]>({
-    queryKey: ['keywords'],
-    queryFn: getKeywords,
-  });
-
-  const onHandleSubmit = async (formData: FormValues) => {
-    const res = await fetch(`${SERVER_URL}/api/conti`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain',
-        'Content-Type': 'application/json;charset=UTF-8',
-      },
-      body: JSON.stringify({
-        ...formData,
-        keywords,
-        songs,
-        user_info: JSON.parse(localStorage['user_info']),
-      }),
-    });
-    const resData = await res.json();
-    console.log(res.status, resData);
+  const renderContent = () => {
+    switch (source) {
+      case "내가?":
+        return (
+          <Content
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={spring}
+          >
+            내가? 버튼을 눌렀을 때의 페이지
+          </Content>
+        );
+      case "AI가?":
+        return (
+          <Content
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={spring}
+          >
+            AI가? 버튼을 눌렀을 때의 페이지
+          </Content>
+        );
+      case "유튜브가?":
+        return (
+          <Content
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={spring}
+          >
+            유튜브가? 버튼을 눌렀을 때의 페이지
+          </Content>
+        );
+      default:
+        return (
+          <Content
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={spring}
+          >
+            잘못된 접근입니다.
+          </Content>
+        );
+    }
   };
 
   return (
     <Container>
-      {isLoading ? (
-        <div>Loading</div>
-      ) : (
-        <>
-          <SongContainer>
-            <List sx={{ maxWidth: 300 }} variant={'soft'}>
-              <ListItem>
-                <ListItemButton>
-                  <SongRegister />
-                </ListItemButton>
-              </ListItem>
-              {songs.map((song, i) => {
-                return (
-                  <ListItem
-                    key={i}
-                    endAction={
-                      <IconButton
-                        aria-label="Delete"
-                        size="sm"
-                        color={'danger'}
-                      >
-                        <Delete />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemButton>{song.title}</ListItemButton>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </SongContainer>
-          <Form onSubmit={handleSubmit(onHandleSubmit)}>
-            <Controller
-              name={'keywords'}
-              control={control}
-              render={({ field }: any) => {
-                const { onChange } = field;
-                return (
-                  <>
-                    <Autocomplete
-                      multiple
-                      startDecorator={<KeyboardCommandKey />}
-                      loading={isLoading}
-                      options={allKeywords!}
-                      getOptionLabel={(keyword) => keyword.name}
-                      isOptionEqualToValue={(option, value) =>
-                        option.name === value.name
-                      }
-                      limitTags={2}
-                      size="sm"
-                      placeholder={'Keywords'}
-                      onChange={(_, data) => {
-                        onChange(data);
-                        setKeywords(data);
-                        return data;
-                      }}
-                    />
-                  </>
-                );
-              }}
-            />
-            <Input
-              type="tel"
-              placeholder="Descriptionl"
-              {...register('description', { required: false })}
-            />
-            <Input
-              type="tel"
-              placeholder="image url"
-              {...register('image_url', { required: false })}
-            />
-            <SubmitButton type="submit" value={'Save'} />
-          </Form>
-        </>
-      )}
+      <StatusBar />
+      <Header>
+        <BackIcon
+          width="9"
+          height="16"
+          viewBox="0 0 9 16"
+          fill="none"
+          onClick={() => navigate(-1)}
+        >
+          <path
+            d="M8 15L1 8L8 1"
+            stroke="#545F71"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </BackIcon>
+      </Header>
+      {renderContent()}
+      <SafariSpace $isFocused={false} />
     </Container>
   );
 }

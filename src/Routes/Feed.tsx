@@ -3,7 +3,7 @@ import {
   Container,
   FeedVariants,
 } from "../styles/Feed.styles";
-import { LoadingSpinner } from "../styles/LoadingSpinner";
+// import { LoadingSpinner } from "../styles/LoadingSpinner";
 import Conti from "../components/Conti";
 import { useQuery } from "react-query";
 import { ContiType } from "../types";
@@ -40,7 +40,7 @@ function Feed() {
       {isLoading ? (
         <CenteredContainer>
           <div style={{ marginBottom: "10px" }}>잠시만요...</div>
-          <LoadingSpinner />
+          {/* <LoadingSpinner /> */}
         </CenteredContainer>
       ) : (
         conties
