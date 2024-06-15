@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   };
 
   const handleAlbumClick = () => {
-    navigate(`/conti-detail/10`);
+    navigate(`/conti-detail/31`);
   };
 
   const handleButtonClick = (buttonName: string) => {

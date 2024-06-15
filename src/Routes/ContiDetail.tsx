@@ -159,7 +159,7 @@ const ContiDetail: React.FC = () => {
                   strokeLinejoin="round"
                 />
               </AddIcon>
-              곡 추가
+              곡을 추가할 수 있어요!
             </AddSongContainer>
           </AlbumDetailContainer>
         </Content>
