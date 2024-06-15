@@ -27,29 +27,44 @@ export const formatTotalDuration = (duration: number) => {
 };
 
 // Adjust Date by Region upon Registration
-export const parseLocalDateString = (dateString: string): string => {
+// Adjust Date by Region upon Registration
+export const parseLocalDateString = (dateString: string): Date => {
   const [datePart, timePart] = dateString.split(" ");
-  const [month, day, year] = datePart.split("/").map(Number);
-  const [hourString, minuteString] = timePart.slice(0, -2).split(":");
-  const ampm = timePart.slice(-2).toLowerCase();
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
 
-  let hour = parseInt(hourString);
-  const minute = parseInt(minuteString);
+  // Create a Date object from the parts
+  const utcDate = new Date(
+    Date.UTC(year, month - 1, day, hour, minute, second)
+  );
 
-  if (ampm === "pm" && hour !== 12) {
-    hour += 12;
-  } else if (ampm === "am" && hour === 12) {
-    hour = 0;
+  return utcDate;
+};
+
+// Utility function to format time
+export const formatRelativeTime = (updatedAt: Date) => {
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - updatedAt.getTime()) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (seconds < 60) {
+    return `${seconds}초 전`;
+  } else if (minutes < 60) {
+    return `${minutes}분 전`;
+  } else if (hours < 24) {
+    return `${hours}시간 전`;
+  } else if (days < 7) {
+    return `${days}일 전`;
+  } else if (weeks < 4) {
+    return `${weeks}주 전`;
+  } else if (months < 12) {
+    return `${months}달 전`;
+  } else {
+    return `${years}년 전`;
   }
-
-  const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
-
-  return utcDate.toLocaleString("en-US", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
 };

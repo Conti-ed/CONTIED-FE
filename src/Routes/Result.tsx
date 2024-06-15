@@ -34,7 +34,6 @@ const Result: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState("전체");
-  const [isSearched, setIsSearched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -74,7 +73,6 @@ const Result: React.FC = () => {
     if (query.trim() !== "") {
       setIsLoading(true);
       setIsFocused(false);
-      setIsSearched(true); // 검색이 완료되었음을 표시
       saveRecentSearch(query);
       setTimeout(() => {
         setIsLoading(false);

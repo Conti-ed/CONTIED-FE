@@ -22,9 +22,17 @@ import {
   SongInfo,
   Subtitle,
   Title,
+  DEContiData,
+  DEContiDataText,
+  DEImage,
 } from "../styles/ContiDetail.styles";
 import { useQuery } from "react-query";
 import { getConti } from "../api";
+import {
+  formatRelativeTime,
+  formatTotalDuration,
+  parseLocalDateString,
+} from "../utils/formatDuration";
 
 const OptionsIcon = () => (
   <svg width="15" height="3" viewBox="0 0 15 3" fill="none">
@@ -46,10 +54,6 @@ const ContiDetail: React.FC = () => {
   );
   const [isFavorite, setIsFavorite] = useState(false);
 
-  if (!contiData) {
-    return <div>콘티가 존재하지 않는 것 같아요...</div>;
-  }
-
   const handleHeartClick = () => {
     setIsFavorite(!isFavorite);
   };
@@ -57,6 +61,41 @@ const ContiDetail: React.FC = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
+
+  if (!contiData) {
+    return (
+      <AnimatePresence mode="wait">
+        <Container
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <StatusBar />
+          <Header>
+            <BackButton onClick={handleBackClick}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M15 6L9 12L15 18"
+                  stroke="#545F71"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </BackButton>
+          </Header>
+          <DEContiData>
+            <DEImage src="../images/WhitePiano.png" alt="Album Image" />
+            <DEContiDataText>
+              콘티가 잘못 생성되었거나, 삭제된 것 같아요...
+            </DEContiDataText>
+          </DEContiData>
+          <SafariSpace $isFocused={false} />
+        </Container>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -101,8 +140,12 @@ const ContiDetail: React.FC = () => {
               </AlbumImageWrapper>
               <InfoText>
                 <Title>{contiData.title}</Title>
-                <Subtitle>{contiData.ownerName}</Subtitle>
-                <SongInfo>{`${contiData.songs.length}곡 • ${contiData.duration}분 • ${contiData.createdDate}`}</SongInfo>
+                <Subtitle>{contiData.owner.name}</Subtitle>
+                <SongInfo>{`${contiData.songs.length}곡 • ${formatTotalDuration(
+                  contiData.duration
+                )} • ${formatRelativeTime(
+                  parseLocalDateString(contiData.updated_at)
+                )}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
             <SongList songs={contiData.songs} />

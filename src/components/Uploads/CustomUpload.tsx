@@ -50,7 +50,7 @@ const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   font-weight: 300;
   color: #171a1f;
   background-color: transparent;
-  padding: 10px 10px;
+  padding: 10px 30px 10px 10px;
   ${(props) =>
     props.$hasError &&
     css`

@@ -85,7 +85,7 @@ export const AlbumImageWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 15px; /* InfoText와의 간격 */
-  border: 1px solid #9dbbe9;
+  // border: 1px solid #9dbbe9;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   position: sticky;
@@ -94,7 +94,8 @@ export const AlbumImageWrapper = styled.div`
 export const AlbumImage = styled.img`
   position: absolute;
   width: auto;
-  height: 69px;
+  height: 100%;
+  border-radius: 20px;
 `;
 
 export const InfoText = styled.div`
@@ -136,4 +137,24 @@ export const AddSongContainer = styled.div`
 
 export const AddIcon = styled.svg`
   margin-right: 5px;
+`;
+
+export const DEContiData = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 70.5%;
+`;
+
+export const DEImage = styled.img`
+  margin-bottom: 20px;
+  width: 50px;
+`;
+
+export const DEContiDataText = styled.h2`
+  color: #000;
+  font-size: 15px;
+  text-align: center;
 `;

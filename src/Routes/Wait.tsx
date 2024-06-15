@@ -58,7 +58,6 @@ const Text = styled.div`
 
 const Wait: React.FC = () => {
   const [text, setText] = useState("로그인 하는 중...");
-  const [isFading, setIsFading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const Wait: React.FC = () => {
   return (
     <Container>
       <StatusBar />
-      <Content $isFading={isFading}>
+      <Content $isFading={true}>
         <Image src="/images/WaitforLogin.png" alt="Loading" />
         <Text>{text}</Text>
       </Content>
