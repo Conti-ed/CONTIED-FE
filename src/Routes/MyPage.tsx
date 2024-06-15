@@ -31,6 +31,7 @@ const Title = styled.h1`
 `;
 
 const Content = styled.div`
+  margin-bottom: 134px;
   flex: 1;
   display: flex;
   justify-content: center;

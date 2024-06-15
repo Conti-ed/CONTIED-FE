@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom"; // useNavigate import 추가
 import ContiPlaceholder from "../ContiPlaceholder";
+import {
+  formatRelativeTime,
+  formatTotalDuration,
+  parseLocalDateString,
+} from "../../utils/formatDuration";
 
 const Conties = styled.div`
   position: absolute;
@@ -31,13 +36,13 @@ const ContiImageWrapper = styled.div`
   height: 100px;
   border-radius: 20px;
   position: relative;
-  border-radius: 20px;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 `;
 
 const ContiImage = styled.img`
   position: absolute;
-  height: 52px;
+  height: 100px;
+  border-radius: 20px;
   width: auto;
   align-items: center;
   justify-content: center;
@@ -138,7 +143,9 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
               <InfoText>
                 <Title>{data.title}</Title>
                 <Subtitle>{data.ownerName}</Subtitle>
-                <SongInfo>{`${data.createdDate} • ${data.duration}분`}</SongInfo>
+                <SongInfo>{`${formatRelativeTime(
+                  parseLocalDateString(data.updated_at)
+                )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
               </InfoText>
             </ContiItem>
           ))}

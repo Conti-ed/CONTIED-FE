@@ -151,6 +151,19 @@ const YouTubeUpload = () => {
 
       const data = await response.json();
       console.log(data);
+
+      // localStorage에 contiData 저장
+      const contiData = {
+        id: data.id,
+        title: data.title,
+        ownerName: data.owner.name,
+        updated_at: data.updated_at,
+        duration: data.duration,
+        songs: data.songs,
+        thumbnail: data.thumbnail || "/images/WhitePiano.png",
+      };
+      localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+
       navigate(`/conti-detail/${data.id}`);
     } catch (error) {
       console.error("Failed to fetch playlist title:", error);
