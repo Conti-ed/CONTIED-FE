@@ -8,7 +8,8 @@ const SafariSpaceContainer = styled.div<SafariSpaceProps>`
   width: 100%;
   height: ${(props) => (props.$isFocused ? "0" : "134px")};
   background-color: #e7f0fc;
-  position: relative;
+  position: fixed;
+  bottom: 0;
   display: ${(props) => (props.$isFocused ? "none" : "flex")};
   flex-direction: column;
   justify-content: center;

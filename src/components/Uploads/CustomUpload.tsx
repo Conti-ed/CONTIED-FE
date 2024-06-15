@@ -151,7 +151,7 @@ const CustomUpload = () => {
 
   return (
     <Container>
-      <Title>제목만으로도 콘티가 생성되요!</Title>
+      <Title>제목만으로도 콘티가 생성돼요!</Title>
       <InputContainer>
         <InputWrapper>
           <MotionInput

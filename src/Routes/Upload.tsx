@@ -9,7 +9,7 @@ import AIUpload from "../components/Uploads/AIUpload";
 import YouTubeUpload from "../components/Uploads/YouTubeUpload";
 
 const Container = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background-color: #ffffff;
   display: flex;
@@ -19,6 +19,7 @@ const Container = styled.div`
 `;
 
 const Content = styled(motion.div)`
+  height: auto;
   width: 100%;
   font-size: 24px;
   color: #000;
@@ -26,7 +27,7 @@ const Content = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: auto;
+  padding-bottom: 134px;
 `;
 
 const Header = styled.div`

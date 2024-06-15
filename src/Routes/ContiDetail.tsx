@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
@@ -23,6 +23,8 @@ import {
   Subtitle,
   Title,
 } from "../styles/ContiDetail.styles";
+import { useQuery } from "react-query";
+import { getConti } from "../api";
 
 const OptionsIcon = () => (
   <svg width="15" height="3" viewBox="0 0 15 3" fill="none">
@@ -39,18 +41,10 @@ const OptionsIcon = () => (
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
   const { contiId } = useParams<{ contiId: string }>();
-  const [contiData, setContiData] = useState<any>(null);
+  const { data: contiData, isLoading } = useQuery(["cid", contiId], () =>
+    getConti(Number(contiId))
+  );
   const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    const storedConti = localStorage.getItem(`conti_${contiId}`);
-    console.log(storedConti);
-    if (storedConti) {
-      setContiData(JSON.parse(storedConti));
-    } else {
-      console.error("Conti not found");
-    }
-  }, [contiId]);
 
   if (!contiData) {
     return <div>콘티가 존재하지 않는 것 같아요...</div>;

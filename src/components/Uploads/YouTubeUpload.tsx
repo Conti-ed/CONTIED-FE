@@ -137,15 +137,11 @@ const YouTubeUpload = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
-          conti_info: JSON.stringify({
-            title: "임시 타이틀",
-            playlist_url: playlistUrl,
-          }),
-          user_id: JSON.parse(localStorage.getItem("user_info")!).id,
-          keywords: JSON.stringify([]),
+          playlist_url: playlistUrl,
+          // user_id: JSON.parse(localStorage.getItem("user_info")!).id,
         }),
       });
 
@@ -154,6 +150,7 @@ const YouTubeUpload = () => {
       }
 
       const data = await response.json();
+      console.log(data);
       navigate(`/conti-detail/${data.id}`);
     } catch (error) {
       console.error("Failed to fetch playlist title:", error);
@@ -169,7 +166,7 @@ const YouTubeUpload = () => {
 
   return (
     <Container>
-      <Title>링크만으로도 콘티가 생성되요!</Title>
+      <Title>링크만으로도 콘티가 생성돼요!</Title>
       <InputContainer>
         <InputWrapper>
           <MotionInput

@@ -23,16 +23,18 @@ import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
 import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
-import ContiTab from "../components/Tabs/ContiTab"; // Import the new ContiTab component
+import ContiTab from "../components/Tabs/ContiTab";
 
 const Result: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialQuery = location.state?.query || ""; // 전달된 초기 query를 가져옴
+  const initialQuery = location.state?.query || "";
   const [query, setQuery] = useState(initialQuery);
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
-  const [isFocused, setIsFocused] = useState(false); // 포커스 상태 추가
-  const [selectedTab, setSelectedTab] = useState("전체"); // 선택된 탭 상태 추가
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("전체");
+  const [isSearched, setIsSearched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,9 +74,11 @@ const Result: React.FC = () => {
     if (query.trim() !== "") {
       setIsLoading(true);
       setIsFocused(false);
+      setIsSearched(true); // 검색이 완료되었음을 표시
       saveRecentSearch(query);
       setTimeout(() => {
         setIsLoading(false);
+        setSearchQuery(query);
         navigate(`/result?query=${encodeURIComponent(query)}`, {
           state: { query },
         });
@@ -128,7 +132,7 @@ const Result: React.FC = () => {
             />
           </BackIcon>
         </AnimatePresence>
-        <Title $isFocused={true}>검색</Title>
+        <Title $isFocused={isFocused}>검색</Title>
         <div style={{ width: "9px", height: "16px" }} />
       </Header>
       <SearchInputContainer>
@@ -180,10 +184,10 @@ const Result: React.FC = () => {
       <Content>
         {isLoading ? (
           <Loading />
-        ) : query.trim() === "" ? (
+        ) : searchQuery.trim() === "" ? (
           renderEmptyState()
         ) : selectedTab === "콘티" ? (
-          <ContiTab searchQuery={query} />
+          <ContiTab searchQuery={searchQuery} />
         ) : (
           renderEmptyState()
         )}
@@ -193,7 +197,7 @@ const Result: React.FC = () => {
         <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
       {isFocused && <Keyboard />}
-      <SafariSpace $isFocused={isFocused} />
+      <SafariSpace $isFocused={false} />
     </Container>
   );
 };

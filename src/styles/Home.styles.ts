@@ -19,7 +19,7 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 50px;
+  padding-bottom: 180px;
 `;
 
 export const Header = styled.div`

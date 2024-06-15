@@ -92,10 +92,10 @@ export const SearchBar = styled.div`
 `;
 
 export const Content = styled.div`
-  flex: 1;
+  height: 60.5%;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 `;
 
 export const SearchPageText = styled.h2`
@@ -103,7 +103,7 @@ export const SearchPageText = styled.h2`
   font-weight: 500;
   text-align: center;
   color: #171a1f;
-  margin-bottom: 40px;
+  justify-self: center;
 `;
 
 export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`

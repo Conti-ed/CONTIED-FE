@@ -10,7 +10,7 @@ const changeColor = keyframes`
     color: #ffffff; /* 기본 텍스트 색상 */
   }
   50% {
-    filter: brightness(0) saturate(100%) invert(54%) sepia(46%) saturate(749%) hue-rotate(160deg) brightness(100%) contrast(94%);
+    filter: brightness(1) saturate(105%) invert(60%) sepia(46%) saturate(749%) hue-rotate(160deg) brightness(110%) contrast(94%);
     color: #7094db; /* 텍스트 색상 */
   }
 `;
