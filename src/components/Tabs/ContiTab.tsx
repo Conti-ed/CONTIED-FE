@@ -138,7 +138,16 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
             <ContiItem key={index} onClick={() => handleContiClick(data.id)}>
               <ContiImageWrapper>
                 <ContiPlaceholder size={100} />
-                <ContiImage src={data.thumbnail} alt="Album Image" />
+                <ContiImage
+                  src={data.thumbnail}
+                  alt="Album Image"
+                  style={{
+                    height:
+                      data.thumbnail === "/images/WhitePiano.png"
+                        ? "62px"
+                        : "100px",
+                  }}
+                />
               </ContiImageWrapper>
               <InfoText>
                 <Title>{data.title}</Title>

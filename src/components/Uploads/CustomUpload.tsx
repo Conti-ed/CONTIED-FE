@@ -2,6 +2,8 @@ import React, { useRef, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Oval } from "react-loader-spinner";
+import { SERVER_URL } from "../../api";
 
 const blink = keyframes`
   0%, 100% {
@@ -106,6 +108,7 @@ const CompleteButton = styled(motion.div)`
 const CustomUpload = () => {
   const [contiTitle, setContiTitle] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showCompleteButton, setShowCompleteButton] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -129,18 +132,46 @@ const CustomUpload = () => {
     }
   };
 
-  const handleComplete = () => {
-    const contiData = {
-      id: `${Date.now()}`,
-      title: contiTitle,
-      ownerName: "준석",
-      createdDate: new Date().toISOString().split("T")[0],
-      duration: 0,
-      songs: [],
-      thumbnail: "/images/WhitePiano.png",
-    };
-    localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
-    navigate(`/conti-detail/${contiData.id}`);
+  const handleComplete = async () => {
+    setIsLoading(true); // 로딩 시작
+    try {
+      const body = { title: contiTitle }; // title만 body에 포함
+      const response = await fetch(`${SERVER_URL}/api/conti`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create conti");
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // localStorage에 contiData 저장
+      const contiData = {
+        id: data.id,
+        title: data.title,
+        ownerName: data.owner.name,
+        updated_at: data.updated_at,
+        lyrics: data.lyrics,
+        duration: data.duration,
+        songs: data.songs,
+        thumbnail: "/images/WhitePiano.png",
+      };
+      localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+
+      navigate(`/conti-detail/${data.id}`);
+    } catch (error) {
+      console.error("Failed to fetch playlist title:", error);
+      alert("재생목록을 가져올 수 없습니다. URL을 확인해주세요.");
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -196,7 +227,18 @@ const CustomUpload = () => {
             transition={{ duration: 0.3 }}
             onClick={handleComplete}
           >
-            완료!
+            {isLoading ? (
+              <Oval
+                height={15}
+                width={15}
+                color="#ffffff"
+                secondaryColor="#94b4ed"
+                strokeWidth={5}
+                strokeWidthSecondary={5}
+              />
+            ) : (
+              "완료!"
+            )}
           </CompleteButton>
         )}
       </InputContainer>

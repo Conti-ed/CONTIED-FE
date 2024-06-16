@@ -33,6 +33,7 @@ import {
   formatTotalDuration,
   parseLocalDateString,
 } from "../utils/formatDuration";
+import AlbumPlaceholder from "../components/AlbumPlaceholder";
 
 const OptionsIcon = () => (
   <svg width="15" height="3" viewBox="0 0 15 3" fill="none">
@@ -135,8 +136,14 @@ const ContiDetail: React.FC = () => {
           <AlbumDetailContainer>
             <AlbumInfo>
               <AlbumImageWrapper>
-                <ContiPlaceholder size={129} />
-                <AlbumImage src={contiData.thumbnail} alt="Album Image" />
+                {contiData.thumbnail ? (
+                  <>
+                    <ContiPlaceholder size={129} />
+                    <AlbumImage src={contiData.thumbnail} alt="Album Image" />
+                  </>
+                ) : (
+                  <AlbumPlaceholder />
+                )}
               </AlbumImageWrapper>
               <InfoText>
                 <Title>{contiData.title}</Title>
