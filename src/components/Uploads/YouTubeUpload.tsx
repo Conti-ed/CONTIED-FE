@@ -1,9 +1,9 @@
-// YouTubeUpload.tsx
 import React, { useRef, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { SERVER_URL } from "../../api"; // 서버 URL 가져오기
+import { SERVER_URL } from "../../api";
+import { Oval } from "react-loader-spinner"; // 로딩 스피너 컴포넌트 import
 
 const blink = keyframes`
   0%, 100% {
@@ -110,6 +110,7 @@ const YouTubeUpload = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showCompleteButton, setShowCompleteButton] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -132,6 +133,7 @@ const YouTubeUpload = () => {
   };
 
   const handleComplete = async () => {
+    setIsLoading(true); // 로딩 시작
     try {
       const response = await fetch(`${SERVER_URL}/api/conti`, {
         method: "POST",
@@ -158,6 +160,7 @@ const YouTubeUpload = () => {
         title: data.title,
         ownerName: data.owner.name,
         updated_at: data.updated_at,
+        lyrics: data.lyrics,
         duration: data.duration,
         songs: data.songs,
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
@@ -168,6 +171,8 @@ const YouTubeUpload = () => {
     } catch (error) {
       console.error("Failed to fetch playlist title:", error);
       alert("재생목록을 가져올 수 없습니다. URL을 확인해주세요.");
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
@@ -224,7 +229,18 @@ const YouTubeUpload = () => {
             transition={{ duration: 0.3 }}
             onClick={handleComplete}
           >
-            완료!
+            {isLoading ? (
+              <Oval
+                height={15}
+                width={15}
+                color="#ffffff"
+                secondaryColor="#94b4ed"
+                strokeWidth={5}
+                strokeWidthSecondary={5}
+              />
+            ) : (
+              "완료!"
+            )}
           </CompleteButton>
         )}
       </InputContainer>
