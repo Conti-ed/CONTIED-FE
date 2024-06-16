@@ -117,7 +117,7 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
     }
     storedContiData.sort(
       (a, b) =>
-        new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     );
     setContiData(storedContiData);
   }, []);

@@ -23,6 +23,8 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  padding-bottom: 134px;
+  margin-bottom: 38px;
 `;
 
 export const IconContainer = styled.div`

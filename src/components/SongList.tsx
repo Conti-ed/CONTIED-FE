@@ -10,7 +10,7 @@ const Container = styled.ul`
 interface Song {
   title: string;
   artist: string;
-  image: string;
+  thumbnail: string;
 }
 
 const SongList = ({ songs }: { songs: Song[] }) => (

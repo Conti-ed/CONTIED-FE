@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
+import SongPlaceholder from "./SongPlaceholder";
 
 const SongItemContainer = styled.li`
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f3f4f6;
 
   &:first-of-type {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #f3f4f6;
   }
 `;
 
@@ -115,7 +116,7 @@ const SongArtistName = styled.div`
 const SongItem = ({
   song,
 }: {
-  song: { title: string; artist: string; image: string };
+  song: { title: string; artist: string; thumbnail: string };
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -128,7 +129,11 @@ const SongItem = ({
       <SongInfo>
         <div>
           <SongImageWrapper>
-            <SongImage src={song.image} alt="Song Image" />
+            {song.thumbnail ? (
+              <SongImage src={song.thumbnail} alt="Image" />
+            ) : (
+              <SongPlaceholder />
+            )}
           </SongImageWrapper>
           <SongSummary className="song-info">
             <SongTitle>{song.title}</SongTitle>
