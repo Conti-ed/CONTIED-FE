@@ -23,6 +23,13 @@ const SongSection = styled.div`
 
 const ContiSection = styled.div``;
 
+const SectionTitle = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  color: #171a1f;
+  margin: 22px 0 20px 10px;
+`;
+
 const Item = styled.div`
   display: flex;
   align-items: center;
@@ -77,13 +84,6 @@ const Subtitle = styled.div`
 const SongInfo = styled.div`
   font-size: 11px;
   color: rgba(23, 26, 31, 0.5);
-`;
-
-const SectionTitle = styled.div`
-  font-size: 15px;
-  font-weight: 300;
-  color: #171a1f;
-  margin: 22px 0 20px 10px;
 `;
 
 const EmptyStateContainer = styled.div`
