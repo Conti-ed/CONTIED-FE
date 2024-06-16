@@ -60,6 +60,12 @@ export const AlbumContainer = styled.div`
   margin-bottom: 29px;
 `;
 
+export const AlbumThumbnail = styled.img`
+  width: 360px;
+  height: 360px;
+  border-radius: 20px;
+`;
+
 export const Mask = styled.div`
   position: absolute;
   top: 0;
@@ -67,7 +73,7 @@ export const Mask = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 20px;
-  background-color: rgba(115, 115, 115, 0.1);
+  background-color: rgba(115, 115, 115, 0.3);
 `;
 
 export const RoundLogo = styled.div`

@@ -4,7 +4,7 @@ const Container = styled.div<{ $size: number }>`
   width: ${(props) => `${props.$size}px`};
   height: ${(props) => `${props.$size}px`};
   border-radius: 20px;
-  background-color: #e7f0fc;
+  background-color: #d7e4ff;
 `;
 
 interface IContiPlaceholder {

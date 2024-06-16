@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
@@ -19,16 +19,35 @@ import {
   SectionTitle,
   ButtonGroup,
   Button,
+  AlbumThumbnail,
 } from "../styles/Home.styles";
 import { LoadingSpinner } from "../styles/LoadingSpinner";
 
 const Home: React.FC = () => {
   const userName = "준석"; // 사용자 이름
-  const albumTitle = "동계 수련회 콘티"; // 앨범 제목
   const navigate = useNavigate();
 
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [isButtonClicked, setIsButtonClicked] = useState<string | null>(null);
+  const [contiList, setContiList] = useState<any[]>([]);
+  const [selectedConti, setSelectedConti] = useState<any | null>(null);
+
+  useEffect(() => {
+    const storedContiData = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("conti_")) {
+        const data = JSON.parse(localStorage.getItem(key)!);
+        storedContiData.push(data);
+      }
+    }
+    setContiList(storedContiData);
+    if (storedContiData.length > 0) {
+      setSelectedConti(
+        storedContiData[Math.floor(Math.random() * storedContiData.length)]
+      );
+    }
+  }, []);
 
   const handleMouseEnter = (buttonName: string) => {
     setHoveredButton(buttonName);
@@ -38,8 +57,8 @@ const Home: React.FC = () => {
     setHoveredButton(null);
   };
 
-  const handleAlbumClick = () => {
-    navigate(`/conti-detail/31`);
+  const handleAlbumClick = (id: string) => {
+    navigate(`/conti-detail/${id}`);
   };
 
   const handleButtonClick = (buttonName: string) => {
@@ -48,6 +67,13 @@ const Home: React.FC = () => {
       navigate(`/upload?source=${buttonName}`);
     }, 1500);
   };
+
+  if (!selectedConti) {
+    return null; // 혹은 로딩 스피너를 표시할 수 있습니다.
+  }
+
+  const albumTitle = selectedConti.title; // 선택된 앨범의 제목
+  const albumThumbnail = selectedConti.thumbnail;
 
   return (
     <AnimatePresence mode="wait">
@@ -62,8 +88,12 @@ const Home: React.FC = () => {
             <br />
             콘티 리스트
           </UserName>
-          <AlbumContainer onClick={handleAlbumClick}>
-            <ContiPlaceholder size={360} />
+          <AlbumContainer onClick={() => handleAlbumClick(selectedConti.id)}>
+            {albumThumbnail !== "/images/WhitePiano.png" ? (
+              <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
+            ) : (
+              <ContiPlaceholder size={360} />
+            )}
             <Mask />
             <RoundLogo>
               <RoundLogoImage src="/images/WhitePiano.png" alt="Round Logo" />
