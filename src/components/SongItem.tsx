@@ -61,7 +61,7 @@ const SongInfo = styled.div`
 const OptionsContainer = styled(motion.div)`
   display: flex;
   background-color: #f9f9f9;
-  border-top: 1px solid #ddd;
+  border: 1px solid rgba(23, 26, 31, 0.1);
   justify-content: center;
 `;
 
@@ -113,15 +113,32 @@ const SongArtistName = styled.div`
   color: rgba(23, 26, 31, 0.5);
 `;
 
+const LyricsContainer = styled(motion.div)`
+  border: 1px solid #9dbbe9;
+`;
+
+const Lyrics = styled.div`
+  padding: 24px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(23, 26, 31, 0.8);
+  text-align: center;
+`;
+
 const SongItem = ({
   song,
 }: {
-  song: { title: string; artist: string; thumbnail: string };
+  song: { title: string; artist: string; thumbnail: string; lyrics: string };
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLyrics, setShowLyrics] = useState(false);
 
   const toggleOptions = () => {
     setIsOpen(!isOpen);
+  };
+
+  const toggleLyrics = () => {
+    setShowLyrics(!showLyrics);
   };
 
   return (
@@ -173,7 +190,7 @@ const SongItem = ({
               </OptionIcon>
               <OptionText>내 콘티에 추가</OptionText>
             </Option>
-            <Option>
+            <Option onClick={toggleLyrics}>
               <OptionIcon>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path
@@ -201,6 +218,19 @@ const SongItem = ({
               <OptionText>곡 정보</OptionText>
             </Option>
           </OptionsContainer>
+        )}
+      </AnimatePresence>
+      <AnimatePresence mode="wait">
+        {showLyrics && (
+          <LyricsContainer
+            key="lyrics" // 추가된 부분
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Lyrics>{song.lyrics || "가사가 아직 제공되지 않았어요."}</Lyrics>
+          </LyricsContainer>
         )}
       </AnimatePresence>
     </SongItemContainer>

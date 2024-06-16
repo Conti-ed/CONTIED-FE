@@ -11,6 +11,7 @@ interface Song {
   title: string;
   artist: string;
   thumbnail: string;
+  lyrics: string;
 }
 
 const SongList = ({ songs }: { songs: Song[] }) => (
