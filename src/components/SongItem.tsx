@@ -49,6 +49,7 @@ const SongInfo = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
+    margin-right: 3px;
   }
 
   img {
@@ -114,7 +115,9 @@ const SongArtistName = styled.div`
 `;
 
 const LyricsContainer = styled(motion.div)`
-  border: 1px solid #9dbbe9;
+  width: 90vw;
+  margin-left: 20px;
+  border: 2px solid #9dbbe9;
 `;
 
 const Lyrics = styled.div`

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // useNavigate import 추가
+import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
 import {
   formatRelativeTime,
   formatTotalDuration,
   parseLocalDateString,
 } from "../../utils/formatDuration";
+import SongList from "../SongList"; // SongList를 추가합니다
 
-const Conties = styled.div`
+const Container = styled.div`
   position: absolute;
   top: 25%;
   height: 60%;
@@ -16,7 +17,13 @@ const Conties = styled.div`
   padding-bottom: 60px;
 `;
 
-const ContiItem = styled.div`
+const SongSection = styled.div`
+  margin: 0px -20px 43px -20px;
+`;
+
+const ContiSection = styled.div``;
+
+const Item = styled.div`
   display: flex;
   align-items: center;
   padding: 10px;
@@ -25,10 +32,10 @@ const ContiItem = styled.div`
   border: 2px solid #9dbbe9;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer; // 클릭 가능하도록 커서 스타일 추가
+  cursor: pointer;
 `;
 
-const ContiImageWrapper = styled.div`
+const ImageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,7 +46,7 @@ const ContiImageWrapper = styled.div`
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 `;
 
-const ContiImage = styled.img`
+const Image = styled.img`
   position: absolute;
   height: 100px;
   border-radius: 20px;
@@ -72,6 +79,13 @@ const SongInfo = styled.div`
   color: rgba(23, 26, 31, 0.5);
 `;
 
+const SectionTitle = styled.div`
+  font-size: 15px;
+  font-weight: 300;
+  color: #171a1f;
+  margin: 22px 0 20px 10px;
+`;
+
 const EmptyStateContainer = styled.div`
   margin-bottom: 74px;
   display: flex;
@@ -98,12 +112,15 @@ const EmptyStateText2 = styled.div`
   color: #828282;
   text-align: center;
 `;
-interface ContiTabProps {
+
+interface AllTabProps {
   searchQuery: string;
 }
 
-const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
+const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   const [contiData, setContiData] = useState<any[]>([]);
+  const [filteredTitles, setFilteredTitles] = useState<any[]>([]);
+  const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -122,18 +139,25 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
     setContiData(storedContiData);
   }, []);
 
-  const filteredTitles = contiData.filter((data) => {
+  useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    return (
-      data.title.toLowerCase().includes(lowerCaseQuery) ||
-      data.songs.some(
+    const songs: any[] = [];
+    const filteredTitles = contiData.filter((data) => {
+      const isTitleMatched = data.title.toLowerCase().includes(lowerCaseQuery);
+      const matchedSongs = data.songs.filter(
         (song: { title: string; artist: string; lyrics: string }) =>
           (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
           (song.artist && song.artist.toLowerCase().includes(lowerCaseQuery)) ||
           (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-      )
-    );
-  });
+      );
+      if (matchedSongs.length > 0) {
+        songs.push(...matchedSongs);
+      }
+      return isTitleMatched || matchedSongs.length > 0;
+    });
+    setFilteredSongs(songs.slice(0, 5));
+    setFilteredTitles(filteredTitles);
+  }, [searchQuery, contiData]);
 
   const handleContiClick = (id: string) => {
     navigate(`/conti-detail/${id}`);
@@ -141,42 +165,53 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
 
   return (
     <>
-      {filteredTitles.length > 0 ? (
-        <Conties>
-          {filteredTitles.map((data, index) => (
-            <ContiItem key={index} onClick={() => handleContiClick(data.id)}>
-              <ContiImageWrapper>
-                <ContiPlaceholder size={100} />
-                <ContiImage
-                  src={data.thumbnail}
-                  alt="Album Image"
-                  style={{
-                    height:
-                      data.thumbnail === "/images/WhitePiano.png"
-                        ? "62px"
-                        : "100px",
-                  }}
-                />
-              </ContiImageWrapper>
-              <InfoText>
-                <Title>{data.title}</Title>
-                <Subtitle>{data.ownerName}</Subtitle>
-                <SongInfo>{`${formatRelativeTime(
-                  parseLocalDateString(data.updated_at)
-                )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
-              </InfoText>
-            </ContiItem>
-          ))}
-        </Conties>
+      {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
+        <Container>
+          <SectionTitle>곡</SectionTitle>
+          {filteredSongs.length > 0 && (
+            <SongSection>
+              <SongList songs={filteredSongs} />
+            </SongSection>
+          )}
+          <SectionTitle>콘티</SectionTitle>
+          {filteredTitles.length > 0 && (
+            <ContiSection>
+              {filteredTitles.map((data, index) => (
+                <Item key={index} onClick={() => handleContiClick(data.id)}>
+                  <ImageWrapper>
+                    <ContiPlaceholder size={100} />
+                    <Image
+                      src={data.thumbnail}
+                      alt="Album Image"
+                      style={{
+                        height:
+                          data.thumbnail === "/images/WhitePiano.png"
+                            ? "62px"
+                            : "100px",
+                      }}
+                    />
+                  </ImageWrapper>
+                  <InfoText>
+                    <Title>{data.title}</Title>
+                    <Subtitle>{data.ownerName}</Subtitle>
+                    <SongInfo>{`${formatRelativeTime(
+                      parseLocalDateString(data.updated_at)
+                    )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
+                  </InfoText>
+                </Item>
+              ))}
+            </ContiSection>
+          )}
+        </Container>
       ) : (
         <EmptyStateContainer>
           <EmptyStateImage src="images/WhitePiano.png" alt="Empty state" />
           <EmptyStateText1>앗!</EmptyStateText1>
-          <EmptyStateText2>콘티 검색 결과가 없어요.</EmptyStateText2>
+          <EmptyStateText2>검색 결과가 없어요.</EmptyStateText2>
         </EmptyStateContainer>
       )}
     </>
   );
 };
 
-export default ContiTab;
+export default AllTab;

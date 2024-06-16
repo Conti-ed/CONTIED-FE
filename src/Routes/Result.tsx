@@ -24,6 +24,7 @@ import Keyboard from "../components/Keyboard";
 import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
 import ContiTab from "../components/Tabs/ContiTab";
+import AllTab from "../components/Tabs/AllTab";
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -184,6 +185,8 @@ const Result: React.FC = () => {
           <Loading />
         ) : searchQuery.trim() === "" ? (
           renderEmptyState()
+        ) : selectedTab === "전체" ? (
+          <AllTab searchQuery={searchQuery} />
         ) : selectedTab === "콘티" ? (
           <ContiTab searchQuery={searchQuery} />
         ) : (
