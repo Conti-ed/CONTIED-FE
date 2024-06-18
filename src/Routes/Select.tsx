@@ -108,7 +108,7 @@ const Select: React.FC = () => {
     setLoading(true);
     setTimeout(() => {
       navigate("/home");
-    }, 2000);
+    }, 3000);
   };
 
   return (
