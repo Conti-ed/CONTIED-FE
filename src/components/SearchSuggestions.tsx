@@ -6,7 +6,7 @@ const SuggestionsWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  color: #171a1f;
+  color: #000;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 20px;
@@ -43,15 +43,6 @@ interface SearchSuggestionsProps {
   onSuggestionClick: (suggestion: string) => void;
 }
 
-const getRandomSuggestions = (suggestions: string[], count: number) => {
-  const shuffled = [...suggestions];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled.slice(0, count);
-};
-
 const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   suggestions,
   onSuggestionClick,
@@ -59,12 +50,20 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const [randomSuggestions, setRandomSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
+    const getRandomSuggestions = (words: string[], count: number) => {
+      const shuffled = [...words];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, count);
+    };
     setRandomSuggestions(getRandomSuggestions(suggestions, 14));
   }, [suggestions]);
 
   return (
     <SuggestionsWrapper>
-      <Title>맞춤 검색어</Title>
+      <Title>랜덤 검색어</Title>
       <SuggestionsContainer>
         {randomSuggestions.map((suggestion, index) => (
           <Suggestion key={index} onClick={() => onSuggestionClick(suggestion)}>

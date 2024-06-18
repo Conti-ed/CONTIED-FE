@@ -3,7 +3,7 @@ import styled from "styled-components";
 import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
 
-const Container = styled(motion.div)`
+const Container = styled.div`
   position: absolute;
   top: 25%;
   width: 90vw;
@@ -89,14 +89,9 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
   }, [searchQuery, contiData]);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
-        <Container
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <Container>
           {filteredSongs.length > 0 && (
             <SongSection>
               <SongList songs={filteredSongs} showLyricsOnly />

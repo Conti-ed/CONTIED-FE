@@ -17,7 +17,6 @@ import {
   SearchBar,
   Content,
   TabBarWrapper,
-  SearchPageText,
   RecentSearchContainer,
   RecentSearchesHeader,
   ClearAllButton,
@@ -28,12 +27,15 @@ import EmptyState from "../components/EmptyState";
 import SafariSpace from "../components/SafariSpace";
 import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
+import { extractWordsFromLyrics } from "../utils/lyricsUtils";
+import { getRandomSuggestions } from "../utils/randomUtils";
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [lyricsSuggestions, setLyricsSuggestions] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const recentSearchesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -137,6 +139,11 @@ const Search: React.FC = () => {
     );
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    handleRecentSearchClick(suggestion);
+  };
+
   const renderRecentSearches = () => (
     <RecentSearchContainer ref={recentSearchesRef}>
       <RecentSearchesHeader>
@@ -164,6 +171,28 @@ const Search: React.FC = () => {
       ))}
     </RecentSearchContainer>
   );
+
+  useEffect(() => {
+    const storedContiData: any[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("conti_")) {
+        const data = JSON.parse(localStorage.getItem(key)!);
+        storedContiData.push(data);
+      }
+    }
+
+    const allLyrics = storedContiData.flatMap((data) =>
+      data.songs.map((song: { lyrics: string }) => song.lyrics)
+    );
+
+    const allWords = allLyrics.flatMap((lyrics: string) =>
+      extractWordsFromLyrics(lyrics)
+    );
+
+    const randomWords = getRandomSuggestions(allWords, 14);
+    setLyricsSuggestions(randomWords);
+  }, []);
 
   return (
     <Container>
@@ -249,8 +278,8 @@ const Search: React.FC = () => {
           <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />
         ) : (
           <SearchSuggestions
-            suggestions={recentSearches}
-            onSuggestionClick={handleRecentSearchClick}
+            suggestions={lyricsSuggestions}
+            onSuggestionClick={handleSuggestionClick}
           />
         )}
       </Content>
