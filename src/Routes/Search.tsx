@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
+import SearchSuggestions from "../components/SearchSuggestions";
 import {
   Container,
   Header,
@@ -247,7 +248,10 @@ const Search: React.FC = () => {
         ) : isFocused ? (
           <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />
         ) : (
-          <SearchPageText>Search Page</SearchPageText>
+          <SearchSuggestions
+            suggestions={recentSearches}
+            onSuggestionClick={handleRecentSearchClick}
+          />
         )}
       </Content>
       <TabBarWrapper $isFocused={isFocused}>

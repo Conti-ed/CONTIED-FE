@@ -50,7 +50,7 @@ const OptionsIcon = () => (
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
   const { contiId } = useParams<{ contiId: string }>();
-  const { data: contiData, isLoading } = useQuery(["cid", contiId], () =>
+  const { data: contiData } = useQuery(["cid", contiId], () =>
     getConti(Number(contiId))
   );
   const [isFavorite, setIsFavorite] = useState(false);
