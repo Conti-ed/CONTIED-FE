@@ -67,7 +67,7 @@ const Wait: React.FC = () => {
     }, animationDuration);
 
     const redirectTimeout = setTimeout(() => {
-      navigate("/home");
+      navigate("/select");
     }, animationDuration + 3000); // 텍스트 변경 후 3초 뒤 리디렉션
 
     return () => {

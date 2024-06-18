@@ -3,7 +3,7 @@ import styled, { keyframes, css } from "styled-components";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../../api";
-import { Oval } from "react-loader-spinner"; // 로딩 스피너 컴포넌트 import
+import { Oval } from "react-loader-spinner";
 
 const blink = keyframes`
   0%, 100% {

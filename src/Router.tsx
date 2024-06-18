@@ -11,6 +11,7 @@ import Upload from "./Routes/Upload";
 import Login from "./Routes/Login";
 import ContiDetail from "./Routes/ContiDetail";
 import MyPage from "./Routes/MyPage";
+import Select from "./Routes/Select";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Start /> },
       { path: "waiting", element: <Wait /> },
+      { path: "select", element: <Select /> },
       { path: "home", element: <Home /> },
       { path: "search", element: <Search /> },
       { path: "result", element: <Result /> },
