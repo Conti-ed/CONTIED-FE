@@ -26,6 +26,7 @@ import EmptyState from "../components/EmptyState";
 import ContiTab from "../components/Tabs/ContiTab";
 import AllTab from "../components/Tabs/AllTab";
 import SongsTab from "../components/Tabs/SongsTab";
+import LyricsTab from "../components/Tabs/LyricsTab";
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -192,6 +193,8 @@ const Result: React.FC = () => {
           <SongsTab searchQuery={searchQuery} />
         ) : selectedTab === "콘티" ? (
           <ContiTab searchQuery={searchQuery} />
+        ) : selectedTab === "가사" ? (
+          <LyricsTab searchQuery={searchQuery} />
         ) : (
           renderEmptyState()
         )}

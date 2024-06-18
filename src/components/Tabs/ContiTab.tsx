@@ -7,8 +7,9 @@ import {
   formatTotalDuration,
   parseLocalDateString,
 } from "../../utils/formatDuration";
+import { AnimatePresence, motion } from "framer-motion";
 
-const Conties = styled.div`
+const Conties = styled(motion.div)`
   position: absolute;
   top: 25%;
   height: 60%;
@@ -140,9 +141,14 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   };
 
   return (
-    <>
+    <AnimatePresence mode="wait">
       {filteredTitles.length > 0 ? (
-        <Conties>
+        <Conties
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {filteredTitles.map((data, index) => (
             <ContiItem key={index} onClick={() => handleContiClick(data.id)}>
               <ContiImageWrapper>
@@ -175,7 +181,7 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
           <EmptyStateText2>콘티 검색 결과가 없어요.</EmptyStateText2>
         </EmptyStateContainer>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 

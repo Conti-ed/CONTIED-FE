@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SongItem from "./SongItem";
+import LyricsOnlySongItem from "./LyricsOnlySongItem"; // 추가
 
 const Container = styled.ul`
   list-style: none;
@@ -14,11 +15,20 @@ interface Song {
   lyrics: string;
 }
 
-const SongList = ({ songs }: { songs: Song[] }) => (
+interface SongListProps {
+  songs: Song[];
+  showLyricsOnly?: boolean;
+}
+
+const SongList = ({ songs, showLyricsOnly = false }: SongListProps) => (
   <Container>
-    {songs.map((song, index) => (
-      <SongItem key={index} song={song} />
-    ))}
+    {songs.map((song, index) =>
+      showLyricsOnly ? (
+        <LyricsOnlySongItem key={index} song={song} />
+      ) : (
+        <SongItem key={index} song={song} />
+      )
+    )}
   </Container>
 );
 

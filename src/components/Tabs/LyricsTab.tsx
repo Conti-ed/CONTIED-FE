@@ -43,11 +43,11 @@ const EmptyStateText2 = styled.div`
   text-align: center;
 `;
 
-interface SongsTabProps {
+interface LyricsTabProps {
   searchQuery: string;
 }
 
-const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
+const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
   const [contiData, setContiData] = useState<any[]>([]);
   const [filteredTitles, setFilteredTitles] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
@@ -99,7 +99,7 @@ const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
         >
           {filteredSongs.length > 0 && (
             <SongSection>
-              <SongList songs={filteredSongs} />
+              <SongList songs={filteredSongs} showLyricsOnly />
             </SongSection>
           )}
         </Container>
@@ -114,4 +114,4 @@ const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
   );
 };
 
-export default SongsTab;
+export default LyricsTab;

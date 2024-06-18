@@ -8,8 +8,9 @@ import {
   parseLocalDateString,
 } from "../../utils/formatDuration";
 import SongList from "../SongList";
+import { AnimatePresence, motion } from "framer-motion";
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   position: absolute;
   top: 25%;
   height: 60%;
@@ -164,9 +165,14 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   };
 
   return (
-    <>
+    <AnimatePresence mode="wait">
       {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
-        <Container>
+        <Container
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <SectionTitle>곡</SectionTitle>
           {filteredSongs.length > 0 && (
             <SongSection>
@@ -210,7 +216,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
           <EmptyStateText2>검색 결과가 없어요.</EmptyStateText2>
         </EmptyStateContainer>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 
