@@ -1,89 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import ContiPlaceholder from "../ContiPlaceholder";
-import {
-  formatRelativeTime,
-  formatTotalDuration,
-  parseLocalDateString,
-} from "../../utils/formatDuration";
 import SongList from "../SongList";
 
 const Container = styled.div`
   position: absolute;
   top: 25%;
+  width: 90vw;
   height: 60%;
   overflow-y: auto;
-  padding-bottom: 60px;
+  padding-bottom: 30px;
 `;
 
 const SongSection = styled.div`
   margin: 0px -20px 43px -20px;
-`;
-
-const ContiSection = styled.div``;
-
-const SectionTitle = styled.div`
-  font-size: 15px;
-  font-weight: 500;
-  color: #171a1f;
-  margin: 22px 0 20px 10px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  width: 90vw;
-  margin-bottom: 15px;
-  border: 2px solid #9dbbe9;
-  border-radius: 10px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-`;
-
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100px;
-  height: 100px;
-  border-radius: 20px;
-  position: relative;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
-`;
-
-const Image = styled.img`
-  position: absolute;
-  height: 100px;
-  border-radius: 20px;
-  width: auto;
-  align-items: center;
-  justify-content: center;
-`;
-
-const InfoText = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-left: 13px;
-`;
-
-const Title = styled.div`
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 7px;
-  color: rgba(23, 26, 31, 0.8);
-`;
-
-const Subtitle = styled.div`
-  font-size: 13px;
-  margin-bottom: 7px;
-  color: rgba(23, 26, 31, 0.5);
-`;
-
-const SongInfo = styled.div`
-  font-size: 11px;
-  color: rgba(23, 26, 31, 0.5);
 `;
 
 const EmptyStateContainer = styled.div`
@@ -117,11 +46,10 @@ interface AllTabProps {
   searchQuery: string;
 }
 
-const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
+const SongsTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   const [contiData, setContiData] = useState<any[]>([]);
   const [filteredTitles, setFilteredTitles] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedContiData: any[] = [];
@@ -155,52 +83,18 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
       }
       return isTitleMatched || matchedSongs.length > 0;
     });
-    setFilteredSongs(songs.slice(0, 5));
+    setFilteredSongs(songs);
     setFilteredTitles(filteredTitles);
   }, [searchQuery, contiData]);
-
-  const handleContiClick = (id: string) => {
-    navigate(`/conti-detail/${id}`);
-  };
 
   return (
     <>
       {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
         <Container>
-          <SectionTitle>곡</SectionTitle>
           {filteredSongs.length > 0 && (
             <SongSection>
               <SongList songs={filteredSongs} />
             </SongSection>
-          )}
-          <SectionTitle>콘티</SectionTitle>
-          {filteredTitles.length > 0 && (
-            <ContiSection>
-              {filteredTitles.map((data, index) => (
-                <Item key={index} onClick={() => handleContiClick(data.id)}>
-                  <ImageWrapper>
-                    <ContiPlaceholder size={100} />
-                    <Image
-                      src={data.thumbnail}
-                      alt="Album Image"
-                      style={{
-                        height:
-                          data.thumbnail === "/images/WhitePiano.png"
-                            ? "62px"
-                            : "100px",
-                      }}
-                    />
-                  </ImageWrapper>
-                  <InfoText>
-                    <Title>{data.title}</Title>
-                    <Subtitle>{data.ownerName}</Subtitle>
-                    <SongInfo>{`${formatRelativeTime(
-                      parseLocalDateString(data.updated_at)
-                    )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
-                  </InfoText>
-                </Item>
-              ))}
-            </ContiSection>
           )}
         </Container>
       ) : (
@@ -214,4 +108,4 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   );
 };
 
-export default AllTab;
+export default SongsTab;

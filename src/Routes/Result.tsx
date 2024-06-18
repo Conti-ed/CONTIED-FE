@@ -25,6 +25,7 @@ import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
 import ContiTab from "../components/Tabs/ContiTab";
 import AllTab from "../components/Tabs/AllTab";
+import SongsTab from "../components/Tabs/SongsTab";
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -187,6 +188,8 @@ const Result: React.FC = () => {
           renderEmptyState()
         ) : selectedTab === "전체" ? (
           <AllTab searchQuery={searchQuery} />
+        ) : selectedTab === "곡" ? (
+          <SongsTab searchQuery={searchQuery} />
         ) : selectedTab === "콘티" ? (
           <ContiTab searchQuery={searchQuery} />
         ) : (
