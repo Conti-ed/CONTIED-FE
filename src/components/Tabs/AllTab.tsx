@@ -14,6 +14,7 @@ const Container = styled(motion.div)`
   position: absolute;
   top: 25%;
   height: 60%;
+  overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 60px;
 `;
