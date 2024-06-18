@@ -111,7 +111,7 @@ const Start: React.FC = () => {
     setIsFading(true);
     setTimeout(() => {
       navigate("/waiting");
-    }, 100); // 애니메이션 지속 시간과 일치하도록 설정
+    }, 100);
   };
 
   return (
