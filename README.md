@@ -120,53 +120,44 @@ $ npm start
 │   └── └── login.png
 └── src : 프론트엔드
     ├── components
-    │   ├── Header.tsx : 페이지 헤더
-    │   ├── Conti.tsx : 홈에서 보여지는 기본적인 콘티 구조
+    │   ├── StatusBar.tsx : IOS 헤더
+    │   ├── EmptyState.tsx : 특정 요소가 없을 경우
     │   ├── ContiPlaceholder.tsx
-    │   ├── HashtagComponent.tsx : 키워드 관리
-    │   ├── TabBar.tsx : 페이지 하단 바
-    │   ├── UploadDrawer.tsx : Feed에서의 업로드 공간
-    │   ├── SongRegister.tsx
-    │   ├── InputFileUpload.tsx
+    │   ├── AlbumPlaceholder.tsx
+    │   ├── SongPlaceholder.tsx
+    │   ├── SafariSpace.tsx : IOS footer
+    │   ├── InputSafariSpace.tsx : 입력 시 IOS footer
+    │   ├── Keyboard.tsx : IOS 키보드
+    │   ├── TabBar.tsx : 페이지 하단 옵션 바
     │   ├── SongItem.tsx : 곡 상세 정보
-    │   ├── OptionsMenu.tsx : 사용자별 옵션 관리
-    │   ├── Modal.tsx : 옵션에 따른 모달
-    │   ├── ConfirmModal.tsx : 확인 모달
-    │   └── Modals : 모달 관련
-    │       ├── ModifyTitle.tsx : 타이틀 수정
-    │       ├── ModifyKeywords.tsx : 키워드 수정
-    │       ├── AddToMyConti.tsx : 내 콘티로 가져오기
-    │       ├── ConfirmDeleteConti.tsx : 콘티 삭제
-    │       └── ConfirmDeleteSong.tsx : 곡 삭제
+    │   ├── SongList.tsx : 곡 리스트
+    │   └── Uploads : 업로드 관련
+    │       ├── CustomUpload.tsx : 커스텀 콘티 생성 관리
+    │       ├── AIUpload.tsx : AI 콘티 생성 관리
+    │       └── YouTubeUpload.tsx : 유튜브 콘티 생성 관리
+    │   └── Tabs : 검색 결과 탭 관련
+    │       ├── AllTab.tsx : 전체 탭 관리
+    │       ├── SongsTab.tsx : 곡 탭 관리
+    │       ├── ContiTab.tsx : 콘티 탭 관리
+    │       └── LyricsTab.tsx : 가사 탭 관리
     ├── Routes
-    │   ├── Login.tsx : 로그인
-    │   ├── Home.tsx : 메인
-    │   ├── Feed.tsx : 피드(공유되는 페이지)
-    │   ├── Upload.tsx : 업로드
-    │   ├── Settings.tsx : 설정
-    │   ├── Search.tsx : 검색
-    │   ├── ContiDetail.tsx : 콘티 상세
-    │   └── MyConti.tsx : 내 콘티
-    ├── hooks
-    │   ├── useFormReset.ts : 업로드 초기화
-    │   ├── useHashtags.ts : 키워드 관리
-    │   └── useContiDetailState.ts : 상세 페이지 state 관리
+    │   ├── Start.tsx : 시작 페이지
+    │   ├── Wait.tsx : 로그인 대기 페이지
+    │   ├── Home.tsx : 메인 페이지
+    │   ├── Search.tsx : 검색 페이지
+    │   ├── Result.tsx : 검색 결과 페이지
+    │   ├── MyPage.tsx : 설정 및 관리 페이지
+    │   └── ContiDetail.tsx : 콘티 상세 페이지
     ├── utils
     │   └── formatDuration.ts : 시간 포맷 설정
     ├── styles
-    │   ├── Header.styles.ts
-    │   ├── Conti.styles.ts
     │   ├── Home.styles.ts
     │   ├── TabBar.styles.ts
-    │   ├── Feed.styles.ts
-    │   ├── Upload.styles.ts
-    │   ├── UploadDrawer.styles.ts
-    │   ├── Settings.styles.ts
     │   └── LoadingSpinner.styles.ts : 로딩 시 출력되는 화면
     ├── Router.tsx : 이동 로직 관리
     ├── Root.tsx
     ├── index.tsx
-    ├── api.ts
+    ├── api.ts : API 관리
     ├── atoms.ts
     └── types.ts
 
