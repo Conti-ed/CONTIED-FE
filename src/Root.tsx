@@ -68,6 +68,9 @@ footer, header, hgroup, main, menu, nav, section {
     font-weight: 300;
     font-style: normal;
 }
+::-webkit-scrollbar {
+    display: none;
+  }
 body {
   line-height: 1;
   font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
