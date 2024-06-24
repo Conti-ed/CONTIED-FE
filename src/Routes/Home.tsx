@@ -22,6 +22,7 @@ import {
   AlbumThumbnail,
 } from "../styles/Home.styles";
 import { LoadingSpinner } from "../styles/LoadingSpinner";
+import Icon from "../components/Icon";
 
 const Home: React.FC = () => {
   const userName = "준석"; // 사용자 이름
@@ -101,21 +102,7 @@ const Home: React.FC = () => {
             <Title>{albumTitle}</Title>
           </AlbumContainer>
           <SectionTitle>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 17V4L19 1V14M7 17C7 18.1046 5.65685 19 4 19C2.34315 19 1 18.1046 1 17C1 15.8954 2.34315 15 4 15C5.65685 15 7 15.8954 7 17ZM19 14C19 15.1046 17.6569 16 16 16C14.3431 16 13 15.1046 13 14C13 12.8954 14.3431 12 16 12C17.6569 12 19 12.8954 19 14ZM7 8L19 5"
-                stroke="black"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon id="note" width="20" height="20" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
           <ButtonGroup>
