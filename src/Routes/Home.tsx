@@ -102,7 +102,7 @@ const Home: React.FC = () => {
             <Title>{albumTitle}</Title>
           </AlbumContainer>
           <SectionTitle>
-            <Icon id="note" width="20" height="20" />
+            <Icon id="note-home" width="20" height="20" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
           <ButtonGroup>
