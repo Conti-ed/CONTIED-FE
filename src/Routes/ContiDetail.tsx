@@ -64,7 +64,7 @@ const ContiDetail: React.FC = () => {
           <StatusBar />
           <Header>
             <BackButton onClick={handleBackClick}>
-              <Icon id="back" width="24" height="24" />
+              <Icon id="back-detail" width="24" height="24" />
             </BackButton>
           </Header>
           <DEContiData>
@@ -90,7 +90,7 @@ const ContiDetail: React.FC = () => {
         <StatusBar />
         <Header>
           <BackButton onClick={handleBackClick}>
-            <Icon id="back" width="24" height="24" />
+            <Icon id="back-detail" width="24" height="24" />
           </BackButton>
           <IconContainer>
             <HeartIcon

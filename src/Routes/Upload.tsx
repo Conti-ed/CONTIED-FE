@@ -7,6 +7,7 @@ import SafariSpace from "../components/SafariSpace";
 import CustomUpload from "../components/Uploads/CustomUpload";
 import AIUpload from "../components/Uploads/AIUpload";
 import YouTubeUpload from "../components/Uploads/YouTubeUpload";
+import Icon from "../components/Icon";
 
 const Container = styled.div`
   width: 100%;
@@ -126,19 +127,8 @@ const Upload: React.FC = () => {
     <Container>
       <StatusBar />
       <Header>
-        <BackIcon
-          width="9"
-          height="16"
-          viewBox="0 0 9 16"
-          fill="none"
-          onClick={() => navigate(-1)}
-        >
-          <path
-            d="M8 15L1 8L8 1"
-            stroke="#545F71"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <BackIcon width="9" viewBox="0 0 9 16" onClick={() => navigate(-1)}>
+          <Icon id="back-upload" width="9" height="16" />
         </BackIcon>
         <Title>{renderTitle()}</Title>
       </Header>

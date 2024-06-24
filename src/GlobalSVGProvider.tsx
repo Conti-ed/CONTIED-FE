@@ -19,11 +19,19 @@ const spriteSvgCode = (
             strokeLinejoin="round"
           />
         </symbol>
-        <symbol id="back" fill="none" viewBox="0 0 24 24">
+        <symbol id="back-detail" fill="none" viewBox="0 0 24 24">
           <path
             d="M15 6L9 12L15 18"
             stroke="#545F71"
             strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </symbol>
+        <symbol id="back-upload" fill="none" viewBox="0 0 9 16">
+          <path
+            d="M8 15L1 8L8 1"
+            stroke="#545F71"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
