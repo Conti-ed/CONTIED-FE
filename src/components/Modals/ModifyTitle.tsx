@@ -1,5 +1,4 @@
 import { styled } from "styled-components";
-import { setFontStyle } from "../../styles/UploadDrawer.styles";
 import { ModalTitle } from "../../styles/Modal.styles";
 import { ContiDetailState } from "../../hooks/useContiDetailState";
 import { useRecoilState } from "recoil";
@@ -7,7 +6,6 @@ import { modalAtom } from "../../atoms";
 import { SERVER_URL } from "../../api";
 
 const TitleEditInput = styled.input`
-  ${setFontStyle}
   border: 1px solid #ced4da;
   border-radius: 4px;
   padding: 8px 12px;

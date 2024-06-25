@@ -1,7 +1,6 @@
 import React from "react";
 import { ModalContentContainer, ModalTitle } from "../../styles/Modal.styles";
 import { styled } from "styled-components";
-import { setFontStyle } from "../../styles/UploadDrawer.styles";
 import { ContiDetailState } from "../../hooks/useContiDetailState";
 
 const KeywordEditorContainer = styled.div`
@@ -18,7 +17,6 @@ const KeywordDisplay = styled.span`
 `;
 
 const KeyEditButton = styled.button`
-  ${setFontStyle}
   background-color: #10769b;
   color: white;
   border: none;
@@ -29,7 +27,6 @@ const KeyEditButton = styled.button`
 `;
 
 const KeyEditInput = styled.input`
-  ${setFontStyle}
   border: 1px solid #ced4da;
   border-radius: 4px;
   padding: 8px 12px;
