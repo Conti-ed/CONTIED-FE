@@ -27,6 +27,31 @@ const spriteSvgCode = (
             strokeLinejoin="round"
           />
         </symbol>
+        <symbol id="remove-search" fill="none" viewBox="0 0 18 18">
+          <path
+            d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
+            stroke="#545F71"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </symbol>
+        <symbol id="clear-search" fill="none" viewBox="0 0 18 18">
+          <path
+            d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
+            stroke="#545F71"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </symbol>
+        <symbol id="search-search" fill="none">
+          <path
+            d="M17.25 17.25L11.75 11.75M13.5833 7.16667C13.5833 10.7105 10.7105 13.5833 7.16667 13.5833C3.62284 13.5833 0.75 10.7105 0.75 7.16667C0.75 3.62284 3.62284 0.75 7.16667 0.75C10.7105 0.75 13.5833 3.62284 13.5833 7.16667Z"
+            stroke="#545F71"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </symbol>
         <symbol id="back-detail" fill="none" viewBox="0 0 24 24">
           <path
             d="M15 6L9 12L15 18"

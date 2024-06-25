@@ -29,6 +29,7 @@ import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
 import { getRandomSuggestions } from "../utils/randomUtils";
+import Icon from "../components/Icon";
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -156,16 +157,10 @@ const Search: React.FC = () => {
           <svg
             onClick={() => handleRemoveRecentSearch(search)}
             width="18"
-            height="18"
             viewBox="0 0 18 18"
             fill="none"
           >
-            <path
-              d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
-              stroke="#545F71"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <Icon id="remove-search" width="18" height="18" />
           </svg>
         </RecentSearchItem>
       ))}
@@ -201,7 +196,6 @@ const Search: React.FC = () => {
         <AnimatePresence>
           {isFocused && (
             <BackIcon
-              key="back-icon"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 21 }}
               exit={{ opacity: 0, x: -20 }}
@@ -209,15 +203,9 @@ const Search: React.FC = () => {
               width="9"
               height="16"
               viewBox="0 0 9 16"
-              fill="none"
               onClick={() => setIsFocused(false)}
             >
-              <path
-                d="M8 15L1 8L8 1"
-                stroke="#545F71"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <Icon id="back-upload" width="9" height="16" />
             </BackIcon>
           )}
         </AnimatePresence>
@@ -239,32 +227,19 @@ const Search: React.FC = () => {
               width="18"
               height="18"
               viewBox="0 0 18 18"
-              fill="none"
               onClick={handleClearSearch}
             >
-              <path
-                d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
-                stroke="#545F71"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <Icon id="clear-search" width="18" height="18" />
             </ClearIcon>
           )}
           <SearchIcon
             width="18"
             height="18"
             viewBox="0 0 18 18"
-            fill="none"
             onClick={handleSearch}
             style={{ cursor: "pointer" }}
           >
-            <path
-              d="M17.25 17.25L11.75 11.75M13.5833 7.16667C13.5833 10.7105 10.7105 13.5833 7.16667 13.5833C3.62284 13.5833 0.75 10.7105 0.75 7.16667C0.75 3.62284 3.62284 0.75 7.16667 0.75C10.7105 0.75 13.5833 3.62284 13.5833 7.16667Z"
-              stroke="#545F71"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <Icon id="search-search" width="18" height="18" />
           </SearchIcon>
         </SearchInputWrapper>
         <SearchBar />
