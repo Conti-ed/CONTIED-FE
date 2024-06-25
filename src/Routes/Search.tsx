@@ -158,7 +158,6 @@ const Search: React.FC = () => {
             onClick={() => handleRemoveRecentSearch(search)}
             width="18"
             viewBox="0 0 18 18"
-            fill="none"
           >
             <Icon id="remove-search" width="18" height="18" />
           </svg>
