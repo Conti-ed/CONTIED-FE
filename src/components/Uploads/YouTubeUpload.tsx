@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../../api";
 import { Oval } from "react-loader-spinner";
+import Icon from "../Icon";
 
 const blink = keyframes`
   0%, 100% {
@@ -205,19 +206,8 @@ const YouTubeUpload = () => {
             }}
           />
           {playlistUrl && isFocused && (
-            <ClearIcon
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              onClick={handleClearSearch}
-            >
-              <path
-                d="M4.5 13.5L13.5 4.5M4.5 4.5L13.5 13.5"
-                stroke="#545F71"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+            <ClearIcon width="18" height="18" onClick={handleClearSearch}>
+              <Icon id="clear-search" width="18" height="18" />
             </ClearIcon>
           )}
           <NextButton onClick={handleSearch}>다음</NextButton>
