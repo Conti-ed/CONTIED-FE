@@ -47,7 +47,10 @@ const Search: React.FC = () => {
       setSearchQuery(location.state.query || "");
       setIsFocused(location.state.isFocused || false);
     }
-  }, [location.state]);
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [location.state, isFocused]);
 
   useEffect(() => {
     const storedSearches = localStorage.getItem("recentSearches");
@@ -55,12 +58,6 @@ const Search: React.FC = () => {
       setRecentSearches(JSON.parse(storedSearches));
     }
   }, []);
-
-  useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
 
   useEffect(() => {
     localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
@@ -73,7 +70,8 @@ const Search: React.FC = () => {
           inputRef.current &&
           !inputRef.current.contains(event.target as Node) &&
           recentSearchesRef.current &&
-          !recentSearchesRef.current.contains(event.target as Node)
+          !recentSearchesRef.current.contains(event.target as Node) &&
+          !(event.target as HTMLElement).closest(".clear-icon")
         ) {
           setIsFocused(false);
         }
@@ -199,8 +197,6 @@ const Search: React.FC = () => {
               animate={{ opacity: 1, x: 21 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
-              width="9"
-              height="16"
               viewBox="0 0 9 16"
               onClick={() => setIsFocused(false)}
             >
@@ -222,22 +218,11 @@ const Search: React.FC = () => {
             onKeyDown={handleKeyDown}
           />
           {searchQuery && isFocused && (
-            <ClearIcon
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              onClick={handleClearSearch}
-            >
+            <ClearIcon className="clear-icon" onClick={handleClearSearch}>
               <Icon id="clear-search" width="18" height="18" />
             </ClearIcon>
           )}
-          <SearchIcon
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            onClick={handleSearch}
-            style={{ cursor: "pointer" }}
-          >
+          <SearchIcon viewBox="0 0 18 18" onClick={handleSearch}>
             <Icon id="search-search" width="18" height="18" />
           </SearchIcon>
         </SearchInputWrapper>

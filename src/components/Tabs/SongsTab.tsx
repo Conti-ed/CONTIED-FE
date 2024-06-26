@@ -91,7 +91,7 @@ const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
 
   return (
     <AnimatePresence mode="wait">
-      {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
+      {filteredTitles.length > 0 && filteredSongs.length > 0 ? (
         <Container
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

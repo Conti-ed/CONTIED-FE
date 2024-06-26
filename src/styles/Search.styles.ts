@@ -22,6 +22,8 @@ export const Header = styled.div`
 
 export const BackIcon = styled(motion.svg)`
   margin-right: 10px;
+  width: 9px;
+  height: 16px;
   cursor: pointer;
 `;
 
@@ -69,7 +71,10 @@ export const SearchInput = styled.input`
 `;
 
 export const ClearIcon = styled.svg`
+  margin-left: 10px;
   margin-right: 10px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
   z-index: 10; /* Ensure ClearIcon is clickable */
   background-color: rgba(
@@ -83,6 +88,9 @@ export const ClearIcon = styled.svg`
 
 export const SearchIcon = styled.svg`
   margin-right: 3px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 `;
 
 export const SearchBar = styled.div`

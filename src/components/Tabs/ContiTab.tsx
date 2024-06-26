@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // useNavigate import 추가
+import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
 import {
   formatRelativeTime,
@@ -26,7 +26,7 @@ const ContiItem = styled.div`
   border: 2px solid #9dbbe9;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer; // 클릭 가능하도록 커서 스타일 추가
+  cursor: pointer;
 `;
 
 const ContiImageWrapper = styled.div`

@@ -91,7 +91,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
 
   return (
     <AnimatePresence>
-      {filteredTitles.length > 0 || filteredSongs.length > 0 ? (
+      {filteredTitles.length > 0 && filteredSongs.length > 0 ? (
         <Container>
           {filteredSongs.length > 0 && (
             <SongSection>
@@ -103,7 +103,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
         <EmptyStateContainer>
           <EmptyStateImage src="images/WhitePiano.png" alt="Empty state" />
           <EmptyStateText1>앗!</EmptyStateText1>
-          <EmptyStateText2>곡 검색 결과가 없어요.</EmptyStateText2>
+          <EmptyStateText2>가사 검색 결과가 없어요.</EmptyStateText2>
         </EmptyStateContainer>
       )}
     </AnimatePresence>
