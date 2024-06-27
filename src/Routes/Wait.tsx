@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { Player } from "@lottiefiles/react-lottie-player";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
+import animationData from "../components/waitingAnimation.json";
 
-const changeColor = keyframes`
-  0%, 100% {
-    filter: brightness(1);
-    color: #ffffff; /* 기본 텍스트 색상 */
+const hue = keyframes`
+  from {
+    filter: hue-rotate(0deg);
   }
-  50% {
-    filter: brightness(1) saturate(105%) invert(60%) sepia(46%) saturate(749%) hue-rotate(160deg) brightness(110%) contrast(94%);
-    color: #7094db; /* 텍스트 색상 */
+  to {
+    filter: hue-rotate(180deg);
   }
 `;
 
 const fadeIn = keyframes`
   from {
-    opacity: 0.9;
+    opacity: 0;
   }
   to {
     opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 `;
 
@@ -43,35 +52,39 @@ const Content = styled.div<{ $isFading: boolean }>`
     `}
 `;
 
-const Image = styled.img`
-  width: 110px; /* 이미지 크기 */
-  height: 110px;
-  animation: ${changeColor} 6s infinite;
-`;
-
-const Text = styled.div`
-  margin-top: 30px;
+const Text = styled.div<{ $fadeState: "fadeIn" | "fadeOut" }>`
   font-size: 25px;
   font-weight: 500;
-  animation: ${changeColor} 6s infinite;
+  background-image: linear-gradient(92deg, #26dbf3, #4e3afe);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: ${hue} 30s infinite linear,
+    ${({ $fadeState }) => ($fadeState === "fadeIn" ? fadeIn : fadeOut)} 3s
+      forwards;
 `;
 
 const Wait: React.FC = () => {
   const [text, setText] = useState("로그인 하는 중...");
+  const [fadeState, setFadeState] = useState<"fadeIn" | "fadeOut">("fadeIn");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const animationDuration = 6000; // 6초 애니메이션
     const textChangeTimeout = setTimeout(() => {
+      setFadeState("fadeOut");
+    }, 3000); // 3초 후 텍스트 사라지기 시작
+
+    const textFadeInTimeout = setTimeout(() => {
       setText("로그인 완료!");
-    }, animationDuration);
+      setFadeState("fadeIn");
+    }, 6000); // 3초 후 텍스트 변경 및 다시 나타나기 시작
 
     const redirectTimeout = setTimeout(() => {
       navigate("/select");
-    }, animationDuration + 3000); // 텍스트 변경 후 3초 뒤 리디렉션
+    }, 9000); // 텍스트 변경 후 3초 뒤 리디렉션
 
     return () => {
       clearTimeout(textChangeTimeout);
+      clearTimeout(textFadeInTimeout);
       clearTimeout(redirectTimeout);
     };
   }, [navigate]);
@@ -80,8 +93,13 @@ const Wait: React.FC = () => {
     <Container>
       <StatusBar />
       <Content $isFading={true}>
-        <Image src="/images/WaitforLogin.png" alt="Loading" />
-        <Text>{text}</Text>
+        <Player
+          autoplay
+          loop
+          src={animationData}
+          style={{ height: "200px", width: "200px" }}
+        />
+        <Text $fadeState={fadeState}>{text}</Text>
       </Content>
       <SafariSpace $isFocused={false} />
     </Container>
