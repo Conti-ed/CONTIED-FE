@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import { Oval } from "react-loader-spinner";
+import Icon from "../components/Icon";
 
 const Container = styled.div`
   height: 100vh;
@@ -58,6 +59,9 @@ const Button = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  width: 300px;
+  height: 40px;
   margin-top: 20px;
   padding: 10px 20px;
   font-size: 15px;
@@ -65,11 +69,31 @@ const Button = styled(motion.button)`
   color: #fff;
   background-color: #4f8eec;
   border: 2px solid #94b4ed;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   &:hover {
     background-color: #4f8eec;
   }
+`;
+
+const ButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+const SpinnerContainer = styled(motion.div)`
+  position: absolute;
+  right: 0px;
+`;
+
+const CheckContainer = styled(motion.div)`
+  position: absolute;
+  right: 45%;
+  bottom: -8px;
 `;
 
 const textVariants = {
@@ -97,7 +121,9 @@ const buttonVariants = {
 
 const Select: React.FC = () => {
   const [selected, setSelected] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [buttonText, setButtonText] = useState("완료");
+  const [showSpinner, setShowSpinner] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
   const navigate = useNavigate();
 
   const handleBoxClick = (index: number) => {
@@ -105,10 +131,19 @@ const Select: React.FC = () => {
   };
 
   const handleButtonClick = () => {
-    setLoading(true);
+    setButtonText("설정 중...");
+    setShowSpinner(true);
     setTimeout(() => {
-      navigate("/home");
-    }, 3000);
+      setShowSpinner(false);
+      setTimeout(() => {
+        setButtonText("");
+        setShowCheck(true);
+        setTimeout(() => {
+          setShowCheck(false);
+          navigate("/home");
+        }, 1000);
+      }, 500);
+    }, 2000);
   };
 
   return (
@@ -138,18 +173,54 @@ const Select: React.FC = () => {
             variants={buttonVariants}
             onClick={handleButtonClick}
           >
-            {loading ? (
-              <Oval
-                height={15}
-                width={15}
-                color="#ffffff"
-                secondaryColor="#94b4ed"
-                strokeWidth={5}
-                strokeWidthSecondary={5}
-              />
-            ) : (
-              "완료"
-            )}
+            <ButtonContent>
+              <AnimatePresence>
+                {showSpinner && (
+                  <SpinnerContainer
+                    key="spinner"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <Oval
+                      height={15}
+                      width={15}
+                      color="#ffffff"
+                      secondaryColor="#94b4ed"
+                      strokeWidth={5}
+                      strokeWidthSecondary={5}
+                    />
+                  </SpinnerContainer>
+                )}
+                {showCheck && (
+                  <CheckContainer
+                    key="check"
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      x: { duration: 0.5 },
+                      opacity: { duration: 0.5 },
+                    }}
+                  >
+                    <Icon id="confirm-select" width="24" height="24" />
+                  </CheckContainer>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {buttonText && (
+                  <motion.div
+                    key="buttonText"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {buttonText}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </ButtonContent>
           </Button>
         )}
       </Content>

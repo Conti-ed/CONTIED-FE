@@ -116,8 +116,7 @@ const SongArtistName = styled.div`
 `;
 
 const LyricsContainer = styled(motion.div)`
-  width: 90vw;
-  margin-left: 20px;
+  width: 100vw;
   border: 2px solid #9dbbe9;
 `;
 
@@ -204,7 +203,7 @@ const SongItem = ({
       <AnimatePresence mode="wait">
         {showLyrics && (
           <LyricsContainer
-            key="lyrics" // 추가된 부분
+            key="lyrics"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
