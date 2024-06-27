@@ -39,10 +39,13 @@ const TextContainer = styled(motion.div)`
 const Box = styled(motion.div)<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 15px;
   border-radius: 10px;
-  background-color: ${({ $isSelected }) =>
-    $isSelected ? "#94b4ed" : "#f0f0f0"};
+  background: ${({ $isSelected }) =>
+    $isSelected
+      ? "linear-gradient(140.12deg, #94B4ED 22.86%, #FFFFFF 126.99%)"
+      : "#f0f0f0"};
   width: 300px;
   cursor: pointer;
   transition: background-color 0.3s ease; /* 트랜지션 시간 단축 */
@@ -71,9 +74,6 @@ const Button = styled(motion.button)`
   border: 2px solid #94b4ed;
   border-radius: 10px;
   cursor: pointer;
-  &:hover {
-    background-color: #4f8eec;
-  }
 `;
 
 const ButtonContent = styled.div`
@@ -183,8 +183,8 @@ const Select: React.FC = () => {
                     exit={{ opacity: 0 }}
                   >
                     <Oval
-                      height={15}
-                      width={15}
+                      height={20}
+                      width={20}
                       color="#ffffff"
                       secondaryColor="#94b4ed"
                       strokeWidth={5}
