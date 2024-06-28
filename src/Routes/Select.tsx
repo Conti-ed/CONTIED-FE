@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
-import { Oval } from "react-loader-spinner";
 import Icon from "../components/Icon";
+import { Oval } from "react-loader-spinner";
 
 const Container = styled.div`
   height: 100vh;
@@ -87,7 +87,7 @@ const ButtonContent = styled.div`
 
 const SpinnerContainer = styled(motion.div)`
   position: absolute;
-  right: 0px;
+  right: -10px;
 `;
 
 const CheckContainer = styled(motion.div)`
@@ -195,7 +195,7 @@ const Select: React.FC = () => {
                 {showCheck && (
                   <CheckContainer
                     key="check"
-                    initial={{ opacity: 0, x: 50 }}
+                    initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{
