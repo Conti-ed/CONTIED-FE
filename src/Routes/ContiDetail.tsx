@@ -35,6 +35,7 @@ import {
 } from "../utils/formatDuration";
 import AlbumPlaceholder from "../components/AlbumPlaceholder";
 import Icon from "../components/Icon";
+import AddLoading from "../components/AddLoading";
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const ContiDetail: React.FC = () => {
     getConti(Number(contiId))
   );
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleHeartClick = () => {
     setIsFavorite(!isFavorite);
@@ -50,6 +52,14 @@ const ContiDetail: React.FC = () => {
 
   const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const handleAddSongClick = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      navigate("/searchadd", { state: { isFocused: true, query: "" } });
+    }, 1000);
   };
 
   if (!contiData) {
@@ -77,6 +87,10 @@ const ContiDetail: React.FC = () => {
         </Container>
       </AnimatePresence>
     );
+  }
+
+  if (isLoading) {
+    return <AddLoading />;
   }
 
   return (
@@ -129,7 +143,7 @@ const ContiDetail: React.FC = () => {
               </InfoText>
             </AlbumInfo>
             <SongList songs={contiData.songs} />
-            <AddSongContainer>
+            <AddSongContainer onClick={handleAddSongClick}>
               <AddIcon width="10" height="10">
                 <Icon id="add-song-detail" width="10" height="10" />
               </AddIcon>

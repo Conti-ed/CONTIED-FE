@@ -9,6 +9,7 @@ import Upload from "./Routes/Upload";
 import ContiDetail from "./Routes/ContiDetail";
 import MyPage from "./Routes/MyPage";
 import Select from "./Routes/Select";
+import SearchAddSong from "./Routes/SearchAddSong";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: "select", element: <Select /> },
       { path: "home", element: <Home /> },
       { path: "search", element: <Search /> },
+      { path: "searchadd", element: <SearchAddSong /> },
       { path: "result", element: <Result /> },
       { path: "upload", element: <Upload /> },
       { path: "conti-detail/:contiId", element: <ContiDetail /> },
