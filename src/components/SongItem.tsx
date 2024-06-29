@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import SongPlaceholder from "./SongPlaceholder";
@@ -116,28 +116,111 @@ const SongArtistName = styled.div`
 `;
 
 const LyricsContainer = styled(motion.div)`
-  width: 100vw;
-  border: 2px solid #9dbbe9;
+  max-height: 200px;
+  overflow-y: auto;
+  background: linear-gradient(145deg, #f0f4f8, #e1e8ed);
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0 16px 16px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
 `;
 
-const Lyrics = styled.div`
-  padding: 24px;
+const GradientOverlay = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 20px;
+  pointer-events: none;
+
+  &.top {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(240, 244, 248, 1),
+      rgba(240, 244, 248, 0)
+    );
+    border-radius: 16px 16px 0 0;
+    position: sticky;
+  }
+
+  &.bottom {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      rgba(225, 232, 237, 1),
+      rgba(225, 232, 237, 0)
+    );
+    border-radius: 0 0 16px 16px;
+    position: sticky;
+  }
+`;
+
+const LyricsContent = styled.div`
+  padding: 10px 16px 6px 16px;
   font-size: 12px;
-  line-height: 1.3;
+  line-height: 1.6;
   color: rgba(23, 26, 31, 0.8);
   text-align: center;
 `;
 
-const SongItem = ({
-  song,
-}: {
-  song: { title: string; artist: string; thumbnail: string; lyrics: string };
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const LyricsTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 16px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+`;
+
+const LyricsText = styled.p`
+  white-space: pre-wrap;
+  text-align: left;
+  padding: 0 16px;
+`;
+
+const NoLyrics = styled.p`
+  font-style: italic;
+  color: #8c8c8c;
+  text-align: center;
+  padding: 16px;
+`;
+
+interface SongItemProps {
+  song: {
+    id: string;
+    title: string;
+    artist: string;
+    thumbnail: string;
+    lyrics: string;
+  };
+  isOpen: boolean;
+  onToggle: (id: string) => void;
+}
+
+const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
   const [showLyrics, setShowLyrics] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setShowLyrics(false);
+    }
+  }, [isOpen]);
+
   const toggleOptions = () => {
-    setIsOpen(!isOpen);
+    onToggle(song.id);
   };
 
   const toggleLyrics = () => {
@@ -207,9 +290,18 @@ const SongItem = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
           >
-            <Lyrics>{song.lyrics || "가사가 아직 제공되지 않았어요."}</Lyrics>
+            <GradientOverlay className="top" />
+            <LyricsContent>
+              <LyricsTitle>{song.title}</LyricsTitle>
+              {song.lyrics ? (
+                <LyricsText>{song.lyrics}</LyricsText>
+              ) : (
+                <NoLyrics>가사가 아직 제공되지 않았어요.</NoLyrics>
+              )}
+            </LyricsContent>
+            <GradientOverlay className="bottom" />
           </LyricsContainer>
         )}
       </AnimatePresence>

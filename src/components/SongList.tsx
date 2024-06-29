@@ -1,6 +1,7 @@
+import React, { useState } from "react";
 import styled from "styled-components";
 import SongItem from "./SongItem";
-import LyricsOnlySongItem from "./LyricsOnlySongItem"; // 추가
+import LyricsOnlySongItem from "./LyricsOnlySongItem";
 
 const Container = styled.ul`
   list-style: none;
@@ -9,6 +10,7 @@ const Container = styled.ul`
 `;
 
 interface Song {
+  id: string; // 고유 ID 추가
   title: string;
   artist: string;
   thumbnail: string;
@@ -20,16 +22,32 @@ interface SongListProps {
   showLyricsOnly?: boolean;
 }
 
-const SongList = ({ songs, showLyricsOnly = false }: SongListProps) => (
-  <Container>
-    {songs.map((song, index) =>
-      showLyricsOnly ? (
-        <LyricsOnlySongItem key={index} song={song} />
-      ) : (
-        <SongItem key={index} song={song} />
-      )
-    )}
-  </Container>
-);
+const SongList: React.FC<SongListProps> = ({
+  songs,
+  showLyricsOnly = false,
+}) => {
+  const [openSongId, setOpenSongId] = useState<string | null>(null);
+
+  const handleToggle = (id: string) => {
+    setOpenSongId((prevId) => (prevId === id ? null : id));
+  };
+
+  return (
+    <Container>
+      {songs.map((song) =>
+        showLyricsOnly ? (
+          <LyricsOnlySongItem key={song.id} song={song} />
+        ) : (
+          <SongItem
+            key={song.id}
+            song={song}
+            isOpen={song.id === openSongId}
+            onToggle={handleToggle}
+          />
+        )
+      )}
+    </Container>
+  );
+};
 
 export default SongList;
