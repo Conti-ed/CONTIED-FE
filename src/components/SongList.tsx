@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import styled from "styled-components";
 import SongItem from "./SongItem";
 import LyricsOnlySongItem from "./LyricsOnlySongItem";
@@ -10,7 +10,7 @@ const Container = styled.ul`
 `;
 
 interface Song {
-  id: string; // 고유 ID 추가
+  id: string;
   title: string;
   artist: string;
   thumbnail: string;
@@ -32,9 +32,20 @@ const SongList: React.FC<SongListProps> = ({
     setOpenSongId((prevId) => (prevId === id ? null : id));
   };
 
+  // 중복 ID를 제거한 노래 목록을 생성
+  const uniqueSongs = useMemo(() => {
+    const uniqueSongsMap = new Map<string, Song>();
+    songs.forEach((song) => {
+      if (!uniqueSongsMap.has(song.id)) {
+        uniqueSongsMap.set(song.id, song);
+      }
+    });
+    return Array.from(uniqueSongsMap.values());
+  }, [songs]);
+
   return (
     <Container>
-      {songs.map((song) =>
+      {uniqueSongs.map((song) =>
         showLyricsOnly ? (
           <LyricsOnlySongItem key={song.id} song={song} />
         ) : (
