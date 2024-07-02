@@ -1,5 +1,5 @@
 // hooks/useHomeLogic.ts
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NavigateFunction } from "react-router-dom";
 
 interface Conti {
@@ -15,18 +15,23 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
   const [contiList, setContiList] = useState<Conti[]>([]);
   const [selectedConti, setSelectedConti] = useState<Conti | null>(null);
 
+  const selectRandomConti = useCallback((list: Conti[]) => {
+    if (list.length > 0) {
+      const randomIndex = Math.floor(Math.random() * list.length);
+      setSelectedConti(list[randomIndex]);
+    } else {
+      setSelectedConti(null);
+    }
+  }, []);
+
   useEffect(() => {
     const storedContiData = Object.keys(localStorage)
       .filter((key) => key.startsWith("conti_"))
       .map((key) => JSON.parse(localStorage.getItem(key)!));
 
     setContiList(storedContiData);
-    if (storedContiData.length > 0) {
-      setSelectedConti(
-        storedContiData[Math.floor(Math.random() * storedContiData.length)]
-      );
-    }
-  }, []);
+    selectRandomConti(storedContiData);
+  }, [selectRandomConti]);
 
   const handleMouseEnter = (buttonName: string) => {
     setHoveredButton(buttonName);
@@ -47,8 +52,13 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
     }, 1500);
   };
 
+  const refreshSelectedConti = useCallback(() => {
+    selectRandomConti(contiList);
+  }, [contiList, selectRandomConti]);
+
   return {
     userName,
+    contiList,
     selectedConti,
     hoveredButton,
     isButtonClicked,
@@ -56,5 +66,6 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
     handleMouseLeave,
     handleAlbumClick,
     handleButtonClick,
+    refreshSelectedConti,
   };
 };
