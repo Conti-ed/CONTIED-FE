@@ -19,6 +19,7 @@ import {
   HeartIcon,
   IconContainer,
   InfoText,
+  LoadingOverlay,
   SongInfo,
   Subtitle,
   Title,
@@ -35,16 +36,17 @@ import {
 } from "../utils/formatDuration";
 import AlbumPlaceholder from "../components/AlbumPlaceholder";
 import Icon from "../components/Icon";
-import AddLoading from "../components/AddLoading";
+import Loading from "../components/Loading";
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
   const { contiId } = useParams<{ contiId: string }>();
-  const { data: contiData } = useQuery(["cid", contiId], () =>
-    getConti(Number(contiId))
+  const { data: contiData, isLoading: isContiLoading } = useQuery(
+    ["cid", contiId],
+    () => getConti(Number(contiId))
   );
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAddSongLoading, setIsAddSongLoading] = useState(false);
 
   const handleHeartClick = () => {
     setIsFavorite(!isFavorite);
@@ -55,12 +57,16 @@ const ContiDetail: React.FC = () => {
   };
 
   const handleAddSongClick = () => {
-    setIsLoading(true);
+    setIsAddSongLoading(true);
     setTimeout(() => {
-      setIsLoading(false);
+      setIsAddSongLoading(false);
       navigate("/searchadd", { state: { isFocused: true, query: "" } });
     }, 1000);
   };
+
+  if (isContiLoading) {
+    return <Loading />;
+  }
 
   if (!contiData) {
     return (
@@ -87,10 +93,6 @@ const ContiDetail: React.FC = () => {
         </Container>
       </AnimatePresence>
     );
-  }
-
-  if (isLoading) {
-    return <AddLoading />;
   }
 
   return (
@@ -152,6 +154,11 @@ const ContiDetail: React.FC = () => {
           </AlbumDetailContainer>
         </Content>
         <SafariSpace $isFocused={false} />
+        {isAddSongLoading && (
+          <LoadingOverlay>
+            <Loading />
+          </LoadingOverlay>
+        )}
       </Container>
     </AnimatePresence>
   );

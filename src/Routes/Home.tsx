@@ -24,6 +24,7 @@ import Icon from "../components/Icon";
 import { useHomeLogic } from "../hooks/useHomeLogic";
 import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
+import Loading from "../components/Loading";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const Home: React.FC = () => {
   } = useHomeLogic(navigate);
 
   if (!selectedConti) {
-    return null; // 또는 로딩 스피너를 표시할 수 있습니다.
+    return <Loading />;
   }
 
   const {

@@ -134,11 +134,23 @@ export const AddSongContainer = styled.div`
   font-size: 12px;
   font-weight: 300;
   color: #9095a1;
-  cursor: pointer;
 `;
 
 export const AddIcon = styled.svg`
   margin-right: 5px;
+`;
+
+export const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 111px;
+  left: 0;
+  right: 0;
+  bottom: 134px;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 `;
 
 export const DEContiData = styled.div`
