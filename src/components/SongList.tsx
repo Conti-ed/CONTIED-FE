@@ -3,10 +3,11 @@ import styled from "styled-components";
 import SongItem from "./SongItem";
 import LyricsOnlySongItem from "./LyricsOnlySongItem";
 
-const Container = styled.ul`
+const Container = styled.ul<{ $width?: string }>`
   list-style: none;
   padding: 0;
-  width: 100%;
+  width: ${(props) => props.$width || "100%"};
+  margin: 0 auto;
 `;
 
 interface Song {
@@ -20,11 +21,13 @@ interface Song {
 interface SongListProps {
   songs: Song[];
   showLyricsOnly?: boolean;
+  width?: string;
 }
 
 const SongList: React.FC<SongListProps> = ({
   songs,
   showLyricsOnly = false,
+  width,
 }) => {
   const [openSongId, setOpenSongId] = useState<string | null>(null);
 
@@ -44,7 +47,7 @@ const SongList: React.FC<SongListProps> = ({
   }, [songs]);
 
   return (
-    <Container>
+    <Container $width={width}>
       {uniqueSongs.map((song) =>
         showLyricsOnly ? (
           <LyricsOnlySongItem key={song.id} song={song} />

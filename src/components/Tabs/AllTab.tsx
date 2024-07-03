@@ -14,22 +14,27 @@ const Container = styled(motion.div)`
   position: absolute;
   top: 25%;
   height: 60%;
+  width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 60px;
 `;
 
 const SongSection = styled.div`
-  margin: 0px -20px 43px -20px;
+  margin: 0 auto;
+  width: 100%;
 `;
 
-const ContiSection = styled.div``;
+const ContiSection = styled.div`
+  margin: 0 auto;
+  width: calc(100% - 40px); // 좌우 20px씩 여백
+`;
 
 const SectionTitle = styled.div`
   font-size: 15px;
   font-weight: 500;
   color: #171a1f;
-  margin: 22px 0 20px 10px;
+  margin: 22px 0 20px 22px;
 `;
 
 const Item = styled.div`
@@ -177,7 +182,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
           <SectionTitle>곡</SectionTitle>
           {filteredSongs.length > 0 && (
             <SongSection>
-              <SongList songs={filteredSongs} />
+              <SongList songs={filteredSongs} width="100%" />
             </SongSection>
           )}
           <SectionTitle>콘티</SectionTitle>

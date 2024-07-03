@@ -8,6 +8,7 @@ const SongItemContainer = styled.li`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #f3f4f6;
+  width: 100%;
 
   &:first-of-type {
     border-top: 1px solid #f3f4f6;
@@ -117,11 +118,9 @@ const SongArtistName = styled.div`
 
 const LyricsContainer = styled(motion.div)`
   width: 100%; // 부모 요소의 너비에 맞춤
-  max-width: calc(100vw - 20px); // 뷰포트 너비에서 좌우 여백을 뺀 값
-  max-height: 200px;
+  max-height: 170px;
   overflow-y: auto;
   background: linear-gradient(145deg, #f0f4f8, #e1e8ed);
-  border-radius: 16px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   margin: 0 auto; // 중앙 정렬
@@ -198,7 +197,6 @@ const NoLyrics = styled.p`
   font-style: italic;
   color: #8c8c8c;
   text-align: center;
-  padding: 16px;
 `;
 
 interface SongItemProps {

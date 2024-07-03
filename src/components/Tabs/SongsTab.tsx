@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 const Container = styled(motion.div)`
   position: absolute;
   top: 25%;
-  width: 90vw;
+  width: 100%;
   height: 60%;
   overflow-x: hidden;
   overflow-y: auto;
@@ -14,7 +14,8 @@ const Container = styled(motion.div)`
 `;
 
 const SongSection = styled.div`
-  margin: 0px -20px 43px -20px;
+  margin: 0 auto;
+  width: 100%;
 `;
 
 const EmptyStateContainer = styled.div`
