@@ -1,12 +1,18 @@
+import React from "react";
 import { styled } from "styled-components";
 
-const LoadingContainer = styled.div`
+interface LoadingContainerProps {
+  $top?: string;
+}
+
+const LoadingContainer = styled.div<LoadingContainerProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
-  top: 48%;
-  transform: translateY(-50%);
+  top: ${(props) => props.$top || "48%"};
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const LoadingImage = styled.img`
@@ -20,10 +26,14 @@ const LoadingText = styled.div`
   text-align: center;
 `;
 
-const Loading: React.FC = () => {
+interface LoadingProps {
+  top?: string;
+}
+
+const Loading: React.FC<LoadingProps> = ({ top }) => {
   return (
-    <LoadingContainer>
-      <LoadingImage src="images/WhitePiano.png" alt="Empty state" />
+    <LoadingContainer $top={top}>
+      <LoadingImage src="images/WhitePiano.png" alt="Loading" />
       <LoadingText>잠시만요...</LoadingText>
     </LoadingContainer>
   );

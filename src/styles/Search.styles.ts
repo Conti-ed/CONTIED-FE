@@ -136,14 +136,13 @@ export const RecentSearchesHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 14px;
   font-weight: 300;
   color: #525252;
   background: #fff;
   position: sticky; /* 컨테이너 내에서 고정 */
   top: 0;
-  z-index: 10;
   margin-bottom: 10px;
 `;
 

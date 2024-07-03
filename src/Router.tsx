@@ -9,7 +9,7 @@ import Upload from "./Routes/Upload";
 import ContiDetail from "./Routes/ContiDetail";
 import MyPage from "./Routes/MyPage";
 import Select from "./Routes/Select";
-import SearchAddSong from "./Routes/SearchAddSong";
+import SearchAddSong from "./Routes/AddSong";
 
 const router = createBrowserRouter([
   {
