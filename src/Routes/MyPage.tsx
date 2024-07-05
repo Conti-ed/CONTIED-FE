@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -19,12 +19,12 @@ const Container = styled(motion.div)`
   width: 100vw;
   height: 100vh;
   background-color: #fff;
-  overflow: hidden;
 `;
 
 const Header = styled.div`
   width: 100%;
   margin-top: 23px;
+  margin-bottom: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,13 +45,13 @@ const Content = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 165px;
 `;
 
 const Conties = styled(motion.div)`
   height: 93%;
   width: 100%;
   overflow-y: auto;
-  padding-bottom: 165px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -154,38 +154,42 @@ const MyPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedFavorites = JSON.parse(
-      localStorage.getItem("favoriteContis") || "{}"
-    );
-    const favoriteContiData: ContiData[] = [];
-
-    Object.keys(storedFavorites).forEach((contiId) => {
-      const contiData = JSON.parse(
-        localStorage.getItem(`conti_${contiId}`) || "{}"
+    const loadFavoriteContis = () => {
+      const storedFavorites = JSON.parse(
+        localStorage.getItem("favoriteContis") || "{}"
       );
-      if (contiData.id) {
-        favoriteContiData.push(contiData);
-      }
-    });
+      const favoriteContiData: ContiData[] = Object.keys(storedFavorites)
+        .map((contiId) => {
+          const contiData = JSON.parse(
+            localStorage.getItem(`conti_${contiId}`) || "{}"
+          );
+          return contiData.id ? contiData : null;
+        })
+        .filter((data): data is ContiData => data !== null)
+        .sort(
+          (a, b) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
 
-    favoriteContiData.sort(
-      (a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    );
+      setFavoriteContis(favoriteContiData);
+    };
 
-    setFavoriteContis(favoriteContiData);
+    loadFavoriteContis();
   }, []);
 
-  const handleContiClick = (id: string) => {
-    navigate(`/conti-detail/${id}`);
-  };
+  const handleContiClick = useCallback(
+    (id: string) => {
+      navigate(`/conti-detail/${id}`);
+    },
+    [navigate]
+  );
 
   return (
     <Container
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
     >
       <StatusBar />
       <Header>
@@ -199,11 +203,11 @@ const MyPage: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
             >
               {favoriteContis.map((data, index) => (
                 <ContiItem
-                  key={index}
+                  key={data.id}
                   onClick={() => handleContiClick(data.id)}
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -238,7 +242,7 @@ const MyPage: React.FC = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
               <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
               <EmptyStateText1>앗!</EmptyStateText1>
