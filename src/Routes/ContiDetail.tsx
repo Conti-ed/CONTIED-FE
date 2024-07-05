@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
@@ -43,13 +43,35 @@ const ContiDetail: React.FC = () => {
   const { contiId } = useParams<{ contiId: string }>();
   const { data: contiData, isLoading: isContiLoading } = useQuery(
     ["cid", contiId],
-    () => getConti(Number(contiId))
+    () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null))
   );
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddSongLoading, setIsAddSongLoading] = useState(false);
 
+  useEffect(() => {
+    if (contiId) {
+      const favoriteContis = JSON.parse(
+        localStorage.getItem("favoriteContis") || "{}"
+      );
+      setIsFavorite(!!favoriteContis[contiId]);
+    }
+  }, [contiId]);
+
   const handleHeartClick = () => {
-    setIsFavorite(!isFavorite);
+    if (!contiId) return;
+
+    const newIsFavorite = !isFavorite;
+    setIsFavorite(newIsFavorite);
+
+    const favoriteContis = JSON.parse(
+      localStorage.getItem("favoriteContis") || "{}"
+    );
+    if (newIsFavorite) {
+      favoriteContis[contiId] = true;
+    } else {
+      delete favoriteContis[contiId];
+    }
+    localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
   };
 
   const handleBackClick = () => {
@@ -68,7 +90,7 @@ const ContiDetail: React.FC = () => {
     return <Loading />;
   }
 
-  if (!contiData) {
+  if (!contiId || !contiData) {
     return (
       <AnimatePresence mode="wait">
         <Container
