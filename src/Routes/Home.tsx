@@ -17,6 +17,7 @@ import {
   RoundLogo,
   RoundLogoImage,
   Title,
+  TransitionTitle,
   SectionTitle,
   ButtonGroup,
 } from "../styles/Home.styles";
@@ -25,6 +26,7 @@ import { useHomeLogic } from "../hooks/useHomeLogic";
 import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
+import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -39,15 +41,15 @@ const Home: React.FC = () => {
     handleButtonClick,
   } = useHomeLogic(navigate);
 
+  const defaultImageUrl = "/images/WhitePiano.png";
+  const albumThumbnail = selectedConti?.thumbnail || defaultImageUrl;
+  const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
+
   if (!selectedConti) {
     return <Loading />;
   }
 
-  const {
-    title: albumTitle,
-    thumbnail: albumThumbnail,
-    id: albumId,
-  } = selectedConti;
+  const { title: albumTitle, id: albumId } = selectedConti;
 
   return (
     <AnimatePresence mode="wait">
@@ -63,16 +65,21 @@ const Home: React.FC = () => {
             콘티 리스트
           </UserName>
           <AlbumContainer onClick={() => handleAlbumClick(albumId)}>
-            {albumThumbnail !== "/images/WhitePiano.png" ? (
+            {albumThumbnail !== defaultImageUrl ? (
               <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
             ) : (
               <ContiPlaceholder size={360} />
             )}
             <Mask />
             <RoundLogo>
-              <RoundLogoImage src="/images/WhitePiano.png" alt="Round Logo" />
+              <RoundLogoImage src={defaultImageUrl} alt="Round Logo" />
             </RoundLogo>
-            <Title>{albumTitle}</Title>
+            <TransitionTitle
+              style={{ color: textColor }}
+              $isLoading={isLoading}
+            >
+              {albumTitle}
+            </TransitionTitle>
           </AlbumContainer>
           <SectionTitle>
             <Icon id="note-home" width="20" height="20" />

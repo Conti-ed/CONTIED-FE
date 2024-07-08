@@ -105,6 +105,11 @@ export const Title = styled.div`
   text-align: center;
 `;
 
+export const TransitionTitle = styled(Title)<{ $isLoading: boolean }>`
+  transition: color 0.3s ease-in-out;
+  opacity: ${(props) => (props.$isLoading ? 0 : 1)};
+`;
+
 export const SectionTitle = styled.div`
   display: flex;
   align-items: center;

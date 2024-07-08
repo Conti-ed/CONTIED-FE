@@ -11,23 +11,23 @@ import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
 
 const Container = styled(motion.div)`
-  position: absolute;
-  top: 25%;
   height: 60%;
   width: 100%;
+  padding-bottom: 60px;
+  position: absolute;
+  top: 25%;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-bottom: 60px;
 `;
 
 const SongSection = styled.div`
-  margin: 0 auto;
   width: 100%;
+  margin: 0 auto;
 `;
 
 const ContiSection = styled.div`
-  margin: 0 auto;
   width: calc(100% - 40px); // 좌우 20px씩 여백
+  margin: 0 auto;
 `;
 
 const SectionTitle = styled.div`
