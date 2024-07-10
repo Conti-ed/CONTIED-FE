@@ -16,7 +16,6 @@ import {
   Mask,
   RoundLogo,
   RoundLogoImage,
-  Title,
   TransitionTitle,
   SectionTitle,
   ButtonGroup,
