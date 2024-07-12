@@ -100,7 +100,7 @@ export const Title = styled.div`
   top: 68%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 25px;
+  font-size: 24px;
   color: #001438;
   text-align: center;
 `;
