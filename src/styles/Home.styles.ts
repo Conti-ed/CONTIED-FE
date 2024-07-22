@@ -53,16 +53,21 @@ export const UserName = styled.div`
 
 export const AlbumContainer = styled.div`
   position: relative;
+  display: flex;
+  justify-content: center;
   width: 360px;
   height: 360px;
   border-radius: 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 29px;
+  flex-shrink: 0;
+  overflow: hidden;
 `;
 
 export const AlbumThumbnail = styled.img`
-  width: 360px;
+  width: auto;
   height: 360px;
+  object-fit: cover;
   border-radius: 20px;
 `;
 
