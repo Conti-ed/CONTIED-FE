@@ -77,6 +77,7 @@ const ContiImageWrapper = styled.div`
   height: 100px;
   border-radius: 20px;
   position: relative;
+  overflow: hidden;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 `;
 
