@@ -77,6 +77,17 @@ const TextContainer = styled.span`
   margin-left: 10px; /* Text와 Icon 사이의 간격 */
 `;
 
+const SocialKakao = () => {
+  const rest_api_key = "cdd854e61f5ff1df43827a2f2e9ca972"; // REST API KEY
+  const currentURL = new URL(window.location.href);
+  const redirect_uri = `${currentURL.protocol}//${currentURL.host}/waiting`; // Redirect URI
+
+  console.log(currentURL, currentURL.protocol, currentURL.host, redirect_uri);
+  // oauth 요청 URL
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;
+  window.location.href = kakaoURL;
+};
+
 const Start: React.FC = () => {
   const [isFading, setIsFading] = React.useState(false);
   const navigate = useNavigate();
@@ -84,7 +95,7 @@ const Start: React.FC = () => {
   const handleButtonClick = () => {
     setIsFading(true);
     setTimeout(() => {
-      navigate("/waiting");
+      SocialKakao(); // 카카오 OAuth 요청 함수 실행
     }, 100);
   };
 

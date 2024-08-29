@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import styled, { css, keyframes } from "styled-components";
+import Icon from "../components/Icon";
 
 export const Container = styled(motion.div)`
   height: 100vh;
@@ -89,7 +90,7 @@ export const AlbumImageWrapper = styled.div`
   margin-right: 15px; /* InfoText와의 간격 */
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  position: sticky;
+  position: relative;
   overflow: auto;
 `;
 
@@ -98,6 +99,25 @@ export const AlbumImage = styled.img`
   width: auto;
   height: 100%;
   border-radius: 20px;
+`;
+
+export const IconWrapper = styled.div`
+  position: absolute;
+  bottom: 7px;
+  right: 7px;
+  width: 40px;
+  height: 40px;
+  background-color: #94b4ed;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: white 2px solid;
+`;
+
+export const NewIcon = styled(Icon)`
+  width: 24px;
+  height: 24px;
 `;
 
 export const InfoText = styled.div`

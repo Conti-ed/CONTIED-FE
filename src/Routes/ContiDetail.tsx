@@ -26,6 +26,8 @@ import {
   DEContiData,
   DEContiDataText,
   DEImage,
+  NewIcon,
+  IconWrapper,
 } from "../styles/ContiDetail.styles";
 import { useQuery, useQueryClient } from "react-query";
 import { getConti } from "../api";
@@ -178,6 +180,9 @@ const ContiDetail: React.FC = () => {
                 ) : (
                   <AlbumPlaceholder />
                 )}
+                <IconWrapper>
+                  <NewIcon id="edit-detail" />
+                </IconWrapper>
               </AlbumImageWrapper>
               <InfoText>
                 <Title>{contiData.title}</Title>
