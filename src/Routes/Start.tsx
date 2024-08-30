@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
 
@@ -79,10 +79,11 @@ const TextContainer = styled.span`
 
 const SocialKakao = () => {
   const rest_api_key = "cdd854e61f5ff1df43827a2f2e9ca972"; // REST API KEY
-  const currentURL = new URL(window.location.href);
-  const redirect_uri = `${currentURL.protocol}//${currentURL.host}/waiting`; // Redirect URI
+  // const currentURL = new URL(window.location.href);
+  // const redirect_uri = `${currentURL.protocol}//${currentURL.host}/waiting`; // Redirect URI
+  const redirect_uri = `http://localhost:5000/waiting`;
 
-  console.log(currentURL, currentURL.protocol, currentURL.host, redirect_uri);
+  // console.log(currentURL, currentURL.protocol, currentURL.host, redirect_uri);
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;
   window.location.href = kakaoURL;
@@ -90,7 +91,7 @@ const SocialKakao = () => {
 
 const Start: React.FC = () => {
   const [isFading, setIsFading] = React.useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleButtonClick = () => {
     setIsFading(true);

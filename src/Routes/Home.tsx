@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
@@ -26,11 +26,13 @@ import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
+import axios from "axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState<string | null>(null);
+
   const {
-    userName,
     selectedConti,
     hoveredButton,
     isButtonClicked,
@@ -43,6 +45,20 @@ const Home: React.FC = () => {
   const defaultImageUrl = "/images/WhitePiano.png";
   const albumThumbnail = selectedConti?.thumbnail || defaultImageUrl;
   const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
+
+  useEffect(() => {
+    // 백엔드에서 사용자 정보를 가져오는 API 호출
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("/api/user"); // 사용자 정보를 반환하는 API 엔드포인트
+        setUserName(response.data.name); // 사용자 이름을 상태에 설정
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   if (!selectedConti) {
     return <Loading />;

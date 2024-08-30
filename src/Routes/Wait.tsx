@@ -72,8 +72,9 @@ const Wait: React.FC = () => {
 
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get("code");
-    const currentURL = new URL(window.location.href);
-    const redirect_uri = `${currentURL.protocol}//${currentURL.host}/auth`; // Redirect URI
+    // const currentURL = new URL(window.location.href);
+    // const redirect_uri = `${currentURL.protocol}//${currentURL.host}/auth`; // Redirect URI
+    const redirect_uri = `http://localhost:5000/waiting`;
 
     const kakaoLogin = async () => {
       try {
