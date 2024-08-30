@@ -37,10 +37,10 @@ const InputContainer = styled.div`
   align-items: center;
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 90%;
   flex-direction: row;
   position: relative;
 `;
@@ -53,6 +53,7 @@ const InputGroup = styled(motion.div)`
 `;
 
 const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
+  width: 100%;
   border-radius: 10px;
   border: 2px solid #94b4ed;
   font-size: 13.7px;
@@ -60,7 +61,6 @@ const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   color: #171a1f;
   background-color: transparent;
   padding: 10px 30px 10px 10px;
-  flex: 1 1 auto; // 이 flex 문제는 나중에 해결해봐야할듯...
 
   transition: border-color 0.3s ease-in-out;
   ${(props) =>
@@ -97,6 +97,7 @@ const NextButton = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  white-space: nowrap;
 `;
 
 const CompleteButton = styled(motion.div)`
@@ -249,7 +250,12 @@ const CustomUpload = () => {
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
-          <InputWrapper>
+          <InputWrapper
+            animate={{
+              width: step > 1 ? "100%" : "90%",
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
             <MotionInput
               ref={inputRef}
               placeholder="제목을 입력해주세요!"
@@ -259,16 +265,12 @@ const CustomUpload = () => {
               onKeyDown={handleKeyDown}
               $hasError={hasError.title}
               animate={{
-                flex: step === 1 ? "0 1 auto" : 1,
                 borderColor: hasError.title ? "#ea8c8c" : "#94b4ed",
-                transition: {
-                  flex: { duration: 0.3, ease: "easeInOut" },
-                  borderColor: {
-                    duration: 0.2,
-                    repeat: hasError.title ? 2 : 0,
-                    repeatType: "reverse",
-                  },
-                },
+              }}
+              transition={{
+                duration: 0.2,
+                repeat: hasError.title ? 2 : 0,
+                repeatType: "reverse",
               }}
             />
             {contiTitle && isFocused && (
@@ -286,11 +288,10 @@ const CustomUpload = () => {
           <AnimatePresence>
             {step >= 2 && (
               <InputWrapper
-                as={motion.div}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20, width: "90%" }}
+                animate={{ opacity: 1, y: 0, width: step > 2 ? "100%" : "90%" }}
                 exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <MotionInput
                   ref={descriptionRef}
@@ -301,16 +302,12 @@ const CustomUpload = () => {
                   onKeyDown={handleKeyDown}
                   $hasError={hasError.description}
                   animate={{
-                    flex: step === 2 ? "0 1 auto" : 1,
                     borderColor: hasError.description ? "#ea8c8c" : "#94b4ed",
-                    transition: {
-                      flex: { duration: 0.3, ease: "easeInOut" },
-                      borderColor: {
-                        duration: 0.2,
-                        repeat: hasError.description ? 2 : 0,
-                        repeatType: "reverse",
-                      },
-                    },
+                  }}
+                  transition={{
+                    duration: 0.2,
+                    repeat: hasError.description ? 2 : 0,
+                    repeatType: "reverse",
                   }}
                 />
                 {contiDescription && isFocused && (
