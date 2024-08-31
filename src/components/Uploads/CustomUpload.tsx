@@ -40,7 +40,7 @@ const InputContainer = styled.div`
 const InputWrapper = styled(motion.div)`
   display: flex;
   align-items: center;
-  width: 90%;
+  width: 100%;
   flex-direction: row;
   position: relative;
 `;
@@ -53,7 +53,7 @@ const InputGroup = styled(motion.div)`
 `;
 
 const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
-  width: 100%;
+  width: 90%;
   border-radius: 10px;
   border: 2px solid #94b4ed;
   font-size: 13.7px;
@@ -61,8 +61,8 @@ const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   color: #171a1f;
   background-color: transparent;
   padding: 10px 30px 10px 10px;
+  transition: all 0.3s ease-in-out;
 
-  transition: border-color 0.3s ease-in-out;
   ${(props) =>
     props.$hasError &&
     css`
@@ -82,9 +82,8 @@ const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   }
 `;
 
-const ClearIcon = styled.svg`
+const ClearIcon = styled(motion.svg)`
   position: absolute;
-  right: 44px;
   cursor: pointer;
   z-index: 10;
 `;
@@ -250,12 +249,7 @@ const CustomUpload = () => {
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
-          <InputWrapper
-            animate={{
-              width: step > 1 ? "100%" : "90%",
-            }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
+          <InputWrapper>
             <MotionInput
               ref={inputRef}
               placeholder="제목을 입력해주세요!"
@@ -264,32 +258,42 @@ const CustomUpload = () => {
               onFocus={() => setIsFocused(true)}
               onKeyDown={handleKeyDown}
               $hasError={hasError.title}
+              initial={{ width: "90%" }}
               animate={{
+                width: step > 1 ? "100%" : "90%",
                 borderColor: hasError.title ? "#ea8c8c" : "#94b4ed",
               }}
               transition={{
-                duration: 0.2,
-                repeat: hasError.title ? 2 : 0,
-                repeatType: "reverse",
+                duration: 0.3,
+                ease: "easeInOut",
               }}
             />
-            {contiTitle && isFocused && (
-              <ClearIcon
-                width="18"
-                height="18"
-                onClick={() => handleClearSearch("title")}
-              >
-                <Icon id="clear-search" width="18" height="18" />
-              </ClearIcon>
-            )}
+            <AnimatePresence>
+              {contiTitle && isFocused && (
+                <ClearIcon
+                  width="18"
+                  height="18"
+                  onClick={() => handleClearSearch("title")}
+                  initial={{ opacity: 0, right: step > 1 ? "10px" : "44px" }}
+                  animate={{ opacity: 1, right: step > 1 ? "10px" : "44px" }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: 0.9,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <Icon id="clear-search" width="18" height="18" />
+                </ClearIcon>
+              )}
+            </AnimatePresence>
             {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
           </InputWrapper>
 
           <AnimatePresence>
             {step >= 2 && (
               <InputWrapper
-                initial={{ opacity: 0, y: 20, width: "90%" }}
-                animate={{ opacity: 1, y: 0, width: step > 2 ? "100%" : "90%" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
@@ -301,24 +305,40 @@ const CustomUpload = () => {
                   onFocus={() => setIsFocused(true)}
                   onKeyDown={handleKeyDown}
                   $hasError={hasError.description}
+                  initial={{ width: "90%" }}
                   animate={{
+                    width: step > 2 ? "100%" : "90%",
                     borderColor: hasError.description ? "#ea8c8c" : "#94b4ed",
                   }}
                   transition={{
-                    duration: 0.2,
-                    repeat: hasError.description ? 2 : 0,
-                    repeatType: "reverse",
+                    duration: 0.3,
+                    ease: "easeInOut",
                   }}
                 />
-                {contiDescription && isFocused && (
-                  <ClearIcon
-                    width="18"
-                    height="18"
-                    onClick={() => handleClearSearch("description")}
-                  >
-                    <Icon id="clear-search" width="18" height="18" />
-                  </ClearIcon>
-                )}
+                <AnimatePresence>
+                  {contiDescription && isFocused && (
+                    <ClearIcon
+                      width="18"
+                      height="18"
+                      onClick={() => handleClearSearch("description")}
+                      initial={{
+                        opacity: 0,
+                        right: step > 2 ? "10px" : "44px",
+                      }}
+                      animate={{
+                        opacity: 1,
+                        right: step > 2 ? "10px" : "44px",
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        duration: 0.9,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Icon id="clear-search" width="18" height="18" />
+                    </ClearIcon>
+                  )}
+                </AnimatePresence>
                 {step === 2 && (
                   <NextButton onClick={handleNext}>다음</NextButton>
                 )}
