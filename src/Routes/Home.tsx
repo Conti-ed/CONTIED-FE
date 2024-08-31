@@ -53,7 +53,7 @@ const Home: React.FC = () => {
         const response = await axios.get("/api/user"); // 사용자 정보를 반환하는 API 엔드포인트
         setUserName(response.data.name); // 사용자 이름을 상태에 설정
       } catch (error) {
-        console.error("Failed to fetch user info:", error);
+        // console.error("Failed to fetch user info:", error);
       }
     };
 

@@ -8,6 +8,8 @@ import Result from "./Routes/Result";
 import Upload from "./Routes/Upload";
 import ContiDetail from "./Routes/ContiDetail";
 import MyPage from "./Routes/MyPage";
+import MyUploadedContis from "./Routes/MyUploadedContis";
+import MyFavoriteContis from "./Routes/MyFavoriteContis";
 import Select from "./Routes/Select";
 import SearchAddSong from "./Routes/AddSong";
 
@@ -25,7 +27,14 @@ const router = createBrowserRouter([
       { path: "result", element: <Result /> },
       { path: "upload", element: <Upload /> },
       { path: "conti-detail/:contiId", element: <ContiDetail /> },
-      { path: "my", element: <MyPage /> },
+      {
+        path: "mypage",
+        element: <MyPage />,
+        children: [
+          { path: "uploaded", element: <MyUploadedContis /> },
+          { path: "favorites", element: <MyFavoriteContis /> },
+        ],
+      },
     ],
   },
 ]);

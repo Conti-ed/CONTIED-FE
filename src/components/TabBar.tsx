@@ -58,9 +58,12 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
   const location = useLocation();
 
   const getActiveButton = useCallback(() => {
-    if (location.pathname === "/search") return "search";
-    if (location.pathname === "/result") return "search";
-    if (location.pathname === "/my") return "my";
+    if (
+      location.pathname.startsWith("/search") ||
+      location.pathname === "/result"
+    )
+      return "search";
+    if (location.pathname.startsWith("/mypage")) return "mypage";
     return "home";
   }, [location.pathname]);
 
@@ -121,10 +124,10 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
         검색
       </Button>
       <Button
-        $active={activeButton === "my"}
+        $active={activeButton === "mypage"}
         onClick={() => {
-          setActiveButton("my");
-          navigate("/my");
+          setActiveButton("mypage");
+          navigate("/mypage");
         }}
       >
         <svg
