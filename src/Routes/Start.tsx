@@ -1,5 +1,4 @@
 import React from "react";
-// import { useNavigate } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
 
@@ -91,12 +90,11 @@ const SocialKakao = () => {
 
 const Start: React.FC = () => {
   const [isFading, setIsFading] = React.useState(false);
-  // const navigate = useNavigate();
 
   const handleButtonClick = () => {
     setIsFading(true);
     setTimeout(() => {
-      SocialKakao(); // 카카오 OAuth 요청 함수 실행
+      SocialKakao(); // 카카오 OAuth 요청
     }, 100);
   };
 

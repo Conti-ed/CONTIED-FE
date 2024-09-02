@@ -124,6 +124,7 @@ const YouTubeUpload = () => {
     url: false,
     description: false,
   });
+  const [urlError, setUrlError] = useState(false);
   const [step, setStep] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
@@ -142,9 +143,9 @@ const YouTubeUpload = () => {
   const handleNext = () => {
     if (step === 1) {
       if (playlistUrl.trim() === "") {
-        setHasError((prev) => ({ ...prev, url: true }));
+        setUrlError(true);
         setTimeout(() => {
-          setHasError((prev) => ({ ...prev, url: false }));
+          setUrlError(false);
         }, 2000);
       } else {
         setStep(2);
@@ -163,25 +164,21 @@ const YouTubeUpload = () => {
 
   const handleComplete = async () => {
     if (playlistUrl.trim() === "") {
-      setHasError((prev) => ({ ...prev, url: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, url: false }));
-      }, 2000);
+      setUrlError(true);
+      setTimeout(() => setUrlError(false), 2000);
       return;
     }
 
-    setIsLoading(true); // 로딩 시작
+    setIsLoading(true);
     try {
       const response = await fetch(`${SERVER_URL}/api/conti`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           playlist_url: playlistUrl,
           description: playlistDescription,
-          // user_id: JSON.parse(localStorage.getItem("user_info")!).id,
         }),
       });
 
@@ -192,7 +189,6 @@ const YouTubeUpload = () => {
       const data = await response.json();
       console.log(data);
 
-      // localStorage에 contiData 저장
       const contiData = {
         id: data.id,
         title: data.title,
@@ -209,9 +205,10 @@ const YouTubeUpload = () => {
       navigate(`/conti-detail/${data.id}`);
     } catch (error) {
       console.error("Failed to create conti:", error);
-      alert("콘티를 생성할 수 없습니다. 다시 시도해주세요.");
+      setUrlError(true);
+      setTimeout(() => setUrlError(false), 2000);
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
   };
 
@@ -262,11 +259,11 @@ const YouTubeUpload = () => {
               onChange={(e) => setPlaylistUrl(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onKeyDown={handleKeyDown}
-              $hasError={hasError.url}
+              $hasError={urlError}
               initial={{ width: "90%" }}
               animate={{
                 width: step > 1 ? "100%" : "90%",
-                borderColor: hasError.url ? "#ea8c8c" : "#94b4ed",
+                borderColor: urlError ? "#ea8c8c" : "#94b4ed",
               }}
               transition={{
                 duration: 0.3,
