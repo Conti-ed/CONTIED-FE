@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import {
   formatRelativeTime,
@@ -21,6 +21,15 @@ import {
   EmptyStateText1,
   EmptyStateText2,
 } from "./MyPage";
+import { styled } from "styled-components";
+
+const ContiList = styled(motion.div)`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+`;
 
 interface ContiData {
   id: string;
@@ -74,38 +83,40 @@ const MyFavoriteContis: React.FC = () => {
       transition={{ duration: 0.3 }}
     >
       {favoriteContis.length > 0 ? (
-        favoriteContis.map((data, index) => (
-          <AnimatePresence key={data.id}>
-            <ContiItem
-              onClick={() => handleContiClick(data.id)}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <ContiImageWrapper>
-                <ContiPlaceholder size={100} />
-                <ContiImage
-                  src={data.thumbnail}
-                  alt="Album Image"
-                  style={{
-                    height:
-                      data.thumbnail === "/images/WhitePiano.png"
-                        ? "62px"
-                        : "100px",
-                  }}
-                />
-              </ContiImageWrapper>
-              <InfoText>
-                <ContiTitle>{data.title}</ContiTitle>
-                <Subtitle>{data.ownerName}</Subtitle>
-                <SongInfo>{`${formatRelativeTime(
-                  parseLocalDateString(data.updated_at)
-                )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
-              </InfoText>
-            </ContiItem>
-          </AnimatePresence>
-        ))
+        <ContiList>
+          {favoriteContis.map((data, index) => (
+            <AnimatePresence key={data.id}>
+              <ContiItem
+                onClick={() => handleContiClick(data.id)}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <ContiImageWrapper>
+                  <ContiPlaceholder size={100} />
+                  <ContiImage
+                    src={data.thumbnail}
+                    alt="Album Image"
+                    style={{
+                      height:
+                        data.thumbnail === "/images/WhitePiano.png"
+                          ? "62px"
+                          : "100px",
+                    }}
+                  />
+                </ContiImageWrapper>
+                <InfoText>
+                  <ContiTitle>{data.title}</ContiTitle>
+                  <Subtitle>{data.ownerName}</Subtitle>
+                  <SongInfo>{`${formatRelativeTime(
+                    parseLocalDateString(data.updated_at)
+                  )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
+                </InfoText>
+              </ContiItem>
+            </AnimatePresence>
+          ))}
+        </ContiList>
       ) : (
         <AnimatePresence>
           <EmptyStateContainer

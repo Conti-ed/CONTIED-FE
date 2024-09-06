@@ -23,12 +23,12 @@ import {
   EmptyStateText2,
 } from "./MyPage";
 
-// 새로운 스타일 컴포넌트 추가
 const ContiList = styled(motion.div)`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 10px;
 `;
 
 interface ContiData {
