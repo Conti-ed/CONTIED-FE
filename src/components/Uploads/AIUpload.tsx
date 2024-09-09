@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
 import { SERVER_URL } from "../../api";
@@ -19,25 +19,31 @@ import {
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
-  const [contiBibleVerse, setContiBibleVerse] = useState("");
+  const [contiBibleVerseFrom, setContiBibleVerseFrom] = useState("");
+  const [contiBibleVerseTo, setContiBibleVerseTo] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState({
     keyword: false,
-    bibleVerse: false,
+    bibleVerseFrom: false,
+    bibleVerseTo: false,
   });
   const [step, setStep] = useState(1);
+  const [expandedFrom, setExpandedFrom] = useState(false);
+  const [expandedTo, setExpandedTo] = useState(false);
   const keywordRef = useRef<HTMLInputElement>(null);
-  const bibleVerseRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  const handleClearSearch = (field: "keyword" | "bibleVerse") => {
+  const handleClearSearch = (
+    field: "keyword" | "bibleVerseFrom" | "bibleVerseTo"
+  ) => {
     if (field === "keyword") {
       setContiKeyword("");
       keywordRef.current?.focus();
+    } else if (field === "bibleVerseFrom") {
+      setContiBibleVerseFrom("");
     } else {
-      setContiBibleVerse("");
-      bibleVerseRef.current?.focus();
+      setContiBibleVerseTo("");
     }
   };
 
@@ -48,8 +54,12 @@ const AIUpload = () => {
     return trimmedKeyword.split(",").every((word) => word.trim() !== "");
   };
 
-  const handleBibleVerseChange = (verse: string) => {
-    setContiBibleVerse(verse);
+  const handleBibleVerseFromChange = (verse: string) => {
+    setContiBibleVerseFrom(verse);
+  };
+
+  const handleBibleVerseToChange = (verse: string) => {
+    setContiBibleVerseTo(verse);
   };
 
   const handleNext = () => {
@@ -63,29 +73,56 @@ const AIUpload = () => {
         setStep(2);
       }
     } else if (step === 2) {
-      if (contiBibleVerse.trim() === "") {
-        setHasError((prev) => ({ ...prev, bibleVerse: true }));
+      if (contiBibleVerseFrom.trim() === "") {
+        setHasError((prev) => ({ ...prev, bibleVerseFrom: true }));
         setTimeout(() => {
-          setHasError((prev) => ({ ...prev, bibleVerse: false }));
+          setHasError((prev) => ({ ...prev, bibleVerseFrom: false }));
         }, 2000);
       } else {
         setStep(3);
+        setExpandedFrom(true);
+      }
+    } else if (step === 3) {
+      if (contiBibleVerseTo.trim() === "") {
+        setHasError((prev) => ({ ...prev, bibleVerseTo: true }));
+        setTimeout(() => {
+          setHasError((prev) => ({ ...prev, bibleVerseTo: false }));
+        }, 2000);
+      } else {
+        setStep(4);
+        setExpandedTo(true);
       }
     }
   };
 
   const handleComplete = async () => {
-    if (!validateKeyword(contiKeyword)) {
-      setHasError((prev) => ({ ...prev, keyword: true }));
+    if (
+      !validateKeyword(contiKeyword) ||
+      !contiBibleVerseFrom ||
+      !contiBibleVerseTo
+    ) {
+      setHasError({
+        keyword: !validateKeyword(contiKeyword),
+        bibleVerseFrom: !contiBibleVerseFrom,
+        bibleVerseTo: !contiBibleVerseTo,
+      });
       setTimeout(() => {
-        setHasError((prev) => ({ ...prev, keyword: false }));
+        setHasError({
+          keyword: false,
+          bibleVerseFrom: false,
+          bibleVerseTo: false,
+        });
       }, 2000);
       return;
     }
 
     setIsLoading(true);
     try {
-      const body = { keyword: contiKeyword, bibleVerse: contiBibleVerse };
+      const body = {
+        keyword: contiKeyword,
+        bibleVerseFrom: contiBibleVerseFrom,
+        bibleVerseTo: contiBibleVerseTo,
+      };
       const response = await fetch(`${SERVER_URL}/api/conti`, {
         method: "POST",
         headers: {
@@ -162,72 +199,107 @@ const AIUpload = () => {
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
-          <InputWrapper>
-            <MotionInput
-              ref={keywordRef}
-              placeholder="예) 사랑, 생명, 삶의 예배"
-              value={contiKeyword}
-              onChange={(e) => setContiKeyword(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onKeyDown={handleKeyDown}
-              $hasError={hasError.keyword}
-              initial={{ width: "90%" }}
-              animate={{
-                width: step > 1 ? "100%" : "90%",
-                borderColor: hasError.keyword ? "#ea8c8c" : "#94b4ed",
-              }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-            />
-            <AnimatePresence>
-              {contiKeyword && isFocused && (
-                <ClearIcon
-                  width="18"
-                  height="18"
-                  onClick={() => handleClearSearch("keyword")}
-                  initial={{ opacity: 0, right: step > 1 ? "10px" : "44px" }}
-                  animate={{ opacity: 1, right: step > 1 ? "10px" : "44px" }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 0.9,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <Icon id="clear-search" width="18" height="18" />
-                </ClearIcon>
-              )}
-            </AnimatePresence>
-            {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
-          </InputWrapper>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <InputWrapper>
+              <MotionInput
+                ref={keywordRef}
+                placeholder="예) 사랑, 생명, 삶의 예배"
+                value={contiKeyword}
+                onChange={(e) => setContiKeyword(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onKeyDown={handleKeyDown}
+                $hasError={hasError.keyword}
+                initial={{ width: "90%" }}
+                animate={{
+                  width: step > 1 ? "100%" : "90%",
+                  borderColor: hasError.keyword ? "#ea8c8c" : "#94b4ed",
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut",
+                }}
+              />
+              <AnimatePresence>
+                {contiKeyword && isFocused && (
+                  <ClearIcon
+                    width="18"
+                    height="18"
+                    onClick={() => handleClearSearch("keyword")}
+                    initial={{ opacity: 0, right: step > 1 ? "10px" : "44px" }}
+                    animate={{ opacity: 1, right: step > 1 ? "10px" : "44px" }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      duration: 0.9,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Icon id="clear-search" width="18" height="18" />
+                  </ClearIcon>
+                )}
+              </AnimatePresence>
+              {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
+            </InputWrapper>
+          </motion.div>
 
           <AnimatePresence>
             {step >= 2 && (
-              <InputWrapper
+              <motion.div
+                key="bibleVerseFrom"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
               >
-                <BibleVerseSelector
-                  onChange={handleBibleVerseChange}
-                  $hasError={hasError.bibleVerse}
-                />
-                {step === 2 && (
-                  <NextButton onClick={handleNext}>다음</NextButton>
-                )}
-              </InputWrapper>
+                <InputWrapper>
+                  <BibleVerseSelector
+                    onChange={handleBibleVerseFromChange}
+                    $hasError={hasError.bibleVerseFrom}
+                    expanded={expandedFrom}
+                    placeholder="성경"
+                  />
+                  {step === 2 && (
+                    <NextButton onClick={handleNext}>부터</NextButton>
+                  )}
+                </InputWrapper>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {step >= 3 && (
+              <motion.div
+                key="bibleVerseTo"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <InputWrapper>
+                  <BibleVerseSelector
+                    onChange={handleBibleVerseToChange}
+                    $hasError={hasError.bibleVerseTo}
+                    expanded={expandedTo}
+                    placeholder="성경"
+                  />
+                  {step === 3 && (
+                    <NextButton onClick={handleNext}>까지</NextButton>
+                  )}
+                </InputWrapper>
+              </motion.div>
             )}
           </AnimatePresence>
         </InputGroup>
 
         <AnimatePresence>
-          {step === 3 && (
+          {step === 4 && (
             <CompleteButton
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
               onClick={handleComplete}
             >

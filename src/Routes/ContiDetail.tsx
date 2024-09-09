@@ -175,7 +175,10 @@ const ContiDetail: React.FC = () => {
                 {contiData.thumbnail ? (
                   <>
                     <ContiPlaceholder size={129} />
-                    <AlbumImage src={contiData.thumbnail} alt="Album Image" />
+                    <AlbumImage
+                      src={contiData.thumbnail}
+                      alt="../images/WhitePiano.png"
+                    />
                   </>
                 ) : (
                   <AlbumPlaceholder />
