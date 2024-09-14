@@ -5,8 +5,6 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import animationData from "../components/waitingAnimation.json";
-import Cookies from "js-cookie";
-import axios from "axios";
 
 const hue = keyframes`
   from {
@@ -71,28 +69,6 @@ const Wait: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = new URL(window.location.href).searchParams.get("code");
-    // const currentURL = new URL(window.location.href);
-    // const redirect_uri = `${currentURL.protocol}//${currentURL.host}/auth`; // Redirect URI
-    const redirect_uri = `http://localhost:5000/waiting`;
-
-    const kakaoLogin = async () => {
-      try {
-        const response = await axios.post(`/api/auth/social/kakao`, {
-          code,
-          redirect_uri,
-        });
-        // 쿠키에 토큰 저장
-        Cookies.set("token", response.data.token, { expires: 7 }); // 7일 동안 쿠키 유지
-        setText("로그인 완료!");
-      } catch (error: any) {
-        console.log(error.response);
-        setText("로그인 실패...");
-      }
-    };
-
-    kakaoLogin(); // 로그인 요청 함수 호출
-
     const textChangeTimeout = setTimeout(() => {
       setFadeState("fadeOut");
     }, 3000); // 3초 후 텍스트 사라지기 시작

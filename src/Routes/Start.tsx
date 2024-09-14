@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
+import { SERVER_URL } from "../api";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const fadeOut = keyframes`
   from {
@@ -76,26 +78,33 @@ const TextContainer = styled.span`
   margin-left: 10px; /* Text와 Icon 사이의 간격 */
 `;
 
-const SocialKakao = () => {
-  const rest_api_key = "cdd854e61f5ff1df43827a2f2e9ca972"; // REST API KEY
-  // const currentURL = new URL(window.location.href);
-  // const redirect_uri = `${currentURL.protocol}//${currentURL.host}/waiting`; // Redirect URI
-  const redirect_uri = `http://localhost:5000/waiting`;
-
-  // console.log(currentURL, currentURL.protocol, currentURL.host, redirect_uri);
-  // oauth 요청 URL
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;
-  window.location.href = kakaoURL;
-};
+const ErrorMessage = styled.div`
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+`;
 
 const Start: React.FC = () => {
-  const [isFading, setIsFading] = React.useState(false);
+  const [isFading, setIsFading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleButtonClick = () => {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const errorParam = searchParams.get("error");
+
+    if (errorParam === "auth_failed") {
+      setError("인증에 실패했습니다. 다시 시도해 주세요.");
+      navigate("/", { replace: true });
+    }
+  }, [location, navigate]);
+
+  const handleLoginClick = () => {
     setIsFading(true);
     setTimeout(() => {
-      SocialKakao(); // 카카오 OAuth 요청
-    }, 100);
+      window.location.href = `${SERVER_URL}/auth/kakao`;
+    }, 300);
   };
 
   return (
@@ -104,13 +113,14 @@ const Start: React.FC = () => {
         <Logo src="/images/StartLogov2.png" alt="Contied Logo" />
       </LogoContainer>
       <ButtonContainer>
-        <StartButton onClick={handleButtonClick}>
+        <StartButton onClick={handleLoginClick}>
           <IconContainer>
             <Icon id="kakao-start" width="32" height="32" />
           </IconContainer>
           <TextContainer>카카오로 3초 만에 시작하기</TextContainer>
         </StartButton>
       </ButtonContainer>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </StartPage>
   );
 };

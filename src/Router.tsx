@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import Start from "./Routes/Start";
+import AuthCallback from "./Routes/AuthCallback";
 import Wait from "./Routes/Wait";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: "", element: <Start /> },
+      { path: "callback", element: <AuthCallback /> },
       { path: "waiting", element: <Wait /> },
       { path: "select", element: <Select /> },
       { path: "home", element: <Home /> },
