@@ -5,6 +5,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import animationData from "../components/waitingAnimation.json";
+import api from "../utils/axios";
 
 const hue = keyframes`
   from {
@@ -69,18 +70,42 @@ const Wait: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const textChangeTimeout = setTimeout(() => {
+    let textChangeTimeout: NodeJS.Timeout;
+    let textFadeInTimeout: NodeJS.Timeout;
+    let redirectTimeout: NodeJS.Timeout;
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await api.get("/users/role");
+        const userRole = response.data.role || "UNKNOWN";
+        console.log(response);
+
+        textFadeInTimeout = setTimeout(() => {
+          setText(userRole !== "UNKNOWN" ? "로그인 완료!" : "잠시만요...");
+          setFadeState("fadeIn");
+        }, 6000);
+
+        redirectTimeout = setTimeout(() => {
+          navigate(userRole === "UNKNOWN" ? "/select" : "/home");
+        }, 9000);
+      } catch (error) {
+        console.error("사용자 정보를 가져오는데 실패했습니다:", error);
+        textFadeInTimeout = setTimeout(() => {
+          setText("문제가 있는 것 같아요...");
+          setFadeState("fadeIn");
+        }, 6000);
+
+        redirectTimeout = setTimeout(() => {
+          navigate("/select");
+        }, 9000);
+      }
+    };
+
+    textChangeTimeout = setTimeout(() => {
       setFadeState("fadeOut");
-    }, 3000); // 3초 후 텍스트 사라지기 시작
+    }, 3000);
 
-    const textFadeInTimeout = setTimeout(() => {
-      setText("로그인 완료!");
-      setFadeState("fadeIn");
-    }, 6000); // 3초 후 텍스트 변경 및 다시 나타나기 시작
-
-    const redirectTimeout = setTimeout(() => {
-      navigate("/select");
-    }, 9000); // 텍스트 변경 후 3초 뒤 리디렉션
+    fetchUserInfo();
 
     return () => {
       clearTimeout(textChangeTimeout);

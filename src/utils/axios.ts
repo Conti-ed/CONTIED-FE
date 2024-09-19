@@ -4,7 +4,7 @@ import { SERVER_URL } from "../api";
 import { setupTokenRefresh } from "./auth";
 
 const getAuthToken = (): string | undefined => {
-  return Cookies.get("token");
+  return Cookies.get("accessToken");
 };
 
 const api: AxiosInstance = axios.create({
@@ -13,13 +13,14 @@ const api: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
   (config) => {
     const token = getAuthToken();
     if (token) {
-      config.headers["Authorization"] = `Token ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },

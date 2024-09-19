@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/axios";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
 import Icon from "../components/Icon";
@@ -119,6 +120,12 @@ const buttonVariants = {
   },
 };
 
+const roleMapping = [
+  { display: "리더", value: "LEADER" },
+  { display: "연주자", value: "PLAYER" },
+  { display: "참여자", value: "PARTICIPANT" },
+];
+
 const Select: React.FC = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [buttonText, setButtonText] = useState("완료");
@@ -130,10 +137,17 @@ const Select: React.FC = () => {
     setSelected(index);
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
+    if (selected === null) return;
+
     setButtonText("설정 중...");
     setShowSpinner(true);
-    setTimeout(() => {
+
+    const selectedRole = roleMapping[selected].value;
+
+    try {
+      await api.post("/users/role", { role: selectedRole });
+
       setShowSpinner(false);
       setTimeout(() => {
         setButtonText("");
@@ -143,7 +157,11 @@ const Select: React.FC = () => {
           navigate("/home");
         }, 1000);
       }, 500);
-    }, 2000);
+    } catch (error) {
+      console.error("역할 설정 중 오류:", error);
+      setButtonText("문제가 있는 것 같아요...");
+      setShowSpinner(false);
+    }
   };
 
   return (
@@ -152,7 +170,7 @@ const Select: React.FC = () => {
       <Content>
         <Title>주로 어떤 역할이신가요?!</Title>
         <TextContainer>
-          {["리더", "연주자", "참여자"].map((text, index) => (
+          {roleMapping.map((role, index) => (
             <Box
               key={index}
               custom={index}
@@ -162,7 +180,7 @@ const Select: React.FC = () => {
               $isSelected={selected === index}
               onClick={() => handleBoxClick(index)}
             >
-              <Text $isSelected={selected === index}>{text}</Text>
+              <Text $isSelected={selected === index}>{role.display}</Text>
             </Box>
           ))}
         </TextContainer>
