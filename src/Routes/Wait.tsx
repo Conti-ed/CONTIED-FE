@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Player } from "@lottiefiles/react-lottie-player";
@@ -64,55 +64,73 @@ const Text = styled.div<{ $fadeState: "fadeIn" | "fadeOut" }>`
       forwards;
 `;
 
+type FadeState = "fadeIn" | "fadeOut";
+type UserRole = "LEADER" | "PLAYER" | "PARTICIPANT" | "UNKNOWN";
+
 const Wait: React.FC = () => {
   const [text, setText] = useState("로그인 하는 중...");
-  const [fadeState, setFadeState] = useState<"fadeIn" | "fadeOut">("fadeIn");
+  const [fadeState, setFadeState] = useState<FadeState>("fadeIn");
   const navigate = useNavigate();
 
+  const fetchUserInfo = useCallback(async (): Promise<UserRole> => {
+    try {
+      const response = await api.get("/users/role");
+      return response.data.role || "UNKNOWN";
+    } catch (error) {
+      console.error("사용자 정보를 가져오는데 실패했습니다:", error);
+      return "UNKNOWN";
+    }
+  }, []);
+
+  const handleTextChange = useCallback(
+    (newText: string, newFadeState: FadeState) => {
+      setText(newText);
+      setFadeState(newFadeState);
+    },
+    []
+  );
+
+  const handleNavigation = useCallback(
+    (userRole: UserRole) => {
+      navigate(userRole === "UNKNOWN" ? "/select" : "/home");
+    },
+    [navigate]
+  );
+
+  const runTimerSequence = useCallback(
+    (userRole: UserRole) => {
+      const timeouts: NodeJS.Timeout[] = [];
+
+      timeouts.push(setTimeout(() => setFadeState("fadeOut"), 3000));
+      timeouts.push(
+        setTimeout(() => {
+          handleTextChange(
+            userRole !== "UNKNOWN" ? "로그인 완료!" : "잠시만요...",
+            "fadeIn"
+          );
+        }, 6000)
+      );
+      timeouts.push(setTimeout(() => handleNavigation(userRole), 9000));
+
+      return () => timeouts.forEach(clearTimeout);
+    },
+    [handleTextChange, handleNavigation]
+  );
+
   useEffect(() => {
-    let textChangeTimeout: NodeJS.Timeout;
-    let textFadeInTimeout: NodeJS.Timeout;
-    let redirectTimeout: NodeJS.Timeout;
+    let cleanup: () => void;
 
-    const fetchUserInfo = async () => {
-      try {
-        const response = await api.get("/users/role");
-        const userRole = response.data.role || "UNKNOWN";
-        console.log(response);
-
-        textFadeInTimeout = setTimeout(() => {
-          setText(userRole !== "UNKNOWN" ? "로그인 완료!" : "잠시만요...");
-          setFadeState("fadeIn");
-        }, 6000);
-
-        redirectTimeout = setTimeout(() => {
-          navigate(userRole === "UNKNOWN" ? "/select" : "/home");
-        }, 9000);
-      } catch (error) {
-        console.error("사용자 정보를 가져오는데 실패했습니다:", error);
-        textFadeInTimeout = setTimeout(() => {
-          setText("문제가 있는 것 같아요...");
-          setFadeState("fadeIn");
-        }, 6000);
-
-        redirectTimeout = setTimeout(() => {
-          navigate("/select");
-        }, 9000);
-      }
+    const initializeWaitSequence = async () => {
+      const userRole = await fetchUserInfo();
+      cleanup = runTimerSequence(userRole);
     };
 
-    textChangeTimeout = setTimeout(() => {
-      setFadeState("fadeOut");
-    }, 3000);
-
-    fetchUserInfo();
+    initializeWaitSequence();
 
     return () => {
-      clearTimeout(textChangeTimeout);
-      clearTimeout(textFadeInTimeout);
-      clearTimeout(redirectTimeout);
+      if (cleanup) cleanup();
     };
-  }, [navigate]);
+  }, [fetchUserInfo, runTimerSequence]);
 
   return (
     <Container>
