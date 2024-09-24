@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../api";
+import { UserInfo } from "../types";
 import StatusBar from "../components/StatusBar";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import TabBar from "../components/TabBar";
@@ -50,10 +52,11 @@ const Home: React.FC = () => {
     // 백엔드에서 사용자 정보를 가져오는 API 호출
     const fetchUserInfo = async () => {
       try {
-        const response = await api.get("http://localhost:5000/api/user"); // 사용자 정보를 반환하는 API 엔드포인트
-        setUserName(response.data.name); // 사용자 이름을 상태에 설정
+        const response = await api.get<UserInfo>(`${SERVER_URL}/users`); // 사용자 정보를 반환하는 API 엔드포인트
+        setUserName(response.data.nickname); // 사용자 이름을 상태에 설정
       } catch (error) {
-        // console.error("Failed to fetch user info:", error);
+        console.error("Failed to fetch user info:", error);
+        setUserName("사용자");
       }
     };
 

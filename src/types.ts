@@ -1,11 +1,7 @@
-export type UserType = {
-  id: number;
-  name: string;
+export interface UserInfo {
+  nickname: string;
   email: string;
-  avatar: string;
-  created_at: string;
-  updated_at: string;
-};
+}
 
 export type KeywordType = {
   id?: number;
@@ -34,7 +30,7 @@ export type SheetType = {
 
 export type ContiType = null | {
   id: number;
-  owner: UserType;
+  owner: UserInfo;
   title: string;
   keywords: string[];
   songs: SongType[];
