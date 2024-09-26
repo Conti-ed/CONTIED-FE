@@ -5,7 +5,9 @@ import { motion } from "framer-motion";
 import SafariSpace from "../components/SafariSpace";
 import TabBar from "../components/TabBar";
 import StatusBar from "../components/StatusBar";
-import axios from "axios";
+import api from "../utils/axios";
+import { UserInfo } from "../types";
+import { SERVER_URL } from "../api";
 
 // Reusable styled components
 export const Container = styled(motion.div)`
@@ -185,10 +187,11 @@ const MyPage: React.FC = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("/api/user");
-        setUsername(response.data.name);
+        const response = await api.get<UserInfo>(`${SERVER_URL}/users`);
+        setUsername(response.data.nickname);
       } catch (error) {
-        // console.error("Failed to fetch user info:", error);
+        console.error("Failed to fetch user info:", error);
+        setUsername("사용자");
       }
     };
 
@@ -210,7 +213,7 @@ const MyPage: React.FC = () => {
       <StatusBar />
       <Header>
         <Title>
-          <span>{username}</span>님의 Conti:ed
+          <span>{username}</span> 님의 Conti:ed
         </Title>
       </Header>
       <Content>
