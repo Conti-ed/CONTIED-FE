@@ -36,7 +36,7 @@ interface ContiData {
   title: string;
   thumbnail: string;
   ownerName: string;
-  updated_at: string;
+  updatedAt: string;
   duration: number;
 }
 
@@ -59,7 +59,7 @@ const MyFavoriteContis: React.FC = () => {
         .filter((data): data is ContiData => data !== null)
         .sort(
           (a, b) =>
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
 
       setFavoriteContis(favoriteContiData);
@@ -110,7 +110,7 @@ const MyFavoriteContis: React.FC = () => {
                   <ContiTitle>{data.title}</ContiTitle>
                   <Subtitle>{data.ownerName}</Subtitle>
                   <SongInfo>{`${formatRelativeTime(
-                    parseLocalDateString(data.updated_at)
+                    parseLocalDateString(data.updatedAt)
                   )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
                 </InfoText>
               </ContiItem>

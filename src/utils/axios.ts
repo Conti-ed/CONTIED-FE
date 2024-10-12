@@ -1,24 +1,24 @@
 import axios, { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
-import { SERVER_URL } from "../api";
-import { setupTokenRefresh } from "./auth";
+import { setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
 
-const getAuthToken = (): string | undefined => {
-  return Cookies.get("accessToken");
-};
+// 서버 URL 설정
+export const SERVER_URL = "http://localhost:5000";
 
+// Axios Instance 생성
 const api: AxiosInstance = axios.create({
   baseURL: SERVER_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // CORS 이슈 해결을 위한 설정
 });
 
+// 요청 interceptors: Authorization header에 token 추가
 api.interceptors.request.use(
   (config) => {
-    const token = getAuthToken();
+    const token = Cookies.get("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -29,6 +29,95 @@ api.interceptors.request.use(
   }
 );
 
+// 응답 인터셉터를 통해 자동으로 토큰 갱신 설정
 setupTokenRefresh(api);
+
+// API 호출 함수들
+// 키워드 가져오기
+export async function getKeywords() {
+  try {
+    const response = await api.get("/keyword");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch keywords:", error);
+    throw error;
+  }
+}
+
+// 모든 콘티 가져오기
+export async function getConties() {
+  try {
+    const response = await api.get("/conti/myconti");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch conties:", error);
+    throw error;
+  }
+}
+
+// 특정 콘티 가져오기
+export async function getConti(cid: number) {
+  try {
+    const response = await api.get(`/conti/myconti/${cid}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch conti with id ${cid}:`, error);
+    throw error;
+  }
+}
+
+// 사용자 정보로 콘티 가져오기
+export async function getMyConties() {
+  const userInfo = localStorage.getItem("user_info");
+  if (!userInfo) {
+    console.warn("No user information found");
+    return;
+  }
+  const myId = JSON.parse(userInfo).id;
+  try {
+    const response = await api.get(`/conti?user=${myId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user's conties:", error);
+    throw error;
+  }
+}
+
+// 키워드로 콘티 검색하기
+export async function getContiesByKeyword(keyword: string) {
+  try {
+    const response = await api.get(`/conti?keyword=${keyword}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch conties by keyword "${keyword}":`, error);
+    throw error;
+  }
+}
+
+// 키워드로 곡 검색하기
+export async function getSongsByKeyword(keyword: string) {
+  try {
+    const response = await api.get(`/song?keyword=${keyword}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch songs by keyword "${keyword}":`, error);
+    throw error;
+  }
+}
+
+// 저장된 콘티 가져오기
+export async function getSavedConties(uid: number) {
+  if (!uid) {
+    console.warn("No user id provided");
+    return null;
+  }
+  try {
+    const response = await api.get(`/save?uid=${uid}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch saved conties for user ${uid}:`, error);
+    throw error;
+  }
+}
 
 export default api;

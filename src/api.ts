@@ -1,17 +1,18 @@
 // export const SERVER_URL =
 //   "https://vscode-adakm.run-us-west2.goorm.site/proxy/8000";
+
 export const SERVER_URL = "http://localhost:5000";
 
 export async function getKeywords() {
-  return (await fetch(`${SERVER_URL}/api/keyword`)).json();
+  return (await fetch(`${SERVER_URL}/keyword`)).json();
 }
 
 export async function getConties() {
-  return (await fetch(`${SERVER_URL}/api/conti`)).json();
+  return (await fetch(`${SERVER_URL}/conti/myconti`)).json();
 }
 
 export async function getConti(cid: number) {
-  return (await fetch(`${SERVER_URL}/api/conti/${cid}`)).json();
+  return (await fetch(`${SERVER_URL}/conti/myconti/${cid}`)).json();
 }
 
 export async function getMyConties() {
@@ -22,19 +23,19 @@ export async function getMyConties() {
     return;
   }
   const my_id = JSON.parse(localStorage["user_info"]).id;
-  return (await fetch(`${SERVER_URL}/api/conti?user=${my_id}`)).json();
+  return (await fetch(`${SERVER_URL}/conti?user=${my_id}`)).json();
 }
 
 export async function getContiesByKeyword(keyword: string) {
-  return (await fetch(`${SERVER_URL}/api/conti?keyword=${keyword}`)).json();
+  return (await fetch(`${SERVER_URL}/conti?keyword=${keyword}`)).json();
 }
 
 export async function getSongsByKeyword(keyword: string) {
-  return (await fetch(`${SERVER_URL}/api/song?keyword=${keyword}`)).json();
+  return (await fetch(`${SERVER_URL}/song?keyword=${keyword}`)).json();
 }
 
 export async function getSavedConties(uid: number) {
-  return uid ? (await fetch(`${SERVER_URL}/api/save?uid=${uid}`)).json() : null;
+  return uid ? (await fetch(`${SERVER_URL}/save?uid=${uid}`)).json() : null;
 }
 
 export async function refreshToken() {

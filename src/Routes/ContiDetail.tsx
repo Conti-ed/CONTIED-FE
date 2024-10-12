@@ -29,8 +29,6 @@ import {
   NewIcon,
   IconWrapper,
 } from "../styles/ContiDetail.styles";
-import { useQuery, useQueryClient } from "react-query";
-import { getConti } from "../api";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -40,18 +38,29 @@ import AlbumPlaceholder from "../components/AlbumPlaceholder";
 import Icon from "../components/Icon";
 import Loading from "../components/Loading";
 import DetailOptions from "../components/DetailOptions";
+import { useQuery, useQueryClient } from "react-query";
+import { getConti } from "../utils/axios";
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
   const { contiId } = useParams<{ contiId: string }>();
   const queryClient = useQueryClient();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isAddSongLoading, setIsAddSongLoading] = useState(false);
 
   const { data: contiData, isLoading: isContiLoading } = useQuery(
     ["cid", contiId],
-    () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null))
+    () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null)), // contiId가 있으면 API 호출
+    {
+      retry: false,
+      onSuccess: (data) => {
+        console.log("Conti Data fetched successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Failed to fetch conti data:", error);
+      },
+    }
   );
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isAddSongLoading, setIsAddSongLoading] = useState(false);
 
   useEffect(() => {
     if (contiId) {
@@ -189,15 +198,17 @@ const ContiDetail: React.FC = () => {
               </AlbumImageWrapper>
               <InfoText>
                 <Title>{contiData.title}</Title>
-                <Subtitle>{contiData.owner.name}</Subtitle>
-                <SongInfo>{`${contiData.songs.length}곡 • ${formatTotalDuration(
+                <Subtitle>{contiData.userId}</Subtitle>
+                <SongInfo>{`${
+                  contiData.ContiToSong.length
+                }곡 • ${formatTotalDuration(
                   contiData.duration
                 )} • ${formatRelativeTime(
-                  parseLocalDateString(contiData.updated_at)
+                  parseLocalDateString(contiData.updatedAt)
                 )}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
-            <SongList songs={contiData.songs} />
+            {/* <SongList songs={contiData.songs} /> */}
             <AddSongContainer onClick={handleAddSongClick}>
               <AddIcon width="10" height="10">
                 <Icon id="add-song-detail" width="10" height="10" />

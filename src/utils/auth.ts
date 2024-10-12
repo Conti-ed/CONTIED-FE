@@ -6,20 +6,24 @@ interface TokenResponse {
   refresh_token: string;
 }
 
+// 현재의 Access Token Get
 export const getAccessToken = (): string | undefined => {
   return Cookies.get("accessToken");
 };
 
+// Access Token과 Refresh Token을 설정
 export const setTokens = (accessToken: string, refreshToken: string): void => {
   Cookies.set("accessToken", accessToken);
   Cookies.set("refreshToken", refreshToken);
 };
 
+// Token 제거
 export const removeTokens = (): void => {
   Cookies.remove("accessToken");
   Cookies.remove("refreshToken");
 };
 
+// Update Access Token
 export const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = Cookies.get("refreshToken");
 
@@ -34,15 +38,16 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     });
     const { access_token, refresh_token } = response.data;
 
-    setTokens(access_token, refresh_token);
+    setTokens(access_token, refresh_token); // new token 설정
     return access_token;
   } catch (error) {
     console.error("Failed to refresh token:", error);
-    removeTokens();
+    removeTokens(); // update 실패 시, token 제거
     return null;
   }
 };
 
+// Axios Instance에 token update 로직 추가
 export const setupTokenRefresh = (api: any): void => {
   api.interceptors.response.use(
     (response: any) => response,

@@ -27,17 +27,8 @@ export const formatTotalDuration = (duration: number) => {
 };
 
 // Adjust Date by Region upon Registration
-// Adjust Date by Region upon Registration
 export const parseLocalDateString = (dateString: string): Date => {
-  const [datePart, timePart] = dateString.split(" ");
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute, second] = timePart.split(":").map(Number);
-
-  // Create a Date object from the parts
-  const utcDate = new Date(
-    Date.UTC(year, month - 1, day, hour, minute, second)
-  );
-
+  const utcDate = new Date(dateString);
   return utcDate;
 };
 

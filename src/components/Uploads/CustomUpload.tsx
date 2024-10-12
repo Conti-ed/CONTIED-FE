@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
-import { SERVER_URL } from "../../api";
 import Icon from "../Icon";
 import {
   Container,
@@ -15,6 +14,7 @@ import {
   NextButton,
   CompleteButton,
 } from "../../styles/Upload.styles";
+import api from "../../utils/axios";
 
 const CustomUpload = () => {
   const [contiTitle, setContiTitle] = useState("");
@@ -41,24 +41,18 @@ const CustomUpload = () => {
   };
 
   const handleNext = () => {
-    if (step === 1) {
-      if (contiTitle.trim() === "") {
-        setHasError((prev) => ({ ...prev, title: true }));
-        setTimeout(() => {
-          setHasError((prev) => ({ ...prev, title: false }));
-        }, 2000);
-      } else {
-        setStep(2);
-      }
-    } else if (step === 2) {
-      if (contiDescription.trim() === "") {
-        setHasError((prev) => ({ ...prev, description: true }));
-        setTimeout(() => {
-          setHasError((prev) => ({ ...prev, description: false }));
-        }, 2000);
-      } else {
-        setStep(3);
-      }
+    if (step === 1 && contiTitle.trim() === "") {
+      setHasError((prev) => ({ ...prev, title: true }));
+      setTimeout(() => {
+        setHasError((prev) => ({ ...prev, title: false }));
+      }, 2000);
+    } else if (step === 2 && contiDescription.trim() === "") {
+      setHasError((prev) => ({ ...prev, description: true }));
+      setTimeout(() => {
+        setHasError((prev) => ({ ...prev, description: false }));
+      }, 2000);
+    } else {
+      setStep(step + 1);
     }
   };
 
@@ -74,34 +68,15 @@ const CustomUpload = () => {
     setIsLoading(true);
     try {
       const body = { title: contiTitle, description: contiDescription };
-      const response = await fetch(`${SERVER_URL}/api/conti`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+      const response = await api.post("/conti/myconti/custom", body);
+      const data = await response.data;
+      localStorage.setItem(`conti_${data.id}`, JSON.stringify(data));
 
-      if (!response.ok) {
-        throw new Error("Failed to create conti");
+      if (!data.id) {
+        throw new Error("Invalid response data: ID not found");
       }
 
-      const data = await response.json();
-      console.log(data);
-
-      const contiData = {
-        id: data.id,
-        title: data.title,
-        description: data.description,
-        ownerName: data.owner.name,
-        updated_at: data.updated_at,
-        lyrics: data.lyrics,
-        duration: data.duration,
-        songs: data.songs,
-        thumbnail: "/images/WhitePiano.png",
-      };
-      localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
-
+      console.log("Navigating to conti-detail with ID:", data.id);
       navigate(`/conti-detail/${data.id}`);
     } catch (error) {
       console.error("Failed to create conti:", error);
