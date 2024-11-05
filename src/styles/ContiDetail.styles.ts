@@ -180,19 +180,44 @@ export const ToggleButton = styled.span`
   flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
 `;
 
-export const AddSongContainer = styled.div`
+export const EmptyStateContainer = styled.div`
+  margin-top: 90px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: auto;
-  margin-top: 23px;
-  font-size: 12px;
-  font-weight: 300;
-  color: #9095a1;
 `;
 
-export const AddIcon = styled.svg`
-  margin-right: 5px;
+export const EmptyStateImage = styled.img`
+  margin-bottom: 8px;
+`;
+
+export const EmptyStateText1 = styled.div`
+  font-size: 15px;
+  font-weight: 300;
+  color: #171a1f;
+  text-align: center;
+  margin-bottom: 9px;
+`;
+
+export const EmptyStateText2 = styled.div`
+  font-size: 12px;
+  font-weight: 300;
+  color: #828282;
+  text-align: center;
+  margin-bottom: 10px;
+`;
+
+export const AddSongButton = styled.div`
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  color: #4f8eec;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: #376bb8;
+  }
 `;
 
 export const LoadingOverlay = styled.div`

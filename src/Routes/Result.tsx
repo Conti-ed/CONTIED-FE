@@ -137,7 +137,7 @@ const Result: React.FC = () => {
             onKeyDown={handleKeyDown}
             onFocus={() => setIsFocused(true)}
           />
-          {query && (
+          {!isLoading && query && (
             <ClearIcon
               width="18"
               height="18"

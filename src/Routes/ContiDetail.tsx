@@ -6,8 +6,6 @@ import SafariSpace from "../components/SafariSpace";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import SongList from "../components/SongList";
 import {
-  AddIcon,
-  AddSongContainer,
   AlbumDetailContainer,
   AlbumImage,
   AlbumImageWrapper,
@@ -32,6 +30,11 @@ import {
   ToggleDescriptionContainer,
   DescriptionText,
   DescriptionTextContainer,
+  EmptyStateContainer,
+  EmptyStateImage,
+  EmptyStateText1,
+  EmptyStateText2,
+  AddSongButton,
 } from "../styles/ContiDetail.styles";
 import {
   formatRelativeTime,
@@ -141,9 +144,20 @@ const ContiDetail: React.FC = () => {
     setIsAddSongLoading(true);
     setTimeout(() => {
       setIsAddSongLoading(false);
-      navigate("/searchadd", { state: { isFocused: true, query: "" } });
+      navigate("/search", { state: { isFocused: true, query: "" } });
     }, 1000);
   };
+
+  const renderEmptyState = () => (
+    <EmptyStateContainer>
+      <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
+      <EmptyStateText1>앗!</EmptyStateText1>
+      <EmptyStateText2>콘티에 곡이 없어요.</EmptyStateText2>
+      <AddSongButton onClick={handleAddSongClick}>
+        콘티를 채우러 가볼까요?
+      </AddSongButton>
+    </EmptyStateContainer>
+  );
 
   if (isContiLoading) {
     return <Loading />;
@@ -243,6 +257,11 @@ const ContiDetail: React.FC = () => {
               </DescriptionTextContainer>
             </ToggleDescriptionContainer>
           </AlbumDetailContainer>
+          {contiData.ContiToSong.length === 0 ? (
+            renderEmptyState()
+          ) : (
+            <SongList songs={contiData.ContiToSong} />
+          )}
           {/* <SongList songs={contiData.songs} /> */}
         </Content>
         <SafariSpace $isFocused={false} />
