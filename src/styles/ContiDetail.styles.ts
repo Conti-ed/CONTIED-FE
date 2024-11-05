@@ -79,7 +79,6 @@ export const AlbumInfo = styled.div`
   justify-content: flex-start;
   align-items: center;
   margin-top: 19px;
-  margin-bottom: 19px;
   padding: 23px;
 `;
 
@@ -143,6 +142,42 @@ export const SongInfo = styled.div`
   font-size: 11px;
   font-weight: 300;
   color: #9095a1;
+`;
+
+export const ToggleDescriptionContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DescriptionTextContainer = styled.div`
+  display: inline-flex; /* 수평으로 정렬 */
+  align-items: center;
+  width: 85%;
+  margin: 0 auto;
+  text-align: left;
+`;
+
+export const DescriptionText = styled.span<{ $isOpen: boolean }>`
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: ${({ $isOpen }) => ($isOpen ? "unset" : 2)};
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.8;
+  text-overflow: ellipsis;
+  margin-right: 4px; /* 더보기 버튼과의 간격 */
+  flex-grow: 1; /* 텍스트가 가능한 공간을 차지하도록 */
+`;
+
+export const ToggleButton = styled.span`
+  cursor: pointer;
+  font-size: 14px;
+  color: #8badf1;
+  white-space: nowrap; /* 버튼이 줄바꿈되지 않도록 */
+  flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
 `;
 
 export const AddSongContainer = styled.div`

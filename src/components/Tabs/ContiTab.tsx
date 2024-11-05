@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
+import { getConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -109,31 +110,38 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedContiData: any[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("conti_")) {
-        const data = JSON.parse(localStorage.getItem(key)!);
-        storedContiData.push(data);
+    const fetchConties = async () => {
+      try {
+        const response = await getConties();
+        const conties = Array.isArray(response)
+          ? response
+          : response.contiData || [];
+
+        const sortedConties = conties.sort(
+          (a: any, b: any) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+
+        setContiData(sortedConties);
+      } catch (error) {
+        console.error("Failed to fetch conties:", error);
       }
-    }
-    storedContiData.sort(
-      (a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    );
-    setContiData(storedContiData);
+    };
+    fetchConties();
   }, []);
 
   const filteredTitles = contiData.filter((data) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     return (
       data.title.toLowerCase().includes(lowerCaseQuery) ||
-      data.songs.some(
-        (song: { title: string; artist: string; lyrics: string }) =>
-          (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.artist && song.artist.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-      )
+      (Array.isArray(data.songs) &&
+        data.songs.some(
+          (song: { title: string; artist: string; lyrics: string }) =>
+            (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
+            (song.artist &&
+              song.artist.toLowerCase().includes(lowerCaseQuery)) ||
+            (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
+        ))
     );
   });
 
@@ -155,10 +163,11 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
               <ContiImageWrapper>
                 <ContiPlaceholder size={100} />
                 <ContiImage
-                  src={data.thumbnail}
+                  src={data.thumbnail || "/images/WhitePiano.png"}
                   alt="Album Image"
                   style={{
                     height:
+                      data.thumbnail === null ||
                       data.thumbnail === "/images/WhitePiano.png"
                         ? "62px"
                         : "100px",
@@ -167,9 +176,9 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
               </ContiImageWrapper>
               <InfoText>
                 <Title>{data.title}</Title>
-                <Subtitle>{data.ownerName}</Subtitle>
+                <Subtitle>{data.userId}</Subtitle>
                 <SongInfo>{`${formatRelativeTime(
-                  parseLocalDateString(data.updated_at)
+                  parseLocalDateString(data.updatedAt)
                 )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
               </InfoText>
             </ContiItem>

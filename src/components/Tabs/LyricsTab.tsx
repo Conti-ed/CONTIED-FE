@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SongList from "../SongList";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { getAllSongs } from "../../utils/axios";
+import { SongType } from "../../types";
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   position: absolute;
   top: 25%;
   width: 90vw;
@@ -48,56 +50,101 @@ interface LyricsTabProps {
   searchQuery: string;
 }
 
+interface FilteredSongItem {
+  song: SongType;
+  titleIndex: number;
+  artistIndex: number;
+  lyricsIndex: number;
+}
+
 const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
-  const [contiData, setContiData] = useState<any[]>([]);
-  const [filteredTitles, setFilteredTitles] = useState<any[]>([]);
+  const [songsData, setSongsData] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
 
   useEffect(() => {
-    const storedContiData: any[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("conti_")) {
-        const data = JSON.parse(localStorage.getItem(key)!);
-        storedContiData.push(data);
+    const fetchSongs = async () => {
+      try {
+        const response = await getAllSongs(0, 50);
+        const songs = response.songData || [];
+        setSongsData(songs);
+      } catch (error) {
+        console.error("Failed to fetch songs:", error);
       }
-    }
-    storedContiData.sort(
-      (a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    );
-    setContiData(storedContiData);
+    };
+    fetchSongs();
   }, []);
 
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    const songs: any[] = [];
-    const filteredTitles = contiData.filter((data) => {
-      const isTitleMatched = data.title.toLowerCase().includes(lowerCaseQuery);
-      const matchedSongs = data.songs.filter(
-        (song: { title: string; artist: string; lyrics: string }) =>
-          (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.artist && song.artist.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-      );
-      if (matchedSongs.length > 0) {
-        songs.push(...matchedSongs);
-      }
-      return isTitleMatched || matchedSongs.length > 0;
-    });
-    setFilteredSongs(songs);
-    setFilteredTitles(filteredTitles);
-  }, [searchQuery, contiData]);
+
+    const filteredSongs = Array.isArray(songsData)
+      ? songsData
+          .map((song): FilteredSongItem | null => {
+            const titleIndex = song.title
+              ? song.title.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+            const artistIndex = song.artist
+              ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+            const lyricsIndex = song.lyrics
+              ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+
+            if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) {
+              return null;
+            }
+
+            return {
+              song,
+              titleIndex,
+              artistIndex,
+              lyricsIndex,
+            };
+          })
+          .filter((item): item is FilteredSongItem => item !== null)
+          .sort((a, b) => {
+            // 제목 비교
+            if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
+            if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
+            if (a.titleIndex !== -1 && b.titleIndex !== -1) {
+              return a.titleIndex - b.titleIndex;
+            }
+
+            // 아티스트 비교
+            if (a.artistIndex !== -1 && b.artistIndex === -1) return -1;
+            if (a.artistIndex === -1 && b.artistIndex !== -1) return 1;
+            if (a.artistIndex !== -1 && b.artistIndex !== -1) {
+              return a.artistIndex - b.artistIndex;
+            }
+
+            // 가사 비교
+            if (a.lyricsIndex !== -1 && b.lyricsIndex === -1) return -1;
+            if (a.lyricsIndex === -1 && b.lyricsIndex !== -1) return 1;
+            if (a.lyricsIndex !== -1 && b.lyricsIndex !== -1) {
+              return a.lyricsIndex - b.lyricsIndex;
+            }
+
+            // 모든 인덱스가 동일한 경우
+            return 0;
+          })
+          .map((item) => item.song)
+      : [];
+
+    setFilteredSongs(filteredSongs);
+  }, [searchQuery, songsData]);
 
   return (
     <AnimatePresence>
-      {filteredTitles.length > 0 && filteredSongs.length > 0 ? (
-        <Container>
-          {filteredSongs.length > 0 && (
-            <SongSection>
-              <SongList songs={filteredSongs} showLyricsOnly />
-            </SongSection>
-          )}
+      {filteredSongs.length > 0 ? (
+        <Container
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <SongSection>
+            <SongList songs={filteredSongs} showLyricsOnly />
+          </SongSection>
         </Container>
       ) : (
         <EmptyStateContainer>

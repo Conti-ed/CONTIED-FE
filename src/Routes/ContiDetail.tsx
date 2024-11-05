@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
@@ -28,6 +28,10 @@ import {
   DEImage,
   NewIcon,
   IconWrapper,
+  ToggleButton,
+  ToggleDescriptionContainer,
+  DescriptionText,
+  DescriptionTextContainer,
 } from "../styles/ContiDetail.styles";
 import {
   formatRelativeTime,
@@ -47,6 +51,9 @@ const ContiDetail: React.FC = () => {
   const queryClient = useQueryClient();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddSongLoading, setIsAddSongLoading] = useState(false);
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const [maxTextLength, setMaxTextLength] = useState(65);
+  const descriptionRef = useRef<HTMLDivElement>(null);
 
   const { data: contiData, isLoading: isContiLoading } = useQuery(
     ["cid", contiId],
@@ -104,6 +111,26 @@ const ContiDetail: React.FC = () => {
         alert("콘티 삭제에 실패했습니다. 다시 시도해 주세요.");
       }
     }
+  };
+
+  const getDisplayText = (text: string) => {
+    if (isDescriptionOpen || text.length <= maxTextLength) return text;
+    return `${text.slice(0, maxTextLength)}... `;
+  };
+
+  const renderDescription = () => {
+    const text = getDisplayText(contiData?.description || "");
+    return (
+      <>
+        {text}
+        {!isDescriptionOpen &&
+          contiData?.description.length > maxTextLength && (
+            <ToggleButton onClick={() => setIsDescriptionOpen(true)}>
+              더보기
+            </ToggleButton>
+          )}
+      </>
+    );
   };
 
   const handleBackClick = () => {
@@ -208,14 +235,15 @@ const ContiDetail: React.FC = () => {
                 )}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
-            {/* <SongList songs={contiData.songs} /> */}
-            <AddSongContainer onClick={handleAddSongClick}>
-              <AddIcon width="10" height="10">
-                <Icon id="add-song-detail" width="10" height="10" />
-              </AddIcon>
-              곡 추가
-            </AddSongContainer>
+            <ToggleDescriptionContainer>
+              <DescriptionTextContainer ref={descriptionRef}>
+                <DescriptionText $isOpen={isDescriptionOpen}>
+                  {renderDescription()}
+                </DescriptionText>
+              </DescriptionTextContainer>
+            </ToggleDescriptionContainer>
           </AlbumDetailContainer>
+          {/* <SongList songs={contiData.songs} /> */}
         </Content>
         <SafariSpace $isFocused={false} />
         {isAddSongLoading && (

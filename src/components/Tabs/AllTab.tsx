@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
+import { getAllSongs, getConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -9,6 +10,7 @@ import {
 } from "../../utils/formatDuration";
 import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
+import { ContiType, SongType } from "../../types";
 
 const Container = styled(motion.div)`
   height: 60%;
@@ -125,47 +127,162 @@ interface AllTabProps {
   searchQuery: string;
 }
 
+interface FilteredSongItem {
+  song: SongType;
+  titleIndex: number;
+  artistIndex: number;
+  lyricsIndex: number;
+}
+
+interface FilteredTitleItem {
+  data: ContiType;
+  titleIndex: number;
+  matchedSongsLength: number;
+}
+
 const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   const [contiData, setContiData] = useState<any[]>([]);
+  const [songsData, setSongsData] = useState<any[]>([]);
   const [filteredTitles, setFilteredTitles] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedContiData: any[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("conti_")) {
-        const data = JSON.parse(localStorage.getItem(key)!);
-        storedContiData.push(data);
+    const fetchContiAndSongData = async () => {
+      try {
+        const songsResponse = await getAllSongs(0, 50);
+        const contiesResponse = await getConties();
+        const songs = songsResponse.songData || [];
+        const conties = Array.isArray(contiesResponse)
+          ? contiesResponse
+          : contiesResponse.contiData || [];
+
+        const sortedConties = conties.sort(
+          (a: any, b: any) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+
+        setContiData(sortedConties);
+        setSongsData(songs);
+      } catch (error) {
+        console.error("Failed to fetch song and conti data:", error);
       }
-    }
-    storedContiData.sort(
-      (a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    );
-    setContiData(storedContiData);
+    };
+    fetchContiAndSongData();
   }, []);
 
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    const songs: any[] = [];
-    const filteredTitles = contiData.filter((data) => {
-      const isTitleMatched = data.title.toLowerCase().includes(lowerCaseQuery);
-      const matchedSongs = data.songs.filter(
-        (song: { title: string; artist: string; lyrics: string }) =>
-          (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.artist && song.artist.toLowerCase().includes(lowerCaseQuery)) ||
-          (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-      );
-      if (matchedSongs.length > 0) {
-        songs.push(...matchedSongs);
-      }
-      return isTitleMatched || matchedSongs.length > 0;
-    });
-    setFilteredSongs(songs.slice(0, 5));
+
+    const filteredSongs = Array.isArray(songsData)
+      ? songsData
+          .map((song): FilteredSongItem | null => {
+            const titleIndex = song.title
+              ? song.title.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+            const artistIndex = song.artist
+              ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+            const lyricsIndex = song.lyrics
+              ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+
+            if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) {
+              return null;
+            }
+
+            return {
+              song,
+              titleIndex,
+              artistIndex,
+              lyricsIndex,
+            };
+          })
+          .filter((item): item is FilteredSongItem => item !== null)
+          .sort((a, b) => {
+            // 제목 비교
+            if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
+            if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
+            if (a.titleIndex !== -1 && b.titleIndex !== -1) {
+              return a.titleIndex - b.titleIndex;
+            }
+
+            // 아티스트 비교
+            if (a.artistIndex !== -1 && b.artistIndex === -1) return -1;
+            if (a.artistIndex === -1 && b.artistIndex !== -1) return 1;
+            if (a.artistIndex !== -1 && b.artistIndex !== -1) {
+              return a.artistIndex - b.artistIndex;
+            }
+
+            // 가사 비교
+            if (a.lyricsIndex !== -1 && b.lyricsIndex === -1) return -1;
+            if (a.lyricsIndex === -1 && b.lyricsIndex !== -1) return 1;
+            if (a.lyricsIndex !== -1 && b.lyricsIndex !== -1) {
+              return a.lyricsIndex - b.lyricsIndex;
+            }
+
+            return 0;
+          })
+          .map((item) => item.song)
+      : [];
+
+    setFilteredSongs(filteredSongs.slice(0, 5));
+
+    // contiData에 대한 동일한 로직 적용
+    const filteredTitles = Array.isArray(contiData)
+      ? contiData
+          .map((data): FilteredTitleItem | null => {
+            const titleIndex = data.title
+              ? data.title.toLowerCase().indexOf(lowerCaseQuery)
+              : -1;
+
+            const matchedSongs = Array.isArray(data.songs)
+              ? data.songs.filter((song: SongType) => {
+                  const songTitleIndex = song.title
+                    ? song.title.toLowerCase().indexOf(lowerCaseQuery)
+                    : -1;
+                  const songArtistIndex = song.artist
+                    ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
+                    : -1;
+                  const songLyricsIndex = song.lyrics
+                    ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
+                    : -1;
+
+                  return (
+                    songTitleIndex !== -1 ||
+                    songArtistIndex !== -1 ||
+                    songLyricsIndex !== -1
+                  );
+                })
+              : [];
+
+            if (titleIndex === -1 && matchedSongs.length === 0) {
+              return null;
+            }
+
+            return {
+              data,
+              titleIndex,
+              matchedSongsLength: matchedSongs.length,
+            };
+          })
+          .filter((item): item is FilteredTitleItem => item !== null)
+          .sort((a, b) => {
+            // 제목 비교
+            if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
+            if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
+            if (a.titleIndex !== -1 && b.titleIndex !== -1) {
+              return a.titleIndex - b.titleIndex;
+            }
+
+            // 매칭된 노래 수로 비교
+            return b.matchedSongsLength - a.matchedSongsLength;
+          })
+          .map((item) => item.data)
+      : [];
+
     setFilteredTitles(filteredTitles);
-  }, [searchQuery, contiData]);
+  }, [searchQuery, contiData, songsData]);
 
   const handleContiClick = (id: string) => {
     navigate(`/conti-detail/${id}`);
@@ -194,10 +311,11 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
                   <ImageWrapper>
                     <ContiPlaceholder size={100} />
                     <Image
-                      src={data.thumbnail}
+                      src={data.thumbnail || "/images/WhitePiano.png"}
                       alt="Album Image"
                       style={{
                         height:
+                          data.thumbnail === null ||
                           data.thumbnail === "/images/WhitePiano.png"
                             ? "62px"
                             : "100px",
@@ -206,9 +324,9 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
                   </ImageWrapper>
                   <InfoText>
                     <Title>{data.title}</Title>
-                    <Subtitle>{data.ownerName}</Subtitle>
+                    <Subtitle>{data.userId}</Subtitle>
                     <SongInfo>{`${formatRelativeTime(
-                      parseLocalDateString(data.updated_at)
+                      parseLocalDateString(data.updatedAt)
                     )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
                   </InfoText>
                 </Item>

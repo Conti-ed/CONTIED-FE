@@ -63,11 +63,12 @@ const Home: React.FC = () => {
     fetchUserInfo();
   }, []);
 
-  if (!selectedConti) {
+  if (isLoading) {
     return <Loading />;
   }
 
-  const { title: albumTitle, id: albumId } = selectedConti;
+  const albumTitle = selectedConti?.title || "콘티를 등록해볼까요?";
+  const albumId = selectedConti?.id;
 
   return (
     <AnimatePresence mode="wait">
@@ -82,7 +83,9 @@ const Home: React.FC = () => {
             <br />
             콘티 리스트
           </UserName>
-          <AlbumContainer onClick={() => handleAlbumClick(albumId)}>
+          <AlbumContainer
+            onClick={albumId ? () => handleAlbumClick(albumId) : undefined} // albumId가 있을 때만 클릭 가능
+          >
             {albumThumbnail !== defaultImageUrl ? (
               <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
             ) : (
@@ -96,7 +99,7 @@ const Home: React.FC = () => {
               style={{ color: textColor }}
               $isLoading={isLoading}
             >
-              {albumTitle}
+              {selectedConti ? albumTitle : "콘티를 등록해볼까요?"}
             </TransitionTitle>
           </AlbumContainer>
           <SectionTitle>

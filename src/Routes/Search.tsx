@@ -29,6 +29,7 @@ import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
 import { getRandomSuggestions } from "../utils/randomUtils";
+import { getAllSongs } from "../utils/axios";
 import Icon from "../components/Icon";
 
 const Search: React.FC = () => {
@@ -165,25 +166,37 @@ const Search: React.FC = () => {
   );
 
   useEffect(() => {
-    const storedContiData: any[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith("conti_")) {
-        const data = JSON.parse(localStorage.getItem(key)!);
-        storedContiData.push(data);
+    const fetchSuggestions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getAllSongs();
+
+        // 응답에서 곡 데이터 배열 추출
+        // response가 객체 형태이므로 songData 필드에서 곡 배열을 추출
+        const songArray = response.songData;
+        if (Array.isArray(songArray)) {
+          const allLyrics = songArray.flatMap(
+            (song: { lyrics: string }) => song.lyrics
+          );
+          const allWords = allLyrics.flatMap((lyrics: string) =>
+            extractWordsFromLyrics(lyrics)
+          );
+          const randomWords = getRandomSuggestions(allWords, 14);
+
+          setLyricsSuggestions(randomWords);
+        } else {
+          console.warn(
+            "Expected songArray to be an array but received:",
+            songArray
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch song data for suggestions:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-
-    const allLyrics = storedContiData.flatMap((data) =>
-      data.songs.map((song: { lyrics: string }) => song.lyrics)
-    );
-
-    const allWords = allLyrics.flatMap((lyrics: string) =>
-      extractWordsFromLyrics(lyrics)
-    );
-
-    const randomWords = getRandomSuggestions(allWords, 14);
-    setLyricsSuggestions(randomWords);
+    };
+    fetchSuggestions();
   }, []);
 
   return (

@@ -16,6 +16,9 @@ interface Song {
   artist: string;
   thumbnail: string;
   lyrics: string;
+  keyScale?: string;
+  tempo?: number;
+  duration: number;
 }
 
 interface SongListProps {

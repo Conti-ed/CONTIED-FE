@@ -35,7 +35,7 @@ interface ContiData {
   id: string;
   title: string;
   thumbnail: string;
-  ownerName: string;
+  userId: string;
   updatedAt: string;
   duration: number;
 }
@@ -96,10 +96,11 @@ const MyFavoriteContis: React.FC = () => {
                 <ContiImageWrapper>
                   <ContiPlaceholder size={100} />
                   <ContiImage
-                    src={data.thumbnail}
+                    src={data.thumbnail || "/images/WhitePiano.png"}
                     alt="Album Image"
                     style={{
                       height:
+                        data.thumbnail === null ||
                         data.thumbnail === "/images/WhitePiano.png"
                           ? "62px"
                           : "100px",
@@ -108,7 +109,7 @@ const MyFavoriteContis: React.FC = () => {
                 </ContiImageWrapper>
                 <InfoText>
                   <ContiTitle>{data.title}</ContiTitle>
-                  <Subtitle>{data.ownerName}</Subtitle>
+                  <Subtitle>{data.userId}</Subtitle>
                   <SongInfo>{`${formatRelativeTime(
                     parseLocalDateString(data.updatedAt)
                   )} • ${formatTotalDuration(data.duration)}`}</SongInfo>

@@ -35,8 +35,8 @@ interface ContiData {
   id: string;
   title: string;
   thumbnail: string;
-  ownerName: string;
-  updated_at: string;
+  userId: string;
+  updatedAt: string;
   duration: number;
 }
 
@@ -51,7 +51,7 @@ const MyUploadedContis: React.FC = () => {
         .map((key) => JSON.parse(localStorage.getItem(key)!))
         .sort(
           (a: ContiData, b: ContiData) =>
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
       setUploadedContis(storedContiData);
     };
@@ -86,10 +86,11 @@ const MyUploadedContis: React.FC = () => {
               <ContiImageWrapper>
                 <ContiPlaceholder size={100} />
                 <ContiImage
-                  src={data.thumbnail}
+                  src={data.thumbnail || "/images/WhitePiano.png"}
                   alt="Album Image"
                   style={{
                     height:
+                      data.thumbnail === null ||
                       data.thumbnail === "/images/WhitePiano.png"
                         ? "62px"
                         : "100px",
@@ -98,9 +99,9 @@ const MyUploadedContis: React.FC = () => {
               </ContiImageWrapper>
               <InfoText>
                 <ContiTitle>{data.title}</ContiTitle>
-                <Subtitle>{data.ownerName}</Subtitle>
+                <Subtitle>{data.userId}</Subtitle>
                 <SongInfo>{`${formatRelativeTime(
-                  parseLocalDateString(data.updated_at)
+                  parseLocalDateString(data.updatedAt)
                 )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
               </InfoText>
             </ContiItem>

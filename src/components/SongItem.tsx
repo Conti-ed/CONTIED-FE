@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import SongPlaceholder from "./SongPlaceholder";
 import Icon from "./Icon";
+import { formatDuration } from "../utils/formatDuration";
 
 const SongItemContainer = styled.li`
   display: flex;
@@ -199,6 +200,44 @@ const NoLyrics = styled.p`
   text-align: center;
 `;
 
+const InfoContainer = styled(motion.div)`
+  width: 100%;
+  max-height: 170px;
+  overflow-y: auto;
+  background: linear-gradient(145deg, #f0f4f8, #e1e8ed);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin: 0 auto;
+`;
+
+const InfoContent = styled.div`
+  padding: 10px 16px 6px 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(23, 26, 31, 0.8);
+  text-align: center;
+`;
+
+const InfoText = styled.div`
+  white-space: pre-wrap;
+  text-align: center;
+  padding: 0 16px;
+
+  p {
+    margin-bottom: 4px;
+  }
+`;
+
+const EmphasizedText = styled.span`
+  color: #4f8eec;
+`;
+
+const NoInfo = styled.p`
+  font-style: italic;
+  color: #8c8c8c;
+  text-align: center;
+`;
+
 interface SongItemProps {
   song: {
     id: string;
@@ -206,6 +245,9 @@ interface SongItemProps {
     artist: string;
     thumbnail: string;
     lyrics: string;
+    duration: number;
+    tempo?: number;
+    keyScale?: string;
   };
   isOpen: boolean;
   onToggle: (id: string) => void;
@@ -213,10 +255,12 @@ interface SongItemProps {
 
 const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
   const [showLyrics, setShowLyrics] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setShowLyrics(false);
+      setShowInfo(false);
     }
   }, [isOpen]);
 
@@ -226,6 +270,12 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
 
   const toggleLyrics = () => {
     setShowLyrics(!showLyrics);
+    if (showInfo) setShowInfo(false);
+  };
+
+  const toggleInfo = () => {
+    setShowInfo(!showInfo);
+    if (showLyrics) setShowLyrics(false);
   };
 
   return (
@@ -241,7 +291,9 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
           </SongImageWrapper>
           <SongSummary className="song-info">
             <SongTitle>{song.title}</SongTitle>
-            <SongArtistName>{song.artist}</SongArtistName>
+            <SongArtistName>
+              {song.artist} • {formatDuration(song.duration)}
+            </SongArtistName>
           </SongSummary>
         </div>
         <div className="song-button" onClick={toggleOptions}>
@@ -275,7 +327,7 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
               </OptionIcon>
               <OptionText>가사</OptionText>
             </Option>
-            <Option>
+            <Option onClick={toggleInfo}>
               <OptionIcon>
                 <Icon id="info-songitem" width="30" height="6" />
               </OptionIcon>
@@ -304,6 +356,39 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
             </LyricsContent>
             <GradientOverlay className="bottom" />
           </LyricsContainer>
+        )}
+      </AnimatePresence>
+      <AnimatePresence mode="wait">
+        {showInfo && (
+          <InfoContainer
+            key="info"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <GradientOverlay className="top" />
+            <InfoContent>
+              {song.tempo && song.keyScale ? (
+                <>
+                  <InfoText>
+                    <p>
+                      이 곡의 템포는{" "}
+                      <EmphasizedText>{song.tempo} BPM</EmphasizedText>이고,
+                    </p>
+                    <p>
+                      원곡은 <EmphasizedText>{song.keyScale}</EmphasizedText>{" "}
+                      코드로 연주되고 있어요!
+                    </p>
+                  </InfoText>
+                </>
+              ) : (
+                <NoInfo>곡 정보가 아직 제공되지 않았어요.</NoInfo>
+              )}
+            </InfoContent>
+
+            <GradientOverlay className="bottom" />
+          </InfoContainer>
         )}
       </AnimatePresence>
     </SongItemContainer>

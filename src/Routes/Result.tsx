@@ -42,7 +42,7 @@ const Result: React.FC = () => {
 
   useEffect(() => {
     setIsFocused(false);
-  }, [location]);
+  }, [location, initialQuery]);
 
   useEffect(() => {
     if (isFocused && inputRef.current) {
@@ -81,9 +81,6 @@ const Result: React.FC = () => {
       setTimeout(() => {
         setIsLoading(false);
         setSearchQuery(query);
-        navigate(`/result?query=${encodeURIComponent(query)}`, {
-          state: { query },
-        });
       }, 1000);
     }
   };

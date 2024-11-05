@@ -47,7 +47,7 @@ export async function getKeywords() {
 // 모든 콘티 가져오기
 export async function getConties() {
   try {
-    const response = await api.get("/conti/myconti");
+    const response = await api.get("/conti");
     return response.data;
   } catch (error) {
     console.error("Failed to fetch conties:", error);
@@ -79,6 +79,19 @@ export async function getMyConties() {
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user's conties:", error);
+    throw error;
+  }
+}
+
+// 모든 곡들 가져오기
+export async function getAllSongs(cursor = 0, take = 500) {
+  try {
+    const response = await api.get(`/song`, {
+      params: { cursor, take },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch all songs:", error);
     throw error;
   }
 }

@@ -18,7 +18,7 @@ export type SongType = {
   duration: number;
   order: number;
   tempo: number;
-  key_scale: string;
+  keyScale: string;
   danceability: number;
 };
 
@@ -38,9 +38,9 @@ export type ContiType = null | {
   thumbnail: string;
   description: string;
   duration: number;
-  youtube_url: string;
-  updated_at: string;
-  created_at: string;
+  youtubeUrl: string;
+  updatedAt: string;
+  createdAt: string;
 };
 
 export type ModalType =
