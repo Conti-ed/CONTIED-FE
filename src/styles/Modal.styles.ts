@@ -1,7 +1,17 @@
 import { motion } from "framer-motion";
-import { styled } from "styled-components";
+import styled, { keyframes } from "styled-components";
 
-export const OverlayModal = styled.div`
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+// 오버레이
+export const OverlayModal = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
@@ -12,41 +22,62 @@ export const OverlayModal = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: ${fadeIn} 0.3s ease-out;
 `;
 
+// 모달 컨테이너
 export const ModalContainer = styled(motion.div)`
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1001;
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
   text-align: center;
-`;
-
-export const ModalContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  animation: ${fadeIn} 0.3s ease-out;
 `;
 
 export const ModalTitle = styled.p`
-  color: black;
-  font-weight: bold;
+  color: #323743;
+  font-weight: 500;
   margin-top: 5px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 18px;
 `;
 
-export const ModalButton = styled.button`
+// 모달 버튼 컨테이너
+export const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+`;
+
+// 취소 버튼
+export const CancelButton = styled.button`
   padding: 10px 20px;
-  margin: 0 10px;
+  background-color: white;
+  color: #323743;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+// 추가 버튼 스타일
+export const AddButton = styled.button`
+  padding: 10px 20px;
   background-color: #388ee9;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
-  &:nth-child(2) {
-    background-color: #b6434f;
+  &:hover {
+    background-color: #2965c2;
   }
 `;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ModalButton, ModalTitle } from "../../styles/Modal.styles";
+// import { ModalButton, ModalTitle } from "../../styles/Modal.styles";
 import { useQuery } from "react-query";
 import { SERVER_URL, getConti, getMyConties } from "../../api";
 import { ContiType, SongType } from "../../types";
@@ -107,7 +107,7 @@ function AddToMyConti() {
 
   return (
     <>
-      <ModalTitle>어떤 콘티에 추가할까요?</ModalTitle>
+      {/* <ModalTitle>어떤 콘티에 추가할까요?</ModalTitle> */}
       <hr></hr>
       {isLoading ? (
         <LoadingSpinner color="#E61414" />
@@ -137,8 +137,8 @@ function AddToMyConti() {
         </ContiList>
       )}
       <div>
-        <ModalButton onClick={addToConti}>추가하기</ModalButton>
-        <ModalButton onClick={closeModal}>취소</ModalButton>
+        {/* <ModalButton onClick={addToConti}>추가하기</ModalButton>
+        <ModalButton onClick={closeModal}>취소</ModalButton> */}
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 import { setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
+import { ContiType } from "../types";
 
 // 서버 URL 설정
 export const SERVER_URL = "http://localhost:5000";
@@ -67,22 +68,19 @@ export async function getConti(cid: number) {
 }
 
 // 사용자 정보로 콘티 가져오기
-export async function getMyConties() {
-  const userInfo = localStorage.getItem("user_info");
-  if (!userInfo) {
-    console.warn("No user information found");
-    return;
-  }
-  const myId = JSON.parse(userInfo).id;
+export interface GetMyContiesResponse {
+  myContiData: ContiType;
+}
+
+export async function getMyConties(): Promise<GetMyContiesResponse> {
   try {
-    const response = await api.get(`/conti?user=${myId}`);
+    const response = await api.get("/conti/myconti");
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to fetch user's conties:", error);
     throw error;
   }
 }
-
 // 모든 곡들 가져오기
 export async function getAllSongs(cursor = 0, take = 500) {
   try {

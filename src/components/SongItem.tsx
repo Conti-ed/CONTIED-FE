@@ -4,6 +4,7 @@ import styled from "styled-components";
 import SongPlaceholder from "./SongPlaceholder";
 import Icon from "./Icon";
 import { formatDuration } from "../utils/formatDuration";
+import AddSongToConti from "./Modals/AddSongToConti";
 
 const SongItemContainer = styled.li`
   display: flex;
@@ -254,6 +255,7 @@ interface SongItemProps {
 }
 
 const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
@@ -276,6 +278,14 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
   const toggleInfo = () => {
     setShowInfo(!showInfo);
     if (showLyrics) setShowLyrics(false);
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -315,7 +325,7 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Option>
+            <Option onClick={openModal}>
               <OptionIcon>
                 <Icon id="add-songitem" width="20" height="16" />
               </OptionIcon>
@@ -336,6 +346,7 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
           </OptionsContainer>
         )}
       </AnimatePresence>
+      <AddSongToConti isOpen={isModalOpen} onClose={closeModal} />
       <AnimatePresence mode="wait">
         {showLyrics && (
           <LyricsContainer
