@@ -147,41 +147,54 @@ export const SongInfo = styled.div`
 export const ToggleDescriptionContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-`;
-
-export const DescriptionTextContainer = styled.div`
-  display: inline-flex; /* 수평으로 정렬 */
-  align-items: center;
-  width: 85%;
+  justify-content: space-between;
+  width: 90%;
+  padding: 10px;
   margin: 0 auto;
-  text-align: left;
+  border: 3px solid #94b4ed;
+  border-radius: 8px;
 `;
 
-export const DescriptionText = styled.span<{ $isOpen: boolean }>`
+export const DescriptionTextWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  text-align: left;
+  flex-grow: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+export const DescriptionText = styled.span`
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: ${({ $isOpen }) => ($isOpen ? "unset" : 2)};
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   white-space: normal;
   color: #333;
   font-size: 14px;
   line-height: 1.8;
   text-overflow: ellipsis;
-  margin-right: 4px; /* 더보기 버튼과의 간격 */
-  flex-grow: 1; /* 텍스트가 가능한 공간을 차지하도록 */
+  padding-right: 3px;
 `;
 
-export const ToggleButton = styled.span`
+export const ToggleButton = styled.button`
+  background-color: rgba(200, 200, 200, 0.2);
+  border: none;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #4f8eec;
   cursor: pointer;
-  font-size: 14px;
-  color: #8badf1;
-  white-space: nowrap; /* 버튼이 줄바꿈되지 않도록 */
-  flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.5);
+  }
 `;
 
 export const EmptyStateContainer = styled.div`
-  margin-top: 90px;
+  margin-top: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;

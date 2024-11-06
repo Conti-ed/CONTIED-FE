@@ -101,16 +101,16 @@ const Wait: React.FC = () => {
     (userRole: UserRole) => {
       const timeouts: NodeJS.Timeout[] = [];
 
-      timeouts.push(setTimeout(() => setFadeState("fadeOut"), 3000));
+      timeouts.push(setTimeout(() => setFadeState("fadeOut"), 2000));
       timeouts.push(
         setTimeout(() => {
           handleTextChange(
             userRole !== "UNKNOWN" ? "로그인 완료!" : "잠시만요...",
             "fadeIn"
           );
-        }, 6000)
+        }, 3000)
       );
-      timeouts.push(setTimeout(() => handleNavigation(userRole), 9000));
+      timeouts.push(setTimeout(() => handleNavigation(userRole), 5000));
 
       return () => timeouts.forEach(clearTimeout);
     },

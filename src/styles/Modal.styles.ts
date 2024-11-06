@@ -34,6 +34,8 @@ export const ModalContainer = styled(motion.div)`
   z-index: 1001;
   max-width: 600px;
   width: 100%;
+  max-height: 50vh; /* 최대 높이 설정 */
+  overflow-y: auto; /* 내부 스크롤 */
   text-align: center;
   animation: ${fadeIn} 0.3s ease-out;
 `;

@@ -42,24 +42,13 @@ const YouTubeUpload = () => {
   };
 
   const handleNext = () => {
-    if (step === 1) {
-      if (playlistUrl.trim() === "") {
-        setUrlError(true);
-        setTimeout(() => {
-          setUrlError(false);
-        }, 2000);
-      } else {
-        setStep(2);
-      }
-    } else if (step === 2) {
-      if (playlistDescription.trim() === "") {
-        setHasError((prev) => ({ ...prev, description: true }));
-        setTimeout(() => {
-          setHasError((prev) => ({ ...prev, description: false }));
-        }, 2000);
-      } else {
-        setStep(3);
-      }
+    if (step === 1 && playlistUrl.trim() === "") {
+      setUrlError(true);
+      setTimeout(() => {
+        setUrlError(false);
+      }, 2000);
+    } else {
+      setStep(step + 1);
     }
   };
 
@@ -79,7 +68,7 @@ const YouTubeUpload = () => {
         },
         body: JSON.stringify({
           playlist_url: playlistUrl,
-          description: playlistDescription,
+          description: playlistDescription || "",
         }),
       });
 
@@ -202,7 +191,7 @@ const YouTubeUpload = () => {
               >
                 <MotionInput
                   ref={descriptionRef}
-                  placeholder="설명을 입력해주세요!"
+                  placeholder="설명을 입력해주세요! (선택)"
                   value={playlistDescription}
                   onChange={(e) => setPlaylistDescription(e.target.value)}
                   onFocus={() => setIsFocused(true)}

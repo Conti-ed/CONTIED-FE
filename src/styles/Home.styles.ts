@@ -113,6 +113,11 @@ export const Title = styled.div`
 export const TransitionTitle = styled(Title)<{ $isLoading: boolean }>`
   transition: color 0.3s ease-in-out;
   opacity: ${(props) => (props.$isLoading ? 0 : 1)};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 70%;
+  max-width: 80%;
 `;
 
 export const SectionTitle = styled.div`

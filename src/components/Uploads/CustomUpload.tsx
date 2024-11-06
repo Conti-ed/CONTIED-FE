@@ -46,11 +46,6 @@ const CustomUpload = () => {
       setTimeout(() => {
         setHasError((prev) => ({ ...prev, title: false }));
       }, 2000);
-    } else if (step === 2 && contiDescription.trim() === "") {
-      setHasError((prev) => ({ ...prev, description: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, description: false }));
-      }, 2000);
     } else {
       setStep(step + 1);
     }
@@ -67,7 +62,7 @@ const CustomUpload = () => {
 
     setIsLoading(true);
     try {
-      const body = { title: contiTitle, description: contiDescription };
+      const body = { title: contiTitle, description: contiDescription || "" }; // description이 비어 있을 때 빈 문자열로 설정
       const response = await api.post("/conti/myconti/custom", body);
       const data = await response.data;
       localStorage.setItem(`conti_${data.id}`, JSON.stringify(data));
@@ -76,7 +71,6 @@ const CustomUpload = () => {
         throw new Error("Invalid response data: ID not found");
       }
 
-      console.log("Navigating to conti-detail with ID:", data.id);
       navigate(`/conti-detail/${data.id}`);
     } catch (error) {
       console.error("Failed to create conti:", error);
@@ -87,7 +81,7 @@ const CustomUpload = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && step < 3) {
       handleNext();
     }
   };
@@ -109,7 +103,7 @@ const CustomUpload = () => {
             exit="exit"
             variants={titleVariants}
           >
-            제목만으로도 콘티가 생성돼요!
+            제목은 간결할수록 좋아요!
           </AnimatedTitle>
         ) : (
           <AnimatedTitle
@@ -128,7 +122,7 @@ const CustomUpload = () => {
           <InputWrapper>
             <MotionInput
               ref={inputRef}
-              placeholder="제목을 입력해주세요!"
+              placeholder="제목을 입력해주세요! (필수)"
               value={contiTitle}
               onChange={(e) => setContiTitle(e.target.value)}
               onFocus={() => setIsFocused(true)}
@@ -175,7 +169,7 @@ const CustomUpload = () => {
               >
                 <MotionInput
                   ref={descriptionRef}
-                  placeholder="설명을 입력해주세요!"
+                  placeholder="설명을 입력해주세요! (선택)"
                   value={contiDescription}
                   onChange={(e) => setContiDescription(e.target.value)}
                   onFocus={() => setIsFocused(true)}

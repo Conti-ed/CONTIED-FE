@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
@@ -29,12 +29,12 @@ import {
   ToggleButton,
   ToggleDescriptionContainer,
   DescriptionText,
-  DescriptionTextContainer,
   EmptyStateContainer,
   EmptyStateImage,
   EmptyStateText1,
   EmptyStateText2,
   AddSongButton,
+  DescriptionTextWrapper,
 } from "../styles/ContiDetail.styles";
 import {
   formatRelativeTime,
@@ -45,6 +45,7 @@ import AlbumPlaceholder from "../components/AlbumPlaceholder";
 import Icon from "../components/Icon";
 import Loading from "../components/Loading";
 import DetailOptions from "../components/DetailOptions";
+import DescriptionModal from "../components/Modals/DescriptionModal";
 import { useQuery, useQueryClient } from "react-query";
 import { getConti } from "../utils/axios";
 
@@ -55,8 +56,6 @@ const ContiDetail: React.FC = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddSongLoading, setIsAddSongLoading] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
-  const [maxTextLength, setMaxTextLength] = useState(65);
-  const descriptionRef = useRef<HTMLDivElement>(null);
 
   const { data: contiData, isLoading: isContiLoading } = useQuery(
     ["cid", contiId],
@@ -116,26 +115,6 @@ const ContiDetail: React.FC = () => {
     }
   };
 
-  const getDisplayText = (text: string) => {
-    if (isDescriptionOpen || text.length <= maxTextLength) return text;
-    return `${text.slice(0, maxTextLength)}... `;
-  };
-
-  const renderDescription = () => {
-    const text = getDisplayText(contiData?.description || "");
-    return (
-      <>
-        {text}
-        {!isDescriptionOpen &&
-          contiData?.description.length > maxTextLength && (
-            <ToggleButton onClick={() => setIsDescriptionOpen(true)}>
-              더보기
-            </ToggleButton>
-          )}
-      </>
-    );
-  };
-
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -158,6 +137,14 @@ const ContiDetail: React.FC = () => {
       </AddSongButton>
     </EmptyStateContainer>
   );
+
+  const handleDescriptionClick = () => {
+    setIsDescriptionOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsDescriptionOpen(false);
+  };
 
   if (isContiLoading) {
     return <Loading />;
@@ -250,11 +237,14 @@ const ContiDetail: React.FC = () => {
               </InfoText>
             </AlbumInfo>
             <ToggleDescriptionContainer>
-              <DescriptionTextContainer ref={descriptionRef}>
-                <DescriptionText $isOpen={isDescriptionOpen}>
-                  {renderDescription()}
+              <DescriptionTextWrapper>
+                <DescriptionText>
+                  {contiData.description.slice(0, 60)}
                 </DescriptionText>
-              </DescriptionTextContainer>
+              </DescriptionTextWrapper>
+              <ToggleButton onClick={handleDescriptionClick}>
+                더보기
+              </ToggleButton>
             </ToggleDescriptionContainer>
           </AlbumDetailContainer>
           {contiData.ContiToSong.length === 0 ? (
@@ -262,9 +252,16 @@ const ContiDetail: React.FC = () => {
           ) : (
             <SongList songs={contiData.ContiToSong} />
           )}
-          {/* <SongList songs={contiData.songs} /> */}
         </Content>
         <SafariSpace $isFocused={false} />
+        <DescriptionModal
+          isOpen={isDescriptionOpen}
+          onClose={handleCloseModal}
+          thumbnail={contiData.thumbnail}
+          title={contiData.title}
+          userId={contiData.userId}
+          description={contiData.description}
+        />
         {isAddSongLoading && (
           <LoadingOverlay>
             <Loading />
