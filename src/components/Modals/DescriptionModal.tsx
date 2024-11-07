@@ -1,5 +1,5 @@
 import React from "react";
-import { OverlayModal, CancelButton } from "../../styles/Modal.styles";
+import { OverlayModal } from "../../styles/Modal.styles";
 import styled from "styled-components";
 import ContiPlaceholder from "../ContiPlaceholder";
 import { motion } from "framer-motion";
@@ -21,7 +21,7 @@ interface DescriptionModalProps {
   onClose: () => void;
   thumbnail: string | null;
   title: string;
-  userId: string;
+  userNickname: string;
   description: string;
 }
 
@@ -61,7 +61,8 @@ const ModalTitle = styled.h2`
   font-size: 18px;
   font-weight: 500;
   color: #323743;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
+  max-width: 200px;
 `;
 
 const SubTitle = styled.p`
@@ -115,12 +116,26 @@ const Footer = styled.div`
   flex-shrink: 0;
 `;
 
+const ExitButton = styled.button`
+  padding: 10px 20px;
+  background-color: white;
+  color: #323743;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
 const DescriptionModal: React.FC<DescriptionModalProps> = ({
   isOpen,
   onClose,
   thumbnail,
   title,
-  userId,
+  userNickname,
   description,
 }) => {
   if (!isOpen) return null;
@@ -149,17 +164,17 @@ const DescriptionModal: React.FC<DescriptionModalProps> = ({
           </ThumbnailWrapper>
           <TitleContainer>
             <ModalTitle>{title}</ModalTitle>
-            <SubTitle>{userId}</SubTitle>
+            <SubTitle>{userNickname}</SubTitle>
           </TitleContainer>
         </ModalHeader>
         <ContentContainer>
           <DescriptionContent>
             <DescriptionTitle>이 콘티는...</DescriptionTitle>
-            <p>{description}</p>
+            <p>{description || "아직 설명이 없어요..."}</p>
           </DescriptionContent>
         </ContentContainer>
         <Footer>
-          <CancelButton onClick={onClose}>닫기</CancelButton>
+          <ExitButton onClick={onClose}>닫기</ExitButton>
         </Footer>
       </ModalContainer>
     </OverlayModal>

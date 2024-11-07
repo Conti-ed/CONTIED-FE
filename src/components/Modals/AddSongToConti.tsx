@@ -14,6 +14,7 @@ import {
   formatTotalDuration,
   parseLocalDateString,
 } from "../../utils/formatDuration";
+import { motion } from "framer-motion";
 
 const ContiList = styled.ul`
   list-style: none;
@@ -23,7 +24,7 @@ const ContiList = styled.ul`
   overflow-y: auto;
 `;
 
-const ContiItem = styled.li`
+const ContiItem = styled.li<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
   padding: 10px;
@@ -33,10 +34,12 @@ const ContiItem = styled.li`
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
+  background-color: ${({ $isSelected }) => ($isSelected ? "#9dbbe9" : "white")};
   color: rgba(23, 26, 31, 0.8);
 
   &:hover {
-    background-color: #f9f9f9;
+    background-color: ${({ $isSelected }) =>
+      $isSelected ? "#9dbbe9" : "#f9f9f9"};
   }
 `;
 
@@ -71,6 +74,10 @@ const Title = styled.div`
   font-size: 15px;
   font-weight: 500;
   color: rgba(23, 26, 31, 0.8);
+  max-width: 210px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Subtitle = styled.div`
@@ -81,6 +88,15 @@ const Subtitle = styled.div`
 const LoadingIndicator = styled.div`
   margin-top: 10px;
   color: #388ee9;
+`;
+
+const AddButton = styled(motion.button)`
+  padding: 10px 20px;
+  background-color: #4f8eec;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const ErrorMessage = styled.div`
@@ -106,6 +122,7 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
   const [contis, setContis] = useState<Conti[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedContiId, setSelectedContiId] = useState<number | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -114,8 +131,6 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
         setError(null);
         try {
           const data = await getMyConties();
-          // console.log("Fetched conties:", data);
-
           if (data && Array.isArray(data.myContiData)) {
             setContis(data.myContiData);
           } else {
@@ -135,9 +150,24 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const handleContiSelect = (contiTitle: string) => {
-    alert(`${contiTitle} 콘티에 추가되었습니다.`);
-    onClose();
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedContiId(null);
+    }
+  }, [isOpen]);
+
+  const handleContiSelect = (contiId: number) => {
+    setSelectedContiId((prevId) => (prevId === contiId ? null : contiId));
+  };
+
+  const handleAddToConti = () => {
+    if (selectedContiId !== null) {
+      const selectedConti = contis.find(
+        (conti) => conti.id === selectedContiId
+      );
+      alert(`${selectedConti?.title} 콘티에 추가되었습니다.`);
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -165,7 +195,8 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
             {contis.map((conti) => (
               <ContiItem
                 key={conti.id}
-                onClick={() => handleContiSelect(conti.title)}
+                onClick={() => handleContiSelect(conti.id)}
+                $isSelected={selectedContiId === conti.id}
               >
                 <ContiImageWrapper>
                   <ContiPlaceholder size={80} />
@@ -191,9 +222,20 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
             ))}
           </ContiList>
         ) : (
-          <div>콘티가 없습니다.</div>
+          <div>생성된 콘티가 없어요...</div>
         )}
         <ModalActions>
+          {selectedContiId !== null && (
+            <AddButton
+              onClick={handleAddToConti}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+            >
+              추가
+            </AddButton>
+          )}
           <CancelButton onClick={onClose} disabled={isLoading}>
             취소
           </CancelButton>

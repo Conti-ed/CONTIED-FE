@@ -35,7 +35,6 @@ export const ModalContainer = styled(motion.div)`
   max-width: 600px;
   width: 100%;
   max-height: 50vh; /* 최대 높이 설정 */
-  overflow-y: auto; /* 내부 스크롤 */
   text-align: center;
   animation: ${fadeIn} 0.3s ease-out;
 `;
@@ -52,7 +51,8 @@ export const ModalTitle = styled.p`
 export const ModalActions = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 10px;
+  gap: 10px;
 `;
 
 // 취소 버튼
@@ -67,19 +67,5 @@ export const CancelButton = styled.button`
 
   &:hover {
     background-color: #f0f0f0;
-  }
-`;
-
-// 추가 버튼 스타일
-export const AddButton = styled.button`
-  padding: 10px 20px;
-  background-color: #388ee9;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #2965c2;
   }
 `;

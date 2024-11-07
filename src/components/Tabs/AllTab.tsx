@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
-import { getAllSongs, getConties } from "../../utils/axios";
+import { getUserNickname, getAllSongs, getConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -11,6 +11,7 @@ import {
 import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
 import { ContiType, SongType } from "../../types";
+import { useQuery } from "react-query";
 
 const Container = styled(motion.div)`
   height: 60%;
@@ -83,6 +84,10 @@ const Title = styled.div`
   font-weight: 500;
   margin-bottom: 7px;
   color: rgba(23, 26, 31, 0.8);
+  max-width: 210px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Subtitle = styled.div`
@@ -284,6 +289,10 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
     setFilteredTitles(filteredTitles);
   }, [searchQuery, contiData, songsData]);
 
+  const { data: nickname } = useQuery("nickname", getUserNickname, {
+    retry: false,
+  });
+
   const handleContiClick = (id: string) => {
     navigate(`/conti-detail/${id}`);
   };
@@ -324,7 +333,9 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
                   </ImageWrapper>
                   <InfoText>
                     <Title>{data.title}</Title>
-                    <Subtitle>{data.userId}</Subtitle>
+                    <Subtitle>
+                      <Subtitle>{nickname || "사용자"}</Subtitle>
+                    </Subtitle>
                     <SongInfo>{`${formatRelativeTime(
                       parseLocalDateString(data.updatedAt)
                     )} • ${formatTotalDuration(data.duration)}`}</SongInfo>

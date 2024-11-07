@@ -45,6 +45,16 @@ export async function getKeywords() {
   }
 }
 
+export async function getUserNickname(): Promise<string> {
+  try {
+    const response = await api.get("/users/nickname");
+    return response.data.nickname;
+  } catch (error) {
+    console.error("Failed to fetch user nickname:", error);
+    throw error;
+  }
+}
+
 // 모든 콘티 가져오기
 export async function getConties() {
   try {
@@ -127,6 +137,32 @@ export async function getSavedConties(uid: number) {
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch saved conties for user ${uid}:`, error);
+    throw error;
+  }
+}
+
+export async function postContiByYouTube(
+  playlistUrl: string,
+  description: string
+) {
+  try {
+    const response = await api.post("/conti/myconti/youtube", {
+      youtubeURL: playlistUrl,
+      description: description || "",
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create conti with YouTube URL:", error);
+    throw error;
+  }
+}
+
+export async function deleteContiById(contiId: number) {
+  try {
+    const response = await api.delete(`/conti/myconti/${contiId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to delete conti with id ${contiId}:`, error);
     throw error;
   }
 }

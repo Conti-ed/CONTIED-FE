@@ -384,12 +384,12 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
                 <>
                   <InfoText>
                     <p>
-                      이 곡의 템포는{" "}
+                      원곡의 템포는{" "}
                       <EmphasizedText>{song.tempo} BPM</EmphasizedText>이고,
                     </p>
                     <p>
-                      원곡은 <EmphasizedText>{song.keyScale}</EmphasizedText>{" "}
-                      코드로 연주되고 있어요!
+                      <EmphasizedText>{song.keyScale}</EmphasizedText> 코드로
+                      연주되고 있어요!
                     </p>
                   </InfoText>
                 </>

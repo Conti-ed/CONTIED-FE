@@ -22,6 +22,8 @@ import {
   EmptyStateText1,
   EmptyStateText2,
 } from "./MyPage";
+import { useQuery } from "react-query";
+import { getUserNickname } from "../utils/axios";
 
 const ContiList = styled(motion.div)`
   width: 100%;
@@ -58,6 +60,10 @@ const MyUploadedContis: React.FC = () => {
 
     loadUploadedContis();
   }, []);
+
+  const { data: nickname } = useQuery("nickname", getUserNickname, {
+    retry: false,
+  });
 
   const handleContiClick = useCallback(
     (id: string) => {
@@ -99,7 +105,7 @@ const MyUploadedContis: React.FC = () => {
               </ContiImageWrapper>
               <InfoText>
                 <ContiTitle>{data.title}</ContiTitle>
-                <Subtitle>{data.userId}</Subtitle>
+                <Subtitle>{nickname || "사용자"}</Subtitle>
                 <SongInfo>{`${formatRelativeTime(
                   parseLocalDateString(data.updatedAt)
                 )} • ${formatTotalDuration(data.duration)}`}</SongInfo>

@@ -129,6 +129,10 @@ export const Title = styled.h1`
   font-weight: 500;
   color: #323743;
   margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 `;
 
 export const Subtitle = styled.h2`

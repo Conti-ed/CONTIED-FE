@@ -136,6 +136,10 @@ export const ContiTitle = styled.div`
   font-weight: 500;
   margin-bottom: 7px;
   color: rgba(23, 26, 31, 0.8);
+  max-width: 210px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const Subtitle = styled.div`

@@ -22,6 +22,8 @@ import {
   EmptyStateText2,
 } from "./MyPage";
 import { styled } from "styled-components";
+import { useQuery } from "react-query";
+import { getUserNickname } from "../utils/axios";
 
 const ContiList = styled(motion.div)`
   width: 100%;
@@ -68,6 +70,10 @@ const MyFavoriteContis: React.FC = () => {
     loadFavoriteContis();
   }, []);
 
+  const { data: nickname } = useQuery("nickname", getUserNickname, {
+    retry: false,
+  });
+
   const handleContiClick = useCallback(
     (id: string) => {
       navigate(`/conti-detail/${id}`);
@@ -109,7 +115,7 @@ const MyFavoriteContis: React.FC = () => {
                 </ContiImageWrapper>
                 <InfoText>
                   <ContiTitle>{data.title}</ContiTitle>
-                  <Subtitle>{data.userId}</Subtitle>
+                  <Subtitle>{nickname || "사용자"}</Subtitle>
                   <SongInfo>{`${formatRelativeTime(
                     parseLocalDateString(data.updatedAt)
                   )} • ${formatTotalDuration(data.duration)}`}</SongInfo>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
 import SafariSpace from "../components/SafariSpace";
@@ -47,10 +47,12 @@ import Loading from "../components/Loading";
 import DetailOptions from "../components/DetailOptions";
 import DescriptionModal from "../components/Modals/DescriptionModal";
 import { useQuery, useQueryClient } from "react-query";
-import { getConti } from "../utils/axios";
+import { getConti, getUserNickname, deleteContiById } from "../utils/axios";
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isFromUpload = location.state?.fromUpload || false;
   const { contiId } = useParams<{ contiId: string }>();
   const queryClient = useQueryClient();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -69,6 +71,12 @@ const ContiDetail: React.FC = () => {
         console.error("Failed to fetch conti data:", error);
       },
     }
+  );
+
+  const { data: nickname, isLoading: isNicknameLoading } = useQuery(
+    "nickname",
+    getUserNickname,
+    { retry: false }
   );
 
   useEffect(() => {
@@ -97,16 +105,20 @@ const ContiDetail: React.FC = () => {
     localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
   };
 
-  const handleDeleteConti = () => {
+  const handleDeleteConti = async () => {
     if (contiId) {
       try {
+        await deleteContiById(Number(contiId));
+
         const allContis = JSON.parse(localStorage.getItem("allContis") || "[]");
         const updatedContis = allContis.filter(
           (conti: any) => conti.id !== Number(contiId)
         );
         localStorage.setItem("allContis", JSON.stringify(updatedContis));
         localStorage.removeItem(`conti_${contiId}`);
+
         queryClient.removeQueries(["cid", contiId]);
+
         navigate(-1);
       } catch (error) {
         console.error("Failed to delete conti:", error);
@@ -116,7 +128,11 @@ const ContiDetail: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    if (isFromUpload) {
+      navigate("/home");
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleAddSongClick = () => {
@@ -146,7 +162,7 @@ const ContiDetail: React.FC = () => {
     setIsDescriptionOpen(false);
   };
 
-  if (isContiLoading) {
+  if (isContiLoading || isNicknameLoading) {
     return <Loading />;
   }
 
@@ -226,7 +242,7 @@ const ContiDetail: React.FC = () => {
               </AlbumImageWrapper>
               <InfoText>
                 <Title>{contiData.title}</Title>
-                <Subtitle>{contiData.userId}</Subtitle>
+                <Subtitle>{nickname || "사용자"}</Subtitle>
                 <SongInfo>{`${
                   contiData.ContiToSong.length
                 }곡 • ${formatTotalDuration(
@@ -259,7 +275,7 @@ const ContiDetail: React.FC = () => {
           onClose={handleCloseModal}
           thumbnail={contiData.thumbnail}
           title={contiData.title}
-          userId={contiData.userId}
+          userNickname={(("by " + nickname) as string) || "사용자"}
           description={contiData.description}
         />
         {isAddSongLoading && (

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { SERVER_URL } from "../../api";
 import { Oval } from "react-loader-spinner";
 import Icon from "../Icon";
 import {
@@ -15,6 +14,7 @@ import {
   NextButton,
   CompleteButton,
 } from "../../styles/Upload.styles";
+import { postContiByYouTube } from "../../utils/axios";
 
 const YouTubeUpload = () => {
   const [playlistUrl, setPlaylistUrl] = useState("");
@@ -58,41 +58,23 @@ const YouTubeUpload = () => {
       setTimeout(() => setUrlError(false), 2000);
       return;
     }
-
     setIsLoading(true);
     try {
-      const response = await fetch(`${SERVER_URL}/api/conti`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          playlist_url: playlistUrl,
-          description: playlistDescription || "",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create conti");
-      }
-
-      const data = await response.json();
+      const data = await postContiByYouTube(playlistUrl, playlistDescription);
       console.log(data);
 
       const contiData = {
         id: data.id,
         title: data.title,
         description: data.description,
-        ownerName: data.owner.name,
-        updated_at: data.updated_at,
-        lyrics: data.lyrics,
+        userId: data.userId,
+        updatedAt: data.updatedAt,
         duration: data.duration,
-        songs: data.songs,
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
 
-      navigate(`/conti-detail/${data.id}`);
+      navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {
       console.error("Failed to create conti:", error);
       setUrlError(true);

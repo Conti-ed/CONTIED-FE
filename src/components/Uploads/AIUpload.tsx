@@ -151,7 +151,7 @@ const AIUpload = () => {
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
 
-      navigate(`/conti-detail/${data.id}`);
+      navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {
       console.error("Failed to create conti:", error);
       alert("콘티를 생성할 수 없습니다. 다시 시도해주세요.");
