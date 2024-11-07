@@ -237,6 +237,7 @@ const NoInfo = styled.p`
   font-style: italic;
   color: #8c8c8c;
   text-align: center;
+  font-size: 12px;
 `;
 
 interface SongItemProps {
@@ -359,7 +360,7 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
             <GradientOverlay className="top" />
             <LyricsContent>
               <LyricsTitle>{song.title}</LyricsTitle>
-              {song.lyrics ? (
+              {song.lyrics && song.lyrics !== "가사 정보를 입력해주세요." ? (
                 <LyricsText>{song.lyrics}</LyricsText>
               ) : (
                 <NoLyrics>가사가 아직 제공되지 않았어요.</NoLyrics>
@@ -380,6 +381,7 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
           >
             <GradientOverlay className="top" />
             <InfoContent>
+              <LyricsTitle>{song.title}</LyricsTitle>
               {song.tempo && song.keyScale ? (
                 <>
                   <InfoText>

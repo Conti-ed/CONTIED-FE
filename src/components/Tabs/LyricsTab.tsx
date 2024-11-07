@@ -64,7 +64,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const response = await getAllSongs(0, 50);
+        const response = await getAllSongs();
         const songs = response.songData || [];
         setSongsData(songs);
       } catch (error) {

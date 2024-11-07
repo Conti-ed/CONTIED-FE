@@ -48,6 +48,7 @@ import DetailOptions from "../components/DetailOptions";
 import DescriptionModal from "../components/Modals/DescriptionModal";
 import { useQuery, useQueryClient } from "react-query";
 import { getConti, getUserNickname, deleteContiById } from "../utils/axios";
+import { ContiType } from "../types";
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -59,9 +60,9 @@ const ContiDetail: React.FC = () => {
   const [isAddSongLoading, setIsAddSongLoading] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
-  const { data: contiData, isLoading: isContiLoading } = useQuery(
+  const { data: contiData, isLoading: isContiLoading } = useQuery<ContiType>(
     ["cid", contiId],
-    () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null)), // contiId가 있으면 API 호출
+    () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null)),
     {
       retry: false,
       onSuccess: (data) => {
@@ -108,7 +109,8 @@ const ContiDetail: React.FC = () => {
   const handleDeleteConti = async () => {
     if (contiId) {
       try {
-        await deleteContiById(Number(contiId));
+        const response = await deleteContiById(Number(contiId));
+        console.log(response);
 
         const allContis = JSON.parse(localStorage.getItem("allContis") || "[]");
         const updatedContis = allContis.filter(
@@ -266,7 +268,12 @@ const ContiDetail: React.FC = () => {
           {contiData.ContiToSong.length === 0 ? (
             renderEmptyState()
           ) : (
-            <SongList songs={contiData.ContiToSong} />
+            <SongList
+              songs={contiData.ContiToSong.map((item) => ({
+                ...item.song,
+                id: Number(item.song.id),
+              }))}
+            />
           )}
         </Content>
         <SafariSpace $isFocused={false} />

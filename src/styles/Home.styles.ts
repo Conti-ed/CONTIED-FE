@@ -65,10 +65,11 @@ export const AlbumContainer = styled.div`
 `;
 
 export const AlbumThumbnail = styled.img`
-  width: auto;
-  height: 360px;
-  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   border-radius: 20px;
+  background-color: #000000;
 `;
 
 export const Mask = styled.div`

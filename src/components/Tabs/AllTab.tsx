@@ -155,7 +155,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   useEffect(() => {
     const fetchContiAndSongData = async () => {
       try {
-        const songsResponse = await getAllSongs(0, 50);
+        const songsResponse = await getAllSongs();
         const contiesResponse = await getConties();
         const songs = songsResponse.songData || [];
         const conties = Array.isArray(contiesResponse)

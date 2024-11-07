@@ -155,6 +155,7 @@ export const ToggleDescriptionContainer = styled.div`
   width: 90%;
   padding: 10px;
   margin: 0 auto;
+  margin-bottom: 20px;
   border: 3px solid #94b4ed;
   border-radius: 8px;
 `;

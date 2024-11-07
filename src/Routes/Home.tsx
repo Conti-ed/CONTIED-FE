@@ -49,11 +49,10 @@ const Home: React.FC = () => {
   const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
 
   useEffect(() => {
-    // 백엔드에서 사용자 정보를 가져오는 API 호출
     const fetchUserInfo = async () => {
       try {
-        const response = await api.get<UserInfo>(`${SERVER_URL}/users`); // 사용자 정보를 반환하는 API 엔드포인트
-        setUserName(response.data.nickname); // 사용자 이름을 상태에 설정
+        const response = await api.get<UserInfo>(`${SERVER_URL}/users`);
+        setUserName(response.data.nickname);
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         setUserName("사용자");
@@ -103,6 +102,7 @@ const Home: React.FC = () => {
             </TransitionTitle>
           </AlbumContainer>
           <SectionTitle>
+            #ccdaf3
             <Icon id="note-home" width="20" height="20" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
