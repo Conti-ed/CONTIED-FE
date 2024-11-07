@@ -102,7 +102,6 @@ const Home: React.FC = () => {
             </TransitionTitle>
           </AlbumContainer>
           <SectionTitle>
-            #ccdaf3
             <Icon id="note-home" width="20" height="20" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
