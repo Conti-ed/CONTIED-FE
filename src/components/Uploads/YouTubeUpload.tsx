@@ -12,6 +12,7 @@ import {
   MotionInput,
   ClearIcon,
   NextButton,
+  ErrorMessage,
   CompleteButton,
 } from "../../styles/Upload.styles";
 import { postContiByYouTube } from "../../utils/axios";
@@ -31,6 +32,12 @@ const YouTubeUpload = () => {
   const descriptionRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  const validateYouTubePlaylistUrl = (url: string) => {
+    const youtubePlaylistRegex =
+      /^https?:\/\/(www\.)?youtube\.com\/playlist\?list=[a-zA-Z0-9_-]+&si=[a-zA-Z0-9_-]+$/;
+    return youtubePlaylistRegex.test(url);
+  };
+
   const handleClearSearch = (field: "url" | "description") => {
     if (field === "url") {
       setPlaylistUrl("");
@@ -42,7 +49,10 @@ const YouTubeUpload = () => {
   };
 
   const handleNext = () => {
-    if (step === 1 && playlistUrl.trim() === "") {
+    if (
+      step === 1 &&
+      (playlistUrl.trim() === "" || !validateYouTubePlaylistUrl(playlistUrl))
+    ) {
       setUrlError(true);
       setTimeout(() => {
         setUrlError(false);
@@ -53,7 +63,7 @@ const YouTubeUpload = () => {
   };
 
   const handleComplete = async () => {
-    if (playlistUrl.trim() === "") {
+    if (playlistUrl.trim() === "" || !validateYouTubePlaylistUrl(playlistUrl)) {
       setUrlError(true);
       setTimeout(() => setUrlError(false), 2000);
       return;
@@ -162,7 +172,16 @@ const YouTubeUpload = () => {
             </AnimatePresence>
             {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
           </InputWrapper>
-
+          {urlError && (
+            <ErrorMessage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              올바른 유튜브 재생목록 URL을 입력해주세요!
+            </ErrorMessage>
+          )}
           <AnimatePresence>
             {step >= 2 && (
               <InputWrapper

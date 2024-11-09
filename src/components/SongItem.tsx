@@ -65,9 +65,16 @@ const SongInfo = styled.div`
 
 const OptionsContainer = styled(motion.div)`
   display: flex;
+  flex-direction: column;
   background-color: #f9f9f9;
   border: 1px solid rgba(23, 26, 31, 0.1);
-  justify-content: center;
+  width: 100%;
+`;
+
+const OptionRow = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
 `;
 
 const Option = styled.div`
@@ -82,11 +89,28 @@ const Option = styled.div`
   padding: 3px;
 `;
 
+const LinkOption = styled(Option)`
+  color: #4f8eec;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 12px;
+  background-color: #e8f0fe;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 0;
+  border-top: 1px solid #e8f0fe;
+  border-bottom: 1px solid rgba(23, 26, 31, 0.1);
+  flex-direction: row;
+  gap: 5px;
+`;
+
 const OptionIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px; /* 아이콘 크기 고정 */
+  height: 24px;
 `;
 
 const OptionText = styled.span`
@@ -119,13 +143,13 @@ const SongArtistName = styled.div`
 `;
 
 const LyricsContainer = styled(motion.div)`
-  width: 100%; // 부모 요소의 너비에 맞춤
+  width: 100%;
   max-height: 170px;
   overflow-y: auto;
   background: linear-gradient(145deg, #f0f4f8, #e1e8ed);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
   position: relative;
-  margin: 0 auto; // 중앙 정렬
+  margin: 0 auto;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -248,6 +272,7 @@ interface SongItemProps {
     thumbnail: string;
     lyrics: string;
     duration: number;
+    videoId?: string;
     tempo?: number;
     keyScale?: string;
   };
@@ -303,7 +328,10 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
           <SongSummary className="song-info">
             <SongTitle>{song.title}</SongTitle>
             <SongArtistName>
-              {song.artist} • {formatDuration(song.duration)}
+              {song.artist === "아티스트 정보를 입력해주세요."
+                ? "아티스트 정보가 아직 제공되지 않았어요."
+                : song.artist}{" "}
+              • {formatDuration(song.duration)}
             </SongArtistName>
           </SongSummary>
         </div>
@@ -326,24 +354,47 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Option onClick={openModal}>
-              <OptionIcon>
-                <Icon id="add-songitem" width="20" height="16" />
-              </OptionIcon>
-              <OptionText>내 콘티에 추가</OptionText>
-            </Option>
-            <Option onClick={toggleLyrics}>
-              <OptionIcon>
-                <Icon id="lyrics-songitem" width="20" height="20" />
-              </OptionIcon>
-              <OptionText>가사</OptionText>
-            </Option>
-            <Option onClick={toggleInfo}>
-              <OptionIcon>
-                <Icon id="info-songitem" width="30" height="6" />
-              </OptionIcon>
-              <OptionText>곡 정보</OptionText>
-            </Option>
+            {song.videoId && (
+              <LinkOption
+                onClick={() =>
+                  song.videoId
+                    ? window.open(
+                        `https://www.youtube.com/watch?v=${song.videoId}`,
+                        "_blank"
+                      )
+                    : null
+                }
+              >
+                <OptionIcon>
+                  <Icon id="link-songitem" width="20" height="20" />
+                </OptionIcon>
+                <OptionText>
+                  {song.videoId
+                    ? "어떤 곡인지 확인해볼까요?"
+                    : "유튜브 정보가 아직 제공되지 않았어요."}
+                </OptionText>
+              </LinkOption>
+            )}
+            <OptionRow>
+              <Option onClick={openModal}>
+                <OptionIcon>
+                  <Icon id="add-songitem" width="20" height="16" />
+                </OptionIcon>
+                <OptionText>내 콘티에 추가</OptionText>
+              </Option>
+              <Option onClick={toggleLyrics}>
+                <OptionIcon>
+                  <Icon id="lyrics-songitem" width="20" height="20" />
+                </OptionIcon>
+                <OptionText>가사</OptionText>
+              </Option>
+              <Option onClick={toggleInfo}>
+                <OptionIcon>
+                  <Icon id="info-songitem" width="30" height="6" />
+                </OptionIcon>
+                <OptionText>곡 정보</OptionText>
+              </Option>
+            </OptionRow>
           </OptionsContainer>
         )}
       </AnimatePresence>

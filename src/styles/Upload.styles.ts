@@ -94,6 +94,14 @@ export const NextButton = styled.div`
   white-space: nowrap;
 `;
 
+export const ErrorMessage = styled(motion.div)`
+  font-size: 11px;
+  color: #ea8c8c;
+  align-self: flex-start;
+  padding-left: 10px;
+  font-weight: 300;
+`;
+
 export const CompleteButton = styled(motion.div)`
   font-size: 13px;
   font-weight: 500;
