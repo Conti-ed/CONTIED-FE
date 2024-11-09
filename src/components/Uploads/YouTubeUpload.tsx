@@ -21,7 +21,7 @@ const YouTubeUpload = () => {
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState({
+  const [hasError /* setHasError */] = useState({
     url: false,
     description: false,
   });
