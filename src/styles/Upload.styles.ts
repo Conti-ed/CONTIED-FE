@@ -77,6 +77,41 @@ export const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   }
 `;
 
+export const SelectorContainer = styled(motion.div)`
+  display: flex;
+  gap: 10px;
+  width: 100%;
+`;
+
+export const Select = styled(motion.select)`
+  width: 90%;
+  border-radius: 10px;
+  border: 2px solid #94b4ed;
+  font-size: 13.7px;
+  font-weight: 300;
+  color: #171a1f;
+  background-color: transparent;
+  padding: 10px;
+  padding-right: 10px;
+  transition: all 0.3s ease-in-out;
+  font-family: inherit;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%2394b4ed" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+
+  &:focus {
+    outline: none;
+    background-color: rgba(148, 180, 237, 0.2);
+    font-weight: 300;
+  }
+
+  option {
+    font-size: 12px;
+    font-weight: 300;
+  }
+`;
+
 export const ClearIcon = styled(motion.svg)`
   position: absolute;
   cursor: pointer;
@@ -116,4 +151,18 @@ export const CompleteButton = styled(motion.div)`
   border-radius: 10px;
   padding: 10px 10px;
   width: 100%;
+`;
+
+export const VisibilityInputWrapper = styled(InputWrapper)`
+  flex-direction: row;
+  align-items: center;
+
+  ${Select} {
+    width: 90%;
+  }
+
+  ${NextButton} {
+    flex: 1;
+    text-align: center;
+  }
 `;
