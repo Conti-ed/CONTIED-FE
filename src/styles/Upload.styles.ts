@@ -138,6 +138,10 @@ export const ErrorMessage = styled(motion.div)`
   font-weight: 300;
 `;
 
+export const KeywordErrorMessage = styled(ErrorMessage)`
+  margin-top: 5px;
+`;
+
 export const CompleteButton = styled(motion.div)`
   font-size: 13px;
   font-weight: 500;

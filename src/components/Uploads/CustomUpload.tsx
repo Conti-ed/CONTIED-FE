@@ -15,6 +15,7 @@ import {
   CompleteButton,
   Select,
   VisibilityInputWrapper,
+  ErrorMessage,
 } from "../../styles/Upload.styles";
 import api from "../../utils/axios";
 
@@ -29,6 +30,7 @@ const CustomUpload = () => {
     description: false,
     visibility: false,
   });
+  const [titleError, setTitleError] = useState("");
   const [step, setStep] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
@@ -38,31 +40,49 @@ const CustomUpload = () => {
     if (field === "title") {
       setContiTitle("");
       inputRef.current?.focus();
+      setTitleError("");
     } else {
       setContiDescription("");
       descriptionRef.current?.focus();
     }
   };
 
+  const validateTitle = () => {
+    if (!contiTitle.trim()) {
+      setTitleError("제목을 입력해주세요!");
+      setTimeout(() => setTitleError(""), 2000);
+      return false;
+    }
+    setTitleError("");
+    return true;
+  };
+
   const handleNext = () => {
-    if (step === 1 && contiTitle.trim() === "") {
-      setHasError((prev) => ({ ...prev, title: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, title: false }));
-      }, 2000);
-    } else {
+    if (step === 1) {
+      if (!validateTitle()) {
+        setHasError((prev) => ({ ...prev, title: true }));
+        setTimeout(() => {
+          setHasError((prev) => ({ ...prev, title: false }));
+        }, 2000);
+      } else {
+        setStep(step + 1);
+      }
+    } else if (step === 2) {
+      if (!contiDescription.trim() && contiDescription.length > 0) {
+        setHasError((prev) => ({ ...prev, description: true }));
+        setTimeout(() => {
+          setHasError((prev) => ({ ...prev, description: false }));
+        }, 2000);
+      } else {
+        setStep(step + 1);
+      }
+    } else if (step === 3) {
       setStep(step + 1);
     }
   };
 
   const handleComplete = async () => {
-    if (contiTitle.trim() === "") {
-      setHasError((prev) => ({ ...prev, title: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, title: false }));
-      }, 2000);
-      return;
-    }
+    if (!validateTitle()) return;
 
     setIsLoading(true);
     try {
@@ -145,11 +165,11 @@ const CustomUpload = () => {
               onChange={(e) => setContiTitle(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onKeyDown={handleKeyDown}
-              $hasError={hasError.title}
+              $hasError={!!titleError}
               initial={{ width: "90%" }}
               animate={{
                 width: step > 1 ? "100%" : "90%",
-                borderColor: hasError.title ? "#ea8c8c" : "#94b4ed",
+                borderColor: titleError ? "#ea8c8c" : "#94b4ed",
               }}
               transition={{
                 duration: 0.3,
@@ -176,6 +196,16 @@ const CustomUpload = () => {
             </AnimatePresence>
             {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
           </InputWrapper>
+          {titleError && (
+            <ErrorMessage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {titleError}
+            </ErrorMessage>
+          )}
 
           <AnimatePresence>
             {step >= 2 && (

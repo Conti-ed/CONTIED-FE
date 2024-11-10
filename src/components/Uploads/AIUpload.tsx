@@ -17,6 +17,7 @@ import {
   CompleteButton,
   Select,
   VisibilityInputWrapper,
+  KeywordErrorMessage,
 } from "../../styles/Upload.styles";
 
 const AIUpload = () => {
@@ -31,6 +32,7 @@ const AIUpload = () => {
     bibleVerseFrom: false,
     bibleVerseTo: false,
   });
+  const [keywordError, setKeywordError] = useState("");
   const [step, setStep] = useState(1);
   const [expandedFrom, setExpandedFrom] = useState(false);
   const [expandedTo, setExpandedTo] = useState(false);
@@ -68,8 +70,10 @@ const AIUpload = () => {
   const handleNext = () => {
     if (step === 1) {
       if (!validateKeyword(contiKeyword)) {
+        setKeywordError("키워드를 하나 이상 적어주세요!");
         setHasError((prev) => ({ ...prev, keyword: true }));
         setTimeout(() => {
+          setKeywordError("");
           setHasError((prev) => ({ ...prev, keyword: false }));
         }, 2000);
       } else {
@@ -249,6 +253,16 @@ const AIUpload = () => {
               </AnimatePresence>
               {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
             </InputWrapper>
+            {keywordError && (
+              <KeywordErrorMessage
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {keywordError}
+              </KeywordErrorMessage>
+            )}
           </motion.div>
 
           <AnimatePresence>
