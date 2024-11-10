@@ -133,6 +133,7 @@ export const ErrorMessage = styled(motion.div)`
   font-size: 11px;
   color: #ea8c8c;
   align-self: flex-start;
+  margin-top: -5px;
   padding-left: 10px;
   font-weight: 300;
 `;
