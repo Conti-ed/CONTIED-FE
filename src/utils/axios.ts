@@ -79,18 +79,42 @@ export async function getConti(cid: number) {
 
 // 사용자 정보로 콘티 가져오기
 export interface GetMyContiesResponse {
-  myContiData: ContiType;
+  myContiData: ContiType[];
+  nextCursor: number | null;
 }
 
-export async function getMyConties(): Promise<GetMyContiesResponse> {
+export async function getMyConties(
+  cursor: number = 0,
+  take: number = 100
+): Promise<GetMyContiesResponse> {
   try {
-    const response = await api.get("/conti/myconti");
+    const response = await api.get("/conti/myconti", {
+      params: { cursor, take },
+    });
     return response.data;
   } catch (error: any) {
     console.error("Failed to fetch user's conties:", error);
     throw error;
   }
 }
+
+export async function getAllMyConties(): Promise<ContiType[]> {
+  let allContis: ContiType[] = [];
+  let cursor = 0;
+  const take = 100;
+
+  while (true) {
+    const response = await getMyConties(cursor, take);
+    allContis = allContis.concat(response.myContiData);
+    if (response.nextCursor === null || response.myContiData.length < take) {
+      break;
+    }
+    cursor = response.nextCursor;
+  }
+
+  return allContis;
+}
+
 // 모든 곡들 가져오기
 export async function getAllSongs(cursor = 0, take = 500) {
   try {

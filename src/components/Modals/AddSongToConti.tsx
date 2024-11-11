@@ -8,7 +8,7 @@ import {
 } from "../../styles/Modal.styles";
 import ContiPlaceholder from "../ContiPlaceholder";
 import styled from "styled-components";
-import { getMyConties } from "../../utils/axios";
+import { getAllMyConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -118,19 +118,16 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-      const fetchConties = async () => {
+      const fetchAllConties = async () => {
         setIsLoading(true);
         setError(null);
         try {
-          const response = await getMyConties();
-          if (Array.isArray(response.myContiData)) {
-            const activeContis = response.myContiData.filter(
-              (conti: ContiType) => conti.state !== "DELETED"
-            );
-            setContis(activeContis);
-          } else {
-            throw new Error("Unexpected response format");
-          }
+          const allContis = await getAllMyConties();
+          const activeContis = allContis.filter(
+            (conti: ContiType) => conti.state !== "DELETED"
+          );
+          console.log("Fetched all contis:", activeContis);
+          setContis(activeContis);
         } catch (error: any) {
           console.error("콘티 목록 가져오기 실패:", error);
           setError(
@@ -141,7 +138,7 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
           setIsLoading(false);
         }
       };
-      fetchConties();
+      fetchAllConties();
     }
   }, [isOpen]);
 
