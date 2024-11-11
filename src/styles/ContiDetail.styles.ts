@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import styled, { css, keyframes } from "styled-components";
-import Icon from "../components/Icon";
 
 export const Container = styled(motion.div)`
   height: 100vh;
@@ -44,6 +43,40 @@ export const BackButton = styled.button`
   align-items: center;
 `;
 
+export const EditActionsContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 22px;
+  display: flex;
+  gap: 5px;
+`;
+
+export const EditButton = styled.button`
+  padding: 8px 16px;
+  background-color: #4f8eec;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #3b6fc0;
+  }
+`;
+
+export const CancelEditButton = styled.button`
+  padding: 8px 16px;
+  background-color: #ccc;
+  color: #323743;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #b3b3b3;
+  }
+`;
+
 export const fillHeart = keyframes`
   from {
     transform: scale(0.7);
@@ -72,6 +105,7 @@ export const HeartIcon = styled.svg<{ $isFavorite: boolean }>`
 export const AlbumDetailContainer = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 export const AlbumInfo = styled.div`
@@ -114,11 +148,6 @@ export const IconWrapper = styled.div`
   border: white 2px solid;
 `;
 
-export const NewIcon = styled(Icon)`
-  width: 24px;
-  height: 24px;
-`;
-
 export const InfoText = styled.div`
   display: flex;
   flex-direction: column;
@@ -140,6 +169,49 @@ export const Subtitle = styled.h2`
   font-weight: 300;
   color: #171a1f;
   margin-bottom: 9px;
+`;
+
+export const UnderlinedInput = styled.input`
+  width: 100%;
+  padding: 2px 0;
+  font-size: 19px;
+  font-weight: 500;
+  color: #323743;
+  border: none;
+  border-bottom: 2px solid #4f8eec;
+  outline: none;
+  background-color: transparent;
+
+  &:focus {
+    border-bottom-color: #376bb8;
+  }
+
+  &::placeholder {
+    color: #ccc;
+  }
+`;
+
+export const UnderlinedTextarea = styled.textarea`
+  width: 100%;
+  padding: 2px 0;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.8;
+  color: #323743;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  resize: vertical;
+  max-height: 60px;
+
+  &:focus {
+    border-bottom-color: #376bb8;
+  }
+
+  &::placeholder {
+    color: #ccc;
+  }
 `;
 
 export const SongInfo = styled.div`

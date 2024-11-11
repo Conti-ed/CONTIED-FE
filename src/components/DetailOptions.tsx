@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
 interface OptionsProps {
+  onEdit: () => void;
   onDelete: () => void;
   children: React.ReactNode;
 }
@@ -35,6 +36,7 @@ const MenuItem = styled.button`
   background: none;
   border: none;
   padding: 4px 8px;
+  margin: 2px;
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -106,7 +108,7 @@ const DeleteButton = styled(Button)`
   color: white;
 `;
 
-const Options: React.FC<OptionsProps> = ({ onDelete, children }) => {
+const Options: React.FC<OptionsProps> = ({ onEdit, onDelete, children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -124,6 +126,11 @@ const Options: React.FC<OptionsProps> = ({ onDelete, children }) => {
     };
   }, []);
 
+  const handleEditClick = () => {
+    setIsMenuOpen(false);
+    onEdit();
+  };
+
   const handleDeleteClick = () => {
     setIsMenuOpen(false);
     setIsDeleteDialogOpen(true);
@@ -139,6 +146,7 @@ const Options: React.FC<OptionsProps> = ({ onDelete, children }) => {
       <div onClick={() => setIsMenuOpen(!isMenuOpen)}>{children}</div>
       {isMenuOpen && (
         <Menu>
+          <MenuItem onClick={handleEditClick}>콘티 수정</MenuItem>
           <MenuItem onClick={handleDeleteClick}>콘티 삭제</MenuItem>
         </Menu>
       )}

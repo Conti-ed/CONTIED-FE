@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import StatusBar from "../components/StatusBar";
@@ -11,6 +11,8 @@ import {
   AlbumImageWrapper,
   AlbumInfo,
   BackButton,
+  EditButton,
+  CancelEditButton,
   Container,
   Content,
   Header,
@@ -24,8 +26,6 @@ import {
   DEContiData,
   DEContiDataText,
   DEImage,
-  NewIcon,
-  IconWrapper,
   ToggleButton,
   ToggleDescriptionContainer,
   DescriptionText,
@@ -35,6 +35,9 @@ import {
   EmptyStateText2,
   AddSongButton,
   DescriptionTextWrapper,
+  EditActionsContainer,
+  UnderlinedInput,
+  UnderlinedTextarea,
 } from "../styles/ContiDetail.styles";
 import {
   formatRelativeTime,
@@ -47,7 +50,13 @@ import Loading from "../components/Loading";
 import DetailOptions from "../components/DetailOptions";
 import DescriptionModal from "../components/Modals/DescriptionModal";
 import { useQuery, useQueryClient } from "react-query";
-import { getConti, getUserNickname, deleteContiById } from "../utils/axios";
+import {
+  getConti,
+  getUserNickname,
+  deleteContiById,
+  patchConti,
+  PatchContiDto,
+} from "../utils/axios";
 import { ContiType } from "../types";
 
 const ContiDetail: React.FC = () => {
@@ -60,13 +69,24 @@ const ContiDetail: React.FC = () => {
   const [isAddSongLoading, setIsAddSongLoading] = useState(false);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
+  // 편집 모드 상태
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // 수정할 제목과 설명 상태
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+
+  // 에러 메시지 상태
+  const [editError, setEditError] = useState<string | null>(null);
+
   const { data: contiData, isLoading: isContiLoading } = useQuery<ContiType>(
     ["cid", contiId],
     () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null)),
     {
       retry: false,
       onSuccess: (data) => {
-        console.log("Conti Data fetched successfully:", data);
+        setEditedTitle(data.title);
+        setEditedDescription(data.description || "");
       },
       onError: (error) => {
         console.error("Failed to fetch conti data:", error);
@@ -106,6 +126,10 @@ const ContiDetail: React.FC = () => {
     localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
   };
 
+  const handleEditConti = () => {
+    setIsEditMode(true);
+  };
+
   const handleDeleteConti = async () => {
     if (contiId) {
       try {
@@ -137,6 +161,13 @@ const ContiDetail: React.FC = () => {
     }
   };
 
+  const totalDuration = useMemo(() => {
+    if (!contiData || !contiData.ContiToSong) return 0;
+    return contiData.ContiToSong.reduce((sum, item) => {
+      return sum + (item.song.duration || 0);
+    }, 0);
+  }, [contiData]);
+
   const handleAddSongClick = () => {
     setIsAddSongLoading(true);
     setTimeout(() => {
@@ -162,6 +193,44 @@ const ContiDetail: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsDescriptionOpen(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!contiId) return;
+
+    if (!editedTitle.trim()) {
+      setEditError("제목은 필수 항목입니다.");
+      return;
+    }
+
+    setEditError(null);
+
+    const dto: PatchContiDto = {
+      title: editedTitle.trim(),
+      description: editedDescription.trim(),
+      songs: contiData?.ContiToSong.map((cts) => cts.songId) || [],
+    };
+
+    try {
+      await patchConti(Number(contiId), dto);
+      queryClient.invalidateQueries(["cid", contiId]);
+      alert("콘티가 성공적으로 수정되었습니다.");
+      setIsEditMode(false);
+    } catch (error: any) {
+      console.error("콘티 수정 실패:", error);
+      setEditError(
+        error.response?.data?.message || "콘티 수정에 실패했습니다."
+      );
+    }
+  };
+
+  const handleCancelEdit = () => {
+    if (contiData) {
+      setEditedTitle(contiData.title);
+      setEditedDescription(contiData.description || "");
+    }
+    setEditError(null);
+    setIsEditMode(false);
   };
 
   if (isContiLoading || isNicknameLoading) {
@@ -218,7 +287,10 @@ const ContiDetail: React.FC = () => {
             >
               <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
             </HeartIcon>
-            <DetailOptions onDelete={handleDeleteConti}>
+            <DetailOptions
+              onEdit={handleEditConti}
+              onDelete={handleDeleteConti}
+            >
               <Icon id="option-detail" width="15" height="3" />
             </DetailOptions>
           </IconContainer>
@@ -238,32 +310,76 @@ const ContiDetail: React.FC = () => {
                 ) : (
                   <AlbumPlaceholder />
                 )}
-                <IconWrapper>
-                  <NewIcon id="edit-detail" />
-                </IconWrapper>
               </AlbumImageWrapper>
               <InfoText>
-                <Title>{contiData.title}</Title>
+                <Title>
+                  {isEditMode ? (
+                    <UnderlinedInput
+                      type="text"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      placeholder="제목을 입력해주세요!"
+                      aria-label="콘티 제목"
+                    />
+                  ) : (
+                    contiData.title
+                  )}
+                </Title>
                 <Subtitle>{nickname || "사용자"}</Subtitle>
                 <SongInfo>{`${
                   contiData.ContiToSong.length
                 }곡 • ${formatTotalDuration(
-                  contiData.duration
+                  totalDuration
                 )} • ${formatRelativeTime(
                   parseLocalDateString(contiData.updatedAt)
                 )}`}</SongInfo>
               </InfoText>
             </AlbumInfo>
+
+            {isEditMode && (
+              <EditActionsContainer>
+                <EditButton onClick={handleSaveEdit} disabled={false}>
+                  완료
+                </EditButton>
+                <CancelEditButton onClick={handleCancelEdit} disabled={false}>
+                  취소
+                </CancelEditButton>
+              </EditActionsContainer>
+            )}
+
             <ToggleDescriptionContainer>
               <DescriptionTextWrapper>
-                <DescriptionText>
-                  {contiData.description.slice(0, 60)}
-                </DescriptionText>
+                {isEditMode ? (
+                  <UnderlinedTextarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    placeholder="콘티의 설명을 입력해주세요!"
+                    aria-label="콘티 설명"
+                  />
+                ) : (
+                  <DescriptionText>
+                    {contiData.description.slice(0, 60)}
+                  </DescriptionText>
+                )}
               </DescriptionTextWrapper>
-              <ToggleButton onClick={handleDescriptionClick}>
-                더보기
-              </ToggleButton>
+              {!isEditMode && (
+                <ToggleButton onClick={handleDescriptionClick}>
+                  더보기
+                </ToggleButton>
+              )}
             </ToggleDescriptionContainer>
+            {editError && !isEditMode && (
+              <span
+                style={{
+                  color: "#dc3545",
+                  fontSize: "12px",
+                  marginTop: "5px",
+                  marginLeft: "20px",
+                }}
+              >
+                {editError}
+              </span>
+            )}
           </AlbumDetailContainer>
           {contiData.ContiToSong.length === 0 ? (
             renderEmptyState()
