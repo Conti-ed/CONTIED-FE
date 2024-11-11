@@ -8,7 +8,7 @@ import {
 } from "../../styles/Modal.styles";
 import ContiPlaceholder from "../ContiPlaceholder";
 import styled from "styled-components";
-import { getAllMyConties } from "../../utils/axios";
+import { getAllMyConties, patchConti, PatchContiDto } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -108,13 +108,19 @@ const ErrorMessage = styled.div`
 interface AddSongToContiProps {
   isOpen: boolean;
   onClose: () => void;
+  songId: number;
 }
 
-const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
+const AddSongToConti: React.FC<AddSongToContiProps> = ({
+  isOpen,
+  onClose,
+  songId,
+}) => {
   const [contis, setContis] = useState<ContiType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedContiId, setSelectedContiId] = useState<number | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -126,7 +132,6 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
           const activeContis = allContis.filter(
             (conti: ContiType) => conti.state !== "DELETED"
           );
-          console.log("Fetched all contis:", activeContis);
           setContis(activeContis);
         } catch (error: any) {
           console.error("콘티 목록 가져오기 실패:", error);
@@ -152,13 +157,48 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
     setSelectedContiId((prevId) => (prevId === contiId ? null : contiId));
   };
 
-  const handleAddToConti = () => {
+  const handleAddToConti = async () => {
     if (selectedContiId !== null) {
-      const selectedConti = contis.find(
-        (conti) => conti.id === selectedContiId
-      );
-      alert(`${selectedConti?.title} 콘티에 추가되었습니다.`);
-      onClose();
+      setIsAdding(true);
+      try {
+        const selectedConti = contis.find(
+          (conti) => conti.id === selectedContiId
+        );
+
+        if (!selectedConti) {
+          throw new Error("선택한 콘티를 찾을 수 없습니다.");
+        }
+
+        const existingSongIds = selectedConti.ContiToSong.map(
+          (cts) => cts.songId
+        );
+
+        if (existingSongIds.includes(songId)) {
+          alert("이미 이 콘티에 추가된 곡입니다.");
+          setIsAdding(false);
+          return;
+        }
+
+        const updatedSongs = [...existingSongIds, songId];
+        const uniqueSongs = Array.from(new Set(updatedSongs));
+
+        const dto: PatchContiDto = {
+          songs: uniqueSongs,
+        };
+
+        await patchConti(selectedContiId, dto);
+
+        alert(`${selectedConti.title} 콘티에 곡이 추가되었습니다.`);
+        onClose();
+      } catch (error: any) {
+        console.error("콘티에 곡 추가 실패:", error);
+        setError(
+          error.response?.data?.message ||
+            "콘티에 곡을 추가하는 데 실패했습니다."
+        );
+      } finally {
+        setIsAdding(false);
+      }
     }
   };
 
@@ -220,15 +260,16 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
           {selectedContiId !== null && (
             <AddButton
               onClick={handleAddToConti}
+              disabled={isAdding}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              추가
+              {isAdding ? "추가 중..." : "추가"}
             </AddButton>
           )}
-          <CancelButton onClick={onClose} disabled={isLoading}>
+          <CancelButton onClick={onClose} disabled={isLoading || isAdding}>
             취소
           </CancelButton>
         </ModalActions>

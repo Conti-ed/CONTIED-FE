@@ -115,6 +115,23 @@ export async function getAllMyConties(): Promise<ContiType[]> {
   return allContis;
 }
 
+// 콘티 정보 수정하기
+export interface PatchContiDto {
+  title?: string;
+  description?: string;
+  songs: number[];
+}
+
+export async function patchConti(contiId: number, dto: PatchContiDto) {
+  try {
+    const response = await api.patch(`/conti/myconti/${contiId}`, dto);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to patch conti with id ${contiId}:`, error);
+    throw error;
+  }
+}
+
 // 모든 곡들 가져오기
 export async function getAllSongs(cursor = 0, take = 500) {
   try {

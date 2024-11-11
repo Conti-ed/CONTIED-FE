@@ -266,7 +266,7 @@ const NoInfo = styled.p`
 
 interface SongItemProps {
   song: {
-    id: string;
+    id: number;
     title: string;
     artist: string;
     thumbnail: string;
@@ -277,7 +277,7 @@ interface SongItemProps {
     keyScale?: string;
   };
   isOpen: boolean;
-  onToggle: (id: string) => void;
+  onToggle: (id: number) => void;
 }
 
 const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
@@ -398,7 +398,11 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
           </OptionsContainer>
         )}
       </AnimatePresence>
-      <AddSongToConti isOpen={isModalOpen} onClose={closeModal} />
+      <AddSongToConti
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        songId={song.id}
+      />
       <AnimatePresence mode="wait">
         {showLyrics && (
           <LyricsContainer

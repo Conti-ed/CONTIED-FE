@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import styled from "styled-components";
@@ -23,7 +23,8 @@ import {
   EmptyStateText2,
 } from "./MyPage";
 import { useQuery } from "react-query";
-import { getUserNickname } from "../utils/axios";
+import { getUserNickname, getAllMyConties } from "../utils/axios";
+import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
   width: 100%;
@@ -33,44 +34,77 @@ const ContiList = styled(motion.div)`
   padding-bottom: 10px;
 `;
 
-interface ContiData {
-  id: string;
-  title: string;
-  thumbnail: string;
-  userId: string;
-  updatedAt: string;
-  duration: number;
-}
-
 const MyUploadedContis: React.FC = () => {
-  const [uploadedContis, setUploadedContis] = useState<ContiData[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadUploadedContis = () => {
-      const storedContiData = Object.keys(localStorage)
-        .filter((key) => key.startsWith("conti_"))
-        .map((key) => JSON.parse(localStorage.getItem(key)!))
-        .sort(
-          (a: ContiData, b: ContiData) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
-      setUploadedContis(storedContiData);
-    };
+  const {
+    data: uploadedContis,
+    isLoading,
+    isError,
+  } = useQuery<ContiType[], Error>("uploadedContis", getAllMyConties, {
+    staleTime: 1000,
+    retry: 1,
+    select: (data: ContiType[]) =>
+      data.filter((conti) => conti.state !== "DELETED"),
+  });
 
-    loadUploadedContis();
-  }, []);
-
-  const { data: nickname } = useQuery("nickname", getUserNickname, {
-    retry: false,
+  const {
+    data: nickname,
+    isLoading: isNicknameLoading,
+    isError: isNicknameError,
+  } = useQuery<string, Error>("nickname", getUserNickname, {
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 
   const handleContiClick = useCallback(
-    (id: string) => {
+    (id: number) => {
       navigate(`/conti-detail/${id}`);
     },
     [navigate]
   );
+
+  if (isLoading || isNicknameLoading) {
+    return (
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <EmptyStateContainer
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
+          <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
+          <EmptyStateText2>잠시만 기다려주세요.</EmptyStateText2>
+        </EmptyStateContainer>
+      </Container>
+    );
+  }
+
+  if (isError || isNicknameError) {
+    return (
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <EmptyStateContainer
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <EmptyStateImage src="/images/WhitePiano.png" alt="Error" />
+          <EmptyStateText1>에러가 발생했어요!</EmptyStateText1>
+          <EmptyStateText2>콘티를 불러오는 데 실패했습니다.</EmptyStateText2>
+        </EmptyStateContainer>
+      </Container>
+    );
+  }
 
   return (
     <Container
@@ -79,7 +113,7 @@ const MyUploadedContis: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {uploadedContis.length > 0 ? (
+      {uploadedContis && uploadedContis.length > 0 ? (
         <ContiList>
           {uploadedContis.map((data, index) => (
             <ContiItem
@@ -96,7 +130,7 @@ const MyUploadedContis: React.FC = () => {
                   alt="Album Image"
                   style={{
                     height:
-                      data.thumbnail === null ||
+                      !data.thumbnail ||
                       data.thumbnail === "/images/WhitePiano.png"
                         ? "62px"
                         : "100px",

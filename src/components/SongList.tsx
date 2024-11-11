@@ -22,21 +22,22 @@ const SongList: React.FC<SongListProps> = ({
   showLyricsOnly = false,
   width,
 }) => {
-  const [openSongId, setOpenSongId] = useState<string | null>(null);
+  const [openSongId, setOpenSongId] = useState<number | null>(null);
 
-  const handleToggle = (id: string) => {
+  const handleToggle = (id: number) => {
     setOpenSongId((prevId) => (prevId === id ? null : id));
   };
 
-  // 중복 ID를 제거한 노래 목록을 생성
   const uniqueSongs = useMemo(() => {
     const uniqueSongsMap = new Map<string, SongType>();
     songs.forEach((song) => {
-      if (!uniqueSongsMap.has(song.id.toString())) {
-        uniqueSongsMap.set(song.id.toString(), song);
+      const key = `${song.title.toLowerCase()}|${song.artist.toLowerCase()}`;
+      if (!uniqueSongsMap.has(key)) {
+        uniqueSongsMap.set(key, song);
       }
     });
-    return Array.from(uniqueSongsMap.values());
+    const unique = Array.from(uniqueSongsMap.values());
+    return unique;
   }, [songs]);
 
   return (
@@ -57,11 +58,11 @@ const SongList: React.FC<SongListProps> = ({
             key={song.id}
             song={{
               ...song,
-              id: song.id.toString(),
+              id: song.id,
               thumbnail: song.thumbnail || "",
               lyrics: song.lyrics || "",
             }}
-            isOpen={song.id.toString() === openSongId}
+            isOpen={song.id === openSongId}
             onToggle={handleToggle}
           />
         )
