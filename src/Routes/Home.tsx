@@ -72,7 +72,6 @@ const Home: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Container>
-        <StatusBar />
         <Content>
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
@@ -124,7 +123,6 @@ const Home: React.FC = () => {
           </ButtonGroup>
         </Content>
         <TabBar />
-        <SafariSpace $isFocused={false} />
       </Container>
     </AnimatePresence>
   );
