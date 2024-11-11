@@ -23,7 +23,8 @@ import {
 } from "./MyPage";
 import { styled } from "styled-components";
 import { useQuery } from "react-query";
-import { getUserNickname } from "../utils/axios";
+import { getConti, getUserNickname } from "../utils/axios";
+import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
   width: 100%;
@@ -33,38 +34,44 @@ const ContiList = styled(motion.div)`
   padding-bottom: 10px;
 `;
 
-interface ContiData {
-  id: string;
-  title: string;
-  thumbnail: string;
-  userId: string;
-  updatedAt: string;
-  duration: number;
-}
-
 const MyFavoriteContis: React.FC = () => {
-  const [favoriteContis, setFavoriteContis] = useState<ContiData[]>([]);
+  const [favoriteContis, setFavoriteContis] = useState<ContiType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadFavoriteContis = () => {
+    const loadFavoriteContis = async () => {
       const storedFavorites = JSON.parse(
         localStorage.getItem("favoriteContis") || "{}"
       );
-      const favoriteContiData: ContiData[] = Object.keys(storedFavorites)
-        .map((contiId) => {
-          const contiData = JSON.parse(
-            localStorage.getItem(`conti_${contiId}`) || "{}"
-          );
-          return contiData.id ? contiData : null;
-        })
-        .filter((data): data is ContiData => data !== null)
-        .sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      const favoriteContiIds = Object.keys(storedFavorites);
+
+      try {
+        const favoriteContiData: ContiType[] = await Promise.all(
+          favoriteContiIds.map(async (contiId) => {
+            try {
+              const contiData = await getConti(Number(contiId));
+              return contiData;
+            } catch (error) {
+              console.error(`Failed to fetch conti with ID ${contiId}:`, error);
+              return null;
+            }
+          })
         );
 
-      setFavoriteContis(favoriteContiData);
+        const validContis = favoriteContiData
+          .filter(
+            (data): data is ContiType =>
+              data !== null && data.state !== "DELETED"
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+
+        setFavoriteContis(validContis);
+      } catch (error) {
+        console.error("Failed to load favorite contis:", error);
+      }
     };
 
     loadFavoriteContis();
@@ -75,7 +82,7 @@ const MyFavoriteContis: React.FC = () => {
   });
 
   const handleContiClick = useCallback(
-    (id: string) => {
+    (id: number) => {
       navigate(`/conti-detail/${id}`);
     },
     [navigate]

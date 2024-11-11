@@ -133,8 +133,7 @@ const ContiDetail: React.FC = () => {
   const handleDeleteConti = async () => {
     if (contiId) {
       try {
-        const response = await deleteContiById(Number(contiId));
-        console.log(response);
+        await deleteContiById(Number(contiId));
 
         const allContis = JSON.parse(localStorage.getItem("allContis") || "[]");
         const updatedContis = allContis.filter(
@@ -214,6 +213,13 @@ const ContiDetail: React.FC = () => {
     try {
       await patchConti(Number(contiId), dto);
       queryClient.invalidateQueries(["cid", contiId]);
+
+      const updatedContiData = await getConti(Number(contiId));
+      localStorage.setItem(
+        `conti_${contiId}`,
+        JSON.stringify(updatedContiData)
+      );
+
       alert("콘티가 성공적으로 수정되었습니다.");
       setIsEditMode(false);
     } catch (error: any) {
