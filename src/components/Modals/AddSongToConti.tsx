@@ -15,6 +15,7 @@ import {
   parseLocalDateString,
 } from "../../utils/formatDuration";
 import { motion } from "framer-motion";
+import { ContiType } from "../../types";
 
 const ContiList = styled.ul`
   list-style: none;
@@ -109,17 +110,8 @@ interface AddSongToContiProps {
   onClose: () => void;
 }
 
-interface Conti {
-  id: number;
-  title: string;
-  userId: string;
-  thumbnail: string | null;
-  updatedAt: string;
-  duration: number;
-}
-
 const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
-  const [contis, setContis] = useState<Conti[]>([]);
+  const [contis, setContis] = useState<ContiType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedContiId, setSelectedContiId] = useState<number | null>(null);
@@ -130,9 +122,12 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({ isOpen, onClose }) => {
         setIsLoading(true);
         setError(null);
         try {
-          const data = await getMyConties();
-          if (data && Array.isArray(data.myContiData)) {
-            setContis(data.myContiData);
+          const response = await getMyConties();
+          if (Array.isArray(response.myContiData)) {
+            const activeContis = response.myContiData.filter(
+              (conti: ContiType) => conti.state !== "DELETED"
+            );
+            setContis(activeContis);
           } else {
             throw new Error("Unexpected response format");
           }
