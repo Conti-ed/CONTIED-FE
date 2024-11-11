@@ -15,12 +15,16 @@ import {
   ClearIcon,
   NextButton,
   CompleteButton,
+  Select,
+  VisibilityInputWrapper,
+  KeywordErrorMessage,
 } from "../../styles/Upload.styles";
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
   const [contiBibleVerseFrom, setContiBibleVerseFrom] = useState("");
   const [contiBibleVerseTo, setContiBibleVerseTo] = useState("");
+  const [visibility, setVisibility] = useState("공개");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState({
@@ -28,6 +32,7 @@ const AIUpload = () => {
     bibleVerseFrom: false,
     bibleVerseTo: false,
   });
+  const [keywordError, setKeywordError] = useState("");
   const [step, setStep] = useState(1);
   const [expandedFrom, setExpandedFrom] = useState(false);
   const [expandedTo, setExpandedTo] = useState(false);
@@ -65,8 +70,10 @@ const AIUpload = () => {
   const handleNext = () => {
     if (step === 1) {
       if (!validateKeyword(contiKeyword)) {
+        setKeywordError("키워드를 하나 이상 적어주세요!");
         setHasError((prev) => ({ ...prev, keyword: true }));
         setTimeout(() => {
+          setKeywordError("");
           setHasError((prev) => ({ ...prev, keyword: false }));
         }, 2000);
       } else {
@@ -92,6 +99,8 @@ const AIUpload = () => {
         setStep(4);
         setExpandedTo(true);
       }
+    } else if (step === 4) {
+      setStep(5);
     }
   };
 
@@ -122,6 +131,7 @@ const AIUpload = () => {
         keyword: contiKeyword,
         bibleVerseFrom: contiBibleVerseFrom,
         bibleVerseTo: contiBibleVerseTo,
+        visibility,
       };
       const response = await fetch(`${SERVER_URL}/api/conti`, {
         method: "POST",
@@ -243,6 +253,16 @@ const AIUpload = () => {
               </AnimatePresence>
               {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
             </InputWrapper>
+            {keywordError && (
+              <KeywordErrorMessage
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {keywordError}
+              </KeywordErrorMessage>
+            )}
           </motion.div>
 
           <AnimatePresence>
@@ -292,10 +312,40 @@ const AIUpload = () => {
               </motion.div>
             )}
           </AnimatePresence>
+          <AnimatePresence>
+            {step >= 4 && (
+              <VisibilityInputWrapper
+                key="visibility"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Select
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                  initial={{ width: "90%" }}
+                  animate={{
+                    width: step > 4 ? "100%" : "90%",
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <option value="공개">공개</option>
+                  <option value="비공개">비공개</option>
+                </Select>
+                {step === 4 && (
+                  <NextButton onClick={handleNext}>다음</NextButton>
+                )}
+              </VisibilityInputWrapper>
+            )}
+          </AnimatePresence>
         </InputGroup>
 
         <AnimatePresence>
-          {step === 4 && (
+          {step === 5 && (
             <CompleteButton
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

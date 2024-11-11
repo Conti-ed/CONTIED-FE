@@ -12,13 +12,17 @@ import {
   MotionInput,
   ClearIcon,
   NextButton,
+  ErrorMessage,
   CompleteButton,
+  Select,
+  VisibilityInputWrapper,
 } from "../../styles/Upload.styles";
 import { postContiByYouTube } from "../../utils/axios";
 
 const YouTubeUpload = () => {
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
+  const [visibility, setVisibility] = useState("공개");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError /* setHasError */] = useState({
@@ -31,6 +35,12 @@ const YouTubeUpload = () => {
   const descriptionRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  const validateYouTubePlaylistUrl = (url: string) => {
+    const youtubePlaylistRegex =
+      /^https?:\/\/(www\.)?youtube\.com\/playlist\?list=[a-zA-Z0-9_-]+&si=[a-zA-Z0-9_-]+$/;
+    return youtubePlaylistRegex.test(url);
+  };
+
   const handleClearSearch = (field: "url" | "description") => {
     if (field === "url") {
       setPlaylistUrl("");
@@ -42,7 +52,10 @@ const YouTubeUpload = () => {
   };
 
   const handleNext = () => {
-    if (step === 1 && playlistUrl.trim() === "") {
+    if (
+      step === 1 &&
+      (playlistUrl.trim() === "" || !validateYouTubePlaylistUrl(playlistUrl))
+    ) {
       setUrlError(true);
       setTimeout(() => {
         setUrlError(false);
@@ -53,7 +66,7 @@ const YouTubeUpload = () => {
   };
 
   const handleComplete = async () => {
-    if (playlistUrl.trim() === "") {
+    if (playlistUrl.trim() === "" || !validateYouTubePlaylistUrl(playlistUrl)) {
       setUrlError(true);
       setTimeout(() => setUrlError(false), 2000);
       return;
@@ -162,7 +175,16 @@ const YouTubeUpload = () => {
             </AnimatePresence>
             {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
           </InputWrapper>
-
+          {urlError && (
+            <ErrorMessage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              올바른 유튜브 재생목록 URL을 입력해주세요!
+            </ErrorMessage>
+          )}
           <AnimatePresence>
             {step >= 2 && (
               <InputWrapper
@@ -219,10 +241,37 @@ const YouTubeUpload = () => {
               </InputWrapper>
             )}
           </AnimatePresence>
+          <AnimatePresence>
+            {step >= 3 && (
+              <VisibilityInputWrapper
+                key="visibility"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Select
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                  initial={{ width: "90%" }}
+                  animate={{
+                    width: step > 3 ? "100%" : "90%",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <option value="공개">공개</option>
+                  <option value="비공개">비공개</option>
+                </Select>
+                {step === 3 && (
+                  <NextButton onClick={handleNext}>다음</NextButton>
+                )}
+              </VisibilityInputWrapper>
+            )}
+          </AnimatePresence>
         </InputGroup>
 
         <AnimatePresence>
-          {step === 3 && (
+          {step === 4 && (
             <CompleteButton
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

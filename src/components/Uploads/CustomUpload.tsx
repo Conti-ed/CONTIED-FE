@@ -13,18 +13,24 @@ import {
   ClearIcon,
   NextButton,
   CompleteButton,
+  Select,
+  VisibilityInputWrapper,
+  ErrorMessage,
 } from "../../styles/Upload.styles";
 import api from "../../utils/axios";
 
 const CustomUpload = () => {
   const [contiTitle, setContiTitle] = useState("");
   const [contiDescription, setContiDescription] = useState("");
+  const [visibility, setVisibility] = useState("공개");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState({
     title: false,
     description: false,
+    visibility: false,
   });
+  const [titleError, setTitleError] = useState("");
   const [step, setStep] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
@@ -34,35 +40,57 @@ const CustomUpload = () => {
     if (field === "title") {
       setContiTitle("");
       inputRef.current?.focus();
+      setTitleError("");
     } else {
       setContiDescription("");
       descriptionRef.current?.focus();
     }
   };
 
+  const validateTitle = () => {
+    if (!contiTitle.trim()) {
+      setTitleError("제목을 입력해주세요!");
+      setTimeout(() => setTitleError(""), 2000);
+      return false;
+    }
+    setTitleError("");
+    return true;
+  };
+
   const handleNext = () => {
-    if (step === 1 && contiTitle.trim() === "") {
-      setHasError((prev) => ({ ...prev, title: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, title: false }));
-      }, 2000);
-    } else {
+    if (step === 1) {
+      if (!validateTitle()) {
+        setHasError((prev) => ({ ...prev, title: true }));
+        setTimeout(() => {
+          setHasError((prev) => ({ ...prev, title: false }));
+        }, 2000);
+      } else {
+        setStep(step + 1);
+      }
+    } else if (step === 2) {
+      if (!contiDescription.trim() && contiDescription.length > 0) {
+        setHasError((prev) => ({ ...prev, description: true }));
+        setTimeout(() => {
+          setHasError((prev) => ({ ...prev, description: false }));
+        }, 2000);
+      } else {
+        setStep(step + 1);
+      }
+    } else if (step === 3) {
       setStep(step + 1);
     }
   };
 
   const handleComplete = async () => {
-    if (contiTitle.trim() === "") {
-      setHasError((prev) => ({ ...prev, title: true }));
-      setTimeout(() => {
-        setHasError((prev) => ({ ...prev, title: false }));
-      }, 2000);
-      return;
-    }
+    if (!validateTitle()) return;
 
     setIsLoading(true);
     try {
-      const body = { title: contiTitle, description: contiDescription || "" }; // description이 비어 있을 때 빈 문자열로 설정
+      const body = {
+        title: contiTitle,
+        description: contiDescription || "",
+        visibility,
+      };
       const response = await api.post("/conti/myconti/custom", body);
       const data = await response.data;
       localStorage.setItem(`conti_${data.id}`, JSON.stringify(data));
@@ -81,7 +109,7 @@ const CustomUpload = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && step < 3) {
+    if (e.key === "Enter" && step < 4) {
       handleNext();
     }
   };
@@ -105,7 +133,7 @@ const CustomUpload = () => {
           >
             제목은 간결할수록 좋아요!
           </AnimatedTitle>
-        ) : (
+        ) : step === 2 ? (
           <AnimatedTitle
             key="title2"
             initial="initial"
@@ -115,7 +143,17 @@ const CustomUpload = () => {
           >
             콘티에 대한 설명을 추가해주세요!
           </AnimatedTitle>
-        )}
+        ) : step === 3 ? (
+          <AnimatedTitle
+            key="title3"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={titleVariants}
+          >
+            공개 여부를 선택해주세요!
+          </AnimatedTitle>
+        ) : null}
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
@@ -127,11 +165,11 @@ const CustomUpload = () => {
               onChange={(e) => setContiTitle(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onKeyDown={handleKeyDown}
-              $hasError={hasError.title}
+              $hasError={!!titleError}
               initial={{ width: "90%" }}
               animate={{
                 width: step > 1 ? "100%" : "90%",
-                borderColor: hasError.title ? "#ea8c8c" : "#94b4ed",
+                borderColor: titleError ? "#ea8c8c" : "#94b4ed",
               }}
               transition={{
                 duration: 0.3,
@@ -158,6 +196,16 @@ const CustomUpload = () => {
             </AnimatePresence>
             {step === 1 && <NextButton onClick={handleNext}>다음</NextButton>}
           </InputWrapper>
+          {titleError && (
+            <ErrorMessage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {titleError}
+            </ErrorMessage>
+          )}
 
           <AnimatePresence>
             {step >= 2 && (
@@ -215,32 +263,59 @@ const CustomUpload = () => {
               </InputWrapper>
             )}
           </AnimatePresence>
+          <AnimatePresence>
+            {step >= 3 && (
+              <VisibilityInputWrapper
+                key="visibility"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <Select
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                  initial={{ width: "90%" }}
+                  animate={{
+                    width: step > 3 ? "100%" : "90%",
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <option value="공개">공개</option>
+                  <option value="비공개">비공개</option>
+                </Select>
+                {step < 4 && <NextButton onClick={handleNext}>다음</NextButton>}
+              </VisibilityInputWrapper>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {step === 4 && (
+              <CompleteButton
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}
+                onClick={handleComplete}
+              >
+                {isLoading ? (
+                  <Oval
+                    height={15}
+                    width={15}
+                    color="#ffffff"
+                    secondaryColor="#94b4ed"
+                    strokeWidth={5}
+                    strokeWidthSecondary={5}
+                  />
+                ) : (
+                  "완료!"
+                )}
+              </CompleteButton>
+            )}
+          </AnimatePresence>
         </InputGroup>
-
-        <AnimatePresence>
-          {step === 3 && (
-            <CompleteButton
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              onClick={handleComplete}
-            >
-              {isLoading ? (
-                <Oval
-                  height={15}
-                  width={15}
-                  color="#ffffff"
-                  secondaryColor="#94b4ed"
-                  strokeWidth={5}
-                  strokeWidthSecondary={5}
-                />
-              ) : (
-                "완료!"
-              )}
-            </CompleteButton>
-          )}
-        </AnimatePresence>
       </InputContainer>
     </Container>
   );
