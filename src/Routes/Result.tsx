@@ -111,7 +111,6 @@ const Result: React.FC = () => {
 
   return (
     <Container>
-      <StatusBar />
       <Header>
         <AnimatePresence>
           <BackIcon
@@ -182,7 +181,6 @@ const Result: React.FC = () => {
         <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
       {isFocused && <Keyboard />}
-      <SafariSpace $isFocused={false} />
     </Container>
   );
 };
