@@ -24,7 +24,6 @@ export const Content = styled.div`
   flex-direction: column;
   overflow-y: auto;
   padding-bottom: 134px;
-  margin-bottom: 38px;
 `;
 
 export const IconContainer = styled.div`
@@ -295,6 +294,37 @@ export const EmptyStateText2 = styled.div`
   color: #828282;
   text-align: center;
   margin-bottom: 10px;
+`;
+
+export const DeleteButtonContainer = styled.div`
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+`;
+
+export const DeleteButton = styled.button`
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #e0aeb3;
+    cursor: not-allowed;
+  }
+
+  &:hover:enabled {
+    background-color: #c82333;
+  }
 `;
 
 export const AddSongButton = styled.div`

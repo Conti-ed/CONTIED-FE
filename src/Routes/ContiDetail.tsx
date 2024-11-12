@@ -38,6 +38,8 @@ import {
   EditActionsContainer,
   UnderlinedInput,
   UnderlinedTextarea,
+  DeleteButtonContainer,
+  DeleteButton,
 } from "../styles/ContiDetail.styles";
 import {
   formatRelativeTime,
@@ -78,6 +80,9 @@ const ContiDetail: React.FC = () => {
 
   // 에러 메시지 상태
   const [editError, setEditError] = useState<string | null>(null);
+
+  // 선택된 곡들을 추적하는 상태
+  const [selectedSongs, setSelectedSongs] = useState<Set<number>>(new Set());
 
   const { data: contiData, isLoading: isContiLoading } = useQuery<ContiType>(
     ["cid", contiId],
@@ -141,6 +146,12 @@ const ContiDetail: React.FC = () => {
         );
         localStorage.setItem("allContis", JSON.stringify(updatedContis));
         localStorage.removeItem(`conti_${contiId}`);
+
+        const favoriteContis = JSON.parse(
+          localStorage.getItem("favoriteContis") || "{}"
+        );
+        delete favoriteContis[contiId];
+        localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
 
         queryClient.removeQueries(["cid", contiId]);
 
@@ -237,6 +248,58 @@ const ContiDetail: React.FC = () => {
     }
     setEditError(null);
     setIsEditMode(false);
+    setSelectedSongs(new Set());
+  };
+
+  const handleSongSelect = (id: number, selected: boolean) => {
+    setSelectedSongs((prev) => {
+      const newSet = new Set(prev);
+      if (selected) {
+        newSet.add(id);
+      } else {
+        newSet.delete(id);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDeleteSelectedSongs = async () => {
+    if (selectedSongs.size === 0) return;
+    const confirmDelete = window.confirm("선택한 곡을 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    if (!contiData) {
+      alert("콘티 데이터를 불러오는 중입니다.");
+      return;
+    }
+
+    try {
+      const updatedSongIds = contiData.ContiToSong.filter(
+        (item) => !selectedSongs.has(item.song.id)
+      ).map((item) => item.song.id);
+
+      const dto: PatchContiDto = {
+        title: contiData.title,
+        description: contiData.description,
+        songs: updatedSongIds,
+      };
+      await patchConti(Number(contiId), dto);
+
+      const updatedContiData = await getConti(Number(contiId));
+      localStorage.setItem(
+        `conti_${contiId}`,
+        JSON.stringify(updatedContiData)
+      );
+
+      queryClient.setQueryData(["cid", contiId], updatedContiData);
+
+      setSelectedSongs(new Set());
+
+      alert("선택한 곡들이 삭제되었어요!");
+    } catch (error) {
+      console.error("삭제 과정에서 오류가 있나봐요...", error);
+      alert("곡 삭제에 실패했는데, 한 번만 다시 시도해 주세요!");
+    }
   };
 
   if (isContiLoading || isNicknameLoading) {
@@ -344,10 +407,8 @@ const ContiDetail: React.FC = () => {
 
             {isEditMode && (
               <EditActionsContainer>
-                <EditButton onClick={handleSaveEdit} disabled={false}>
-                  완료
-                </EditButton>
-                <CancelEditButton onClick={handleCancelEdit} disabled={false}>
+                <EditButton onClick={handleSaveEdit}>완료</EditButton>
+                <CancelEditButton onClick={handleCancelEdit}>
                   취소
                 </CancelEditButton>
               </EditActionsContainer>
@@ -395,7 +456,17 @@ const ContiDetail: React.FC = () => {
                 ...item.song,
                 id: Number(item.song.id),
               }))}
+              isEditMode={isEditMode}
+              selectedSongs={selectedSongs}
+              onSongSelect={handleSongSelect}
             />
+          )}
+          {isEditMode && selectedSongs.size > 0 && (
+            <DeleteButtonContainer>
+              <DeleteButton onClick={handleDeleteSelectedSongs}>
+                선택한 곡 삭제하기
+              </DeleteButton>
+            </DeleteButtonContainer>
           )}
         </Content>
         <SafariSpace $isFocused={false} />

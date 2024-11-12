@@ -22,38 +22,42 @@ const SongImageWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin-left: 23px;
-  margin-right: 20px; /* InfoText와의 간격 */
+  margin-right: 20px;
   border: 1px solid #9dbbe9;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   position: sticky;
 `;
 
-const SongInfo = styled.div`
+const SongInfo = styled.div<{ $isEditMode: boolean }>`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 53px;
   padding-left: 20px;
   padding-right: 20px;
 
-  & > div {
+  & > .checkbox-wrapper {
+    width: ${(props) => (props.$isEditMode ? "20px" : "0px")};
+    margin-right: ${(props) => (props.$isEditMode ? "10px" : "0px")};
     display: flex;
+    justify-content: center;
     align-items: center;
-    flex-direction: row;
+    overflow: hidden;
+    transition: width 0.3s, margin-right 0.3s;
   }
 
-  & > .song-info {
+  & > div:nth-child(2) {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    margin-left: 10px;
+    align-items: center;
   }
 
   & > .song-button {
+    flex: 0 0 30px;
     display: flex;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
-    margin-right: 3px;
   }
 
   img {
@@ -84,7 +88,7 @@ const Option = styled.div`
   font-size: 10px;
   font-weight: 300;
   color: #8c8c8c;
-  gap: 6px; /* 아이콘과 텍스트 간의 간격 */
+  gap: 6px;
   width: 110px;
   padding: 3px;
 `;
@@ -264,6 +268,55 @@ const NoInfo = styled.p`
   font-size: 12px;
 `;
 
+const CheckboxWrapper = styled.div`
+  height: 40px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CheckboxLabel = styled.label`
+  display: inline-block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+`;
+
+const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+`;
+
+export const StyledCheckbox = styled.div<{ checked: boolean }>`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: ${(props) => (props.checked ? "#4f8eec" : "#fff")};
+  border: 2px solid #4f8eec;
+  border-radius: 4px;
+  transition: all 150ms;
+  cursor: pointer;
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    display: ${(props) => (props.checked ? "block" : "none")};
+    left: 5.5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+`;
+
 interface SongItemProps {
   song: {
     id: number;
@@ -278,9 +331,38 @@ interface SongItemProps {
   };
   isOpen: boolean;
   onToggle: (id: number) => void;
+  isEditMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: (id: number, selected: boolean) => void;
 }
 
-const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
+const Checkbox = ({
+  checked,
+  onChange,
+  ariaLabel,
+}: {
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  ariaLabel: string;
+}) => (
+  <CheckboxLabel>
+    <HiddenCheckbox
+      checked={checked}
+      onChange={onChange}
+      aria-label={ariaLabel}
+    />
+    <StyledCheckbox checked={checked} />
+  </CheckboxLabel>
+);
+
+const SongItem: React.FC<SongItemProps> = ({
+  song,
+  isOpen,
+  onToggle,
+  isEditMode = false,
+  isSelected = false,
+  onSelect = () => {},
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -314,9 +396,22 @@ const SongItem: React.FC<SongItemProps> = ({ song, isOpen, onToggle }) => {
     setIsModalOpen(false);
   };
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSelect(song.id, e.target.checked);
+  };
+
   return (
     <SongItemContainer>
-      <SongInfo>
+      <SongInfo $isEditMode={isEditMode}>
+        <CheckboxWrapper className="checkbox-wrapper">
+          {isEditMode && (
+            <Checkbox
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              ariaLabel={`Select ${song.title}`}
+            />
+          )}
+        </CheckboxWrapper>
         <div>
           <SongImageWrapper>
             {song.thumbnail ? (

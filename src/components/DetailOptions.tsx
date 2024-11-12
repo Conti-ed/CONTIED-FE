@@ -153,7 +153,7 @@ const Options: React.FC<OptionsProps> = ({ onEdit, onDelete, children }) => {
       {isDeleteDialogOpen && (
         <DialogOverlay>
           <DialogContent>
-            <DialogTitle>콘티를 삭제하시겠습니까?</DialogTitle>
+            <DialogTitle>이 콘티를 삭제할까요?</DialogTitle>
             <DialogActions>
               <DeleteButton onClick={handleDeleteConfirm}>삭제</DeleteButton>
               <CancelButton onClick={() => setIsDeleteDialogOpen(false)}>

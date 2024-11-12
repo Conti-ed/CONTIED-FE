@@ -9,18 +9,25 @@ const Container = styled.ul<{ $width?: string }>`
   padding: 0;
   width: ${(props) => props.$width || "100%"};
   margin: 0 auto;
+  margin-bottom: 10px;
 `;
 
 interface SongListProps {
   songs: SongType[];
   showLyricsOnly?: boolean;
   width?: string;
+  isEditMode?: boolean;
+  selectedSongs?: Set<number>;
+  onSongSelect?: (id: number, selected: boolean) => void;
 }
 
 const SongList: React.FC<SongListProps> = ({
   songs,
   showLyricsOnly = false,
   width,
+  isEditMode = false,
+  selectedSongs = new Set(),
+  onSongSelect = () => {},
 }) => {
   const [openSongId, setOpenSongId] = useState<number | null>(null);
 
@@ -42,7 +49,7 @@ const SongList: React.FC<SongListProps> = ({
 
   return (
     <Container $width={width}>
-      {uniqueSongs.map((song) =>
+      {uniqueSongs.map((song, index) =>
         showLyricsOnly ? (
           <LyricsOnlySongItem
             key={song.id.toString()}
@@ -64,6 +71,9 @@ const SongList: React.FC<SongListProps> = ({
             }}
             isOpen={song.id === openSongId}
             onToggle={handleToggle}
+            isEditMode={isEditMode}
+            isSelected={selectedSongs.has(song.id)}
+            onSelect={onSongSelect}
           />
         )
       )}
