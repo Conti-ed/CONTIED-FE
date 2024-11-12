@@ -49,6 +49,8 @@ import Icon from "../components/Icon";
 import Loading from "../components/Loading";
 import DetailOptions from "../components/DetailOptions";
 import DescriptionModal from "../components/Modals/DescriptionModal";
+import Notification from "../components/Notification";
+import ConfirmModal from "../components/Modals/ConfirmModal";
 import { useQuery, useQueryClient } from "react-query";
 import {
   getConti,
@@ -81,6 +83,13 @@ const ContiDetail: React.FC = () => {
 
   // 선택된 곡들을 추적하는 상태
   const [selectedSongs, setSelectedSongs] = useState<Set<number>>(new Set());
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const { data: contiData, isLoading: isContiLoading } = useQuery<ContiType>(
     ["cid", contiId],
@@ -207,7 +216,7 @@ const ContiDetail: React.FC = () => {
     if (!contiId) return;
 
     if (!editedTitle.trim()) {
-      setEditError("제목은 필수 항목입니다.");
+      setEditError("제목은 필수입니다!");
       return;
     }
 
@@ -229,13 +238,17 @@ const ContiDetail: React.FC = () => {
         JSON.stringify(updatedContiData)
       );
 
-      alert("콘티가 성공적으로 수정되었습니다.");
+      setNotification({
+        message: "콘티가 업데이트되었어요!",
+        type: "success",
+      });
       setIsEditMode(false);
     } catch (error: any) {
       console.error("콘티 수정 실패:", error);
       setEditError(
         error.response?.data?.message || "콘티 수정에 실패했습니다."
       );
+      setNotification({ message: "콘티 수정에 실패했어요...", type: "error" }); // 에러 알림 설정
     }
   };
 
@@ -263,9 +276,11 @@ const ContiDetail: React.FC = () => {
 
   const handleDeleteSelectedSongs = async () => {
     if (selectedSongs.size === 0) return;
-    const confirmDelete = window.confirm("선택한 곡을 삭제하시겠습니까?");
-    if (!confirmDelete) return;
 
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteSelectedSongs = async () => {
     if (!contiData) {
       alert("콘티 데이터를 불러오는 중입니다.");
       return;
@@ -293,11 +308,23 @@ const ContiDetail: React.FC = () => {
 
       setSelectedSongs(new Set());
 
-      alert("선택한 곡들이 삭제되었어요!");
+      setNotification({
+        message: "선택한 곡들이 삭제되었습니다.",
+        type: "success",
+      }); // 알림 설정
     } catch (error) {
       console.error("삭제 과정에서 오류가 있나봐요...", error);
-      alert("곡 삭제에 실패했는데, 한 번만 다시 시도해 주세요!");
+      setNotification({
+        message: "곡 삭제에 실패했습니다. 다시 시도해 주세요.",
+        type: "error",
+      }); // 에러 알림 설정
+    } finally {
+      setIsDeleteModalOpen(false);
     }
+  };
+
+  const cancelDeleteSelectedSongs = () => {
+    setIsDeleteModalOpen(false);
   };
 
   if (isContiLoading || isNicknameLoading) {
@@ -330,155 +357,171 @@ const ContiDetail: React.FC = () => {
   }
 
   return (
-    <AnimatePresence mode="wait">
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Header>
-          <BackButton onClick={handleBackClick}>
-            <Icon id="back-detail" width="24" height="24" />
-          </BackButton>
-          <IconContainer>
-            <HeartIcon
-              $isFavorite={isFavorite}
-              onClick={handleHeartClick}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#4F8EEC"
-            >
-              <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
-            </HeartIcon>
-            <DetailOptions
-              onEdit={handleEditConti}
-              onDelete={handleDeleteConti}
-            >
-              <Icon id="option-detail" width="15" height="3" />
-            </DetailOptions>
-          </IconContainer>
-        </Header>
-        <Content>
-          <AlbumDetailContainer>
-            <AlbumInfo>
-              <AlbumImageWrapper>
-                {contiData.thumbnail ? (
-                  <>
-                    <ContiPlaceholder size={129} />
-                    <AlbumImage
-                      src={contiData.thumbnail}
-                      alt="../images/WhitePiano.png"
-                    />
-                  </>
-                ) : (
-                  <AlbumPlaceholder />
-                )}
-              </AlbumImageWrapper>
-              <InfoText>
-                <Title>
+    <>
+      <AnimatePresence mode="wait">
+        <Container
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Header>
+            <BackButton onClick={handleBackClick}>
+              <Icon id="back-detail" width="24" height="24" />
+            </BackButton>
+            <IconContainer>
+              <HeartIcon
+                $isFavorite={isFavorite}
+                onClick={handleHeartClick}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4F8EEC"
+              >
+                <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
+              </HeartIcon>
+              <DetailOptions
+                onEdit={handleEditConti}
+                onDelete={handleDeleteConti}
+              >
+                <Icon id="option-detail" width="15" height="3" />
+              </DetailOptions>
+            </IconContainer>
+          </Header>
+          <Content>
+            <AlbumDetailContainer>
+              <AlbumInfo>
+                <AlbumImageWrapper>
+                  {contiData.thumbnail ? (
+                    <>
+                      <ContiPlaceholder size={129} />
+                      <AlbumImage
+                        src={contiData.thumbnail}
+                        alt="../images/WhitePiano.png"
+                      />
+                    </>
+                  ) : (
+                    <AlbumPlaceholder />
+                  )}
+                </AlbumImageWrapper>
+                <InfoText>
+                  <Title>
+                    {isEditMode ? (
+                      <UnderlinedInput
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        placeholder="제목을 입력해주세요!"
+                        aria-label="콘티 제목"
+                      />
+                    ) : (
+                      contiData.title
+                    )}
+                  </Title>
+                  <Subtitle>{nickname || "사용자"}</Subtitle>
+                  <SongInfo>{`${
+                    contiData.ContiToSong.length
+                  }곡 • ${formatTotalDuration(
+                    totalDuration
+                  )} • ${formatRelativeTime(
+                    parseLocalDateString(contiData.updatedAt)
+                  )}`}</SongInfo>
+                </InfoText>
+              </AlbumInfo>
+
+              {isEditMode && (
+                <EditActionsContainer>
+                  <EditButton onClick={handleSaveEdit}>완료</EditButton>
+                  <CancelEditButton onClick={handleCancelEdit}>
+                    취소
+                  </CancelEditButton>
+                </EditActionsContainer>
+              )}
+
+              <ToggleDescriptionContainer>
+                <DescriptionTextWrapper>
                   {isEditMode ? (
-                    <UnderlinedInput
-                      type="text"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      placeholder="제목을 입력해주세요!"
-                      aria-label="콘티 제목"
+                    <UnderlinedTextarea
+                      value={editedDescription}
+                      onChange={(e) => setEditedDescription(e.target.value)}
+                      placeholder="콘티의 설명을 입력해주세요!"
+                      aria-label="콘티 설명"
                     />
                   ) : (
-                    contiData.title
+                    <DescriptionText>
+                      {contiData.description.slice(0, 60)}
+                    </DescriptionText>
                   )}
-                </Title>
-                <Subtitle>{nickname || "사용자"}</Subtitle>
-                <SongInfo>{`${
-                  contiData.ContiToSong.length
-                }곡 • ${formatTotalDuration(
-                  totalDuration
-                )} • ${formatRelativeTime(
-                  parseLocalDateString(contiData.updatedAt)
-                )}`}</SongInfo>
-              </InfoText>
-            </AlbumInfo>
-
-            {isEditMode && (
-              <EditActionsContainer>
-                <EditButton onClick={handleSaveEdit}>완료</EditButton>
-                <CancelEditButton onClick={handleCancelEdit}>
-                  취소
-                </CancelEditButton>
-              </EditActionsContainer>
-            )}
-
-            <ToggleDescriptionContainer>
-              <DescriptionTextWrapper>
-                {isEditMode ? (
-                  <UnderlinedTextarea
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    placeholder="콘티의 설명을 입력해주세요!"
-                    aria-label="콘티 설명"
-                  />
-                ) : (
-                  <DescriptionText>
-                    {contiData.description.slice(0, 60)}
-                  </DescriptionText>
+                </DescriptionTextWrapper>
+                {!isEditMode && (
+                  <ToggleButton onClick={handleDescriptionClick}>
+                    더보기
+                  </ToggleButton>
                 )}
-              </DescriptionTextWrapper>
-              {!isEditMode && (
-                <ToggleButton onClick={handleDescriptionClick}>
-                  더보기
-                </ToggleButton>
+              </ToggleDescriptionContainer>
+              {editError && !isEditMode && (
+                <span
+                  style={{
+                    color: "#dc3545",
+                    fontSize: "12px",
+                    marginTop: "5px",
+                    marginLeft: "20px",
+                  }}
+                >
+                  {editError}
+                </span>
               )}
-            </ToggleDescriptionContainer>
-            {editError && !isEditMode && (
-              <span
-                style={{
-                  color: "#dc3545",
-                  fontSize: "12px",
-                  marginTop: "5px",
-                  marginLeft: "20px",
-                }}
-              >
-                {editError}
-              </span>
+            </AlbumDetailContainer>
+            {contiData.ContiToSong.length === 0 ? (
+              renderEmptyState()
+            ) : (
+              <SongList
+                songs={contiData.ContiToSong.map((item) => ({
+                  ...item.song,
+                  id: Number(item.song.id),
+                }))}
+                isEditMode={isEditMode}
+                selectedSongs={selectedSongs}
+                onSongSelect={handleSongSelect}
+              />
             )}
-          </AlbumDetailContainer>
-          {contiData.ContiToSong.length === 0 ? (
-            renderEmptyState()
-          ) : (
-            <SongList
-              songs={contiData.ContiToSong.map((item) => ({
-                ...item.song,
-                id: Number(item.song.id),
-              }))}
-              isEditMode={isEditMode}
-              selectedSongs={selectedSongs}
-              onSongSelect={handleSongSelect}
-            />
+            {isEditMode && selectedSongs.size > 0 && (
+              <DeleteButtonContainer>
+                <DeleteButton onClick={handleDeleteSelectedSongs}>
+                  선택한 곡 삭제하기
+                </DeleteButton>
+              </DeleteButtonContainer>
+            )}
+          </Content>
+          <DescriptionModal
+            isOpen={isDescriptionOpen}
+            onClose={handleCloseModal}
+            thumbnail={contiData.thumbnail}
+            title={contiData.title}
+            userNickname={(("by " + nickname) as string) || "사용자"}
+            description={contiData.description}
+          />
+          {isAddSongLoading && (
+            <LoadingOverlay>
+              <Loading />
+            </LoadingOverlay>
           )}
-          {isEditMode && selectedSongs.size > 0 && (
-            <DeleteButtonContainer>
-              <DeleteButton onClick={handleDeleteSelectedSongs}>
-                선택한 곡 삭제하기
-              </DeleteButton>
-            </DeleteButtonContainer>
-          )}
-        </Content>
-        <DescriptionModal
-          isOpen={isDescriptionOpen}
-          onClose={handleCloseModal}
-          thumbnail={contiData.thumbnail}
-          title={contiData.title}
-          userNickname={(("by " + nickname) as string) || "사용자"}
-          description={contiData.description}
+        </Container>
+      </AnimatePresence>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
-        {isAddSongLoading && (
-          <LoadingOverlay>
-            <Loading />
-          </LoadingOverlay>
-        )}
-      </Container>
-    </AnimatePresence>
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmModal
+          title={`선택한 ${selectedSongs.size}곡을 삭제할까요?`}
+          onConfirm={confirmDeleteSelectedSongs}
+          onCancel={cancelDeleteSelectedSongs}
+        />
+      )}
+    </>
   );
 };
 
