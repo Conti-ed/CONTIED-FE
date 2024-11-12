@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
 import SearchSuggestions from "../components/SearchSuggestions";
 import {
@@ -24,7 +23,6 @@ import {
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
 import EmptyState from "../components/EmptyState";
-import SafariSpace from "../components/SafariSpace";
 import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
@@ -171,8 +169,6 @@ const Search: React.FC = () => {
         setIsLoading(true);
         const response = await getAllSongs();
 
-        // 응답에서 곡 데이터 배열 추출
-        // response가 객체 형태이므로 songData 필드에서 곡 배열을 추출
         const songArray = response.songData;
         if (Array.isArray(songArray)) {
           const allLyrics = songArray.flatMap(
@@ -201,7 +197,6 @@ const Search: React.FC = () => {
 
   return (
     <Container>
-      <StatusBar />
       <Header>
         <AnimatePresence>
           {isFocused && (
@@ -260,7 +255,6 @@ const Search: React.FC = () => {
         <InputSafariSpace $isFocused={isFocused} />
       </TabBarWrapper>
       {isFocused && <Keyboard />}
-      <SafariSpace $isFocused={isFocused} />
     </Container>
   );
 };

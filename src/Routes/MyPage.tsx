@@ -2,12 +2,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import SafariSpace from "../components/SafariSpace";
 import TabBar from "../components/TabBar";
-import StatusBar from "../components/StatusBar";
-import api from "../utils/axios";
+import api, { SERVER_URL } from "../utils/axios";
 import { UserInfo } from "../types";
-import { SERVER_URL } from "../api";
 
 // Reusable styled components
 export const Container = styled(motion.div)`
@@ -45,7 +42,7 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 165px;
+  padding-bottom: 30px;
   overflow-y: hidden;
 `;
 
@@ -214,7 +211,6 @@ const MyPage: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <StatusBar />
       <Header>
         <Title>
           <span>{username}</span> 님의 Conti:ed
@@ -248,7 +244,6 @@ const MyPage: React.FC = () => {
         </ScrollableContainer>
       </Content>
       <TabBar />
-      <SafariSpace $isFocused={false} />
       {window.location.pathname === "/mypage" && (
         <Navigate to="/mypage/uploaded" replace />
       )}
