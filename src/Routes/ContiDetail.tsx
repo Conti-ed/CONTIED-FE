@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import StatusBar from "../components/StatusBar";
-import SafariSpace from "../components/SafariSpace";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import SongList from "../components/SongList";
 import {
@@ -315,7 +313,6 @@ const ContiDetail: React.FC = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <StatusBar />
           <Header>
             <BackButton onClick={handleBackClick}>
               <Icon id="back-detail" width="24" height="24" />
@@ -327,7 +324,6 @@ const ContiDetail: React.FC = () => {
               콘티가 잘못 생성되었거나, 삭제된 것 같아요...
             </DEContiDataText>
           </DEContiData>
-          <SafariSpace $isFocused={false} />
         </Container>
       </AnimatePresence>
     );
@@ -341,7 +337,6 @@ const ContiDetail: React.FC = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <StatusBar />
         <Header>
           <BackButton onClick={handleBackClick}>
             <Icon id="back-detail" width="24" height="24" />
@@ -469,7 +464,6 @@ const ContiDetail: React.FC = () => {
             </DeleteButtonContainer>
           )}
         </Content>
-        <SafariSpace $isFocused={false} />
         <DescriptionModal
           isOpen={isDescriptionOpen}
           onClose={handleCloseModal}

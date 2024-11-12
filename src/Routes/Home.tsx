@@ -3,10 +3,8 @@ import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../api";
 import { UserInfo } from "../types";
-import StatusBar from "../components/StatusBar";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import TabBar from "../components/TabBar";
-import SafariSpace from "../components/SafariSpace";
 import {
   Container,
   Content,
@@ -72,7 +70,6 @@ const Home: React.FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Container>
-        <StatusBar />
         <Content>
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
@@ -124,7 +121,6 @@ const Home: React.FC = () => {
           </ButtonGroup>
         </Content>
         <TabBar />
-        <SafariSpace $isFocused={false} />
       </Container>
     </AnimatePresence>
   );

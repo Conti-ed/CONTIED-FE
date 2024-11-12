@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Player } from "@lottiefiles/react-lottie-player";
-import StatusBar from "../components/StatusBar";
-import SafariSpace from "../components/SafariSpace";
 import animationData from "../components/waitingAnimation.json";
 import api from "../utils/axios";
 
@@ -43,7 +41,7 @@ const Content = styled.div<{ $isFading: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 663px;
+  height: 100%;
   width: 100%;
   background-color: #fff;
   ${({ $isFading }) =>
@@ -134,7 +132,6 @@ const Wait: React.FC = () => {
 
   return (
     <Container>
-      <StatusBar />
       <Content $isFading={true}>
         <Player
           autoplay
@@ -144,7 +141,6 @@ const Wait: React.FC = () => {
         />
         <Text $fadeState={fadeState}>{text}</Text>
       </Content>
-      <SafariSpace $isFocused={false} />
     </Container>
   );
 };
