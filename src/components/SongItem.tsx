@@ -425,8 +425,10 @@ const SongItem: React.FC<SongItemProps> = ({
             <SongArtistName>
               {song.artist === "아티스트 정보를 입력해주세요."
                 ? "아티스트 정보가 아직 제공되지 않았어요."
-                : song.artist}{" "}
-              • {formatDuration(song.duration)}
+                : song.artist}
+              {formatDuration(song.duration) === "0:00"
+                ? ""
+                : " • " + formatDuration(song.duration)}
             </SongArtistName>
           </SongSummary>
         </div>

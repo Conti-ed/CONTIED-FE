@@ -313,13 +313,13 @@ const ContiDetail: React.FC = () => {
       setNotification({
         message: "선택한 곡들이 삭제되었습니다.",
         type: "success",
-      }); // 알림 설정
+      });
     } catch (error) {
       console.error("삭제 과정에서 오류가 있나봐요...", error);
       setNotification({
         message: "곡 삭제에 실패했습니다. 다시 시도해 주세요.",
         type: "error",
-      }); // 에러 알림 설정
+      });
     } finally {
       setIsDeleteModalOpen(false);
     }
@@ -420,11 +420,11 @@ const ContiDetail: React.FC = () => {
                     )}
                   </Title>
                   <Subtitle>{nickname || "사용자"}</Subtitle>
-                  <SongInfo>{`${
-                    contiData.ContiToSong.length
-                  }곡 • ${formatTotalDuration(
-                    totalDuration
-                  )} • ${formatRelativeTime(
+                  <SongInfo>{`${contiData.ContiToSong.length}곡 ${
+                    formatTotalDuration(totalDuration) === "0분"
+                      ? ""
+                      : "• " + formatTotalDuration(totalDuration)
+                  } • ${formatRelativeTime(
                     parseLocalDateString(contiData.updatedAt)
                   )}`}</SongInfo>
                 </InfoText>
