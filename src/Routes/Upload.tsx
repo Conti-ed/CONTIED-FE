@@ -2,8 +2,6 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import StatusBar from "../components/StatusBar";
-import SafariSpace from "../components/SafariSpace";
 import CustomUpload from "../components/Uploads/CustomUpload";
 import AIUpload from "../components/Uploads/AIUpload";
 import YouTubeUpload from "../components/Uploads/YouTubeUpload";
@@ -28,7 +26,7 @@ const Content = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 134px;
+  margin-bottom: 23px;
 `;
 
 const Header = styled.div`

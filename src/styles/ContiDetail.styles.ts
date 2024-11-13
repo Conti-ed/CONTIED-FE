@@ -269,10 +269,10 @@ export const ToggleButton = styled.button`
 `;
 
 export const EmptyStateContainer = styled.div`
-  margin-top: 65px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 80px;
 `;
 
 export const EmptyStateImage = styled.img`

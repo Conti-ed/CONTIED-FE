@@ -6,7 +6,7 @@ export const Container = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background-color: #fff;
   overflow: hidden;
 `;
@@ -100,7 +100,7 @@ export const SearchBar = styled.div`
 `;
 
 export const Content = styled.div`
-  height: 60.5%;
+  margin-top: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,10 +126,10 @@ export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
 
 export const RecentSearchContainer = styled.div`
   position: absolute;
-  top: 18%; /* 위치를 조금 더 아래로 조정합니다 */
+  top: 18%;
   width: 90%;
-  max-height: 33%; /* 최대 높이를 설정하여 스크롤 가능하게 합니다 */
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
+  max-height: 33%;
+  overflow-y: auto;
 `;
 
 export const RecentSearchesHeader = styled.div`
@@ -141,7 +141,7 @@ export const RecentSearchesHeader = styled.div`
   font-weight: 300;
   color: #525252;
   background: #fff;
-  position: sticky; /* 컨테이너 내에서 고정 */
+  position: sticky;
   top: 0;
   margin-bottom: 10px;
 `;
