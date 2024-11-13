@@ -194,9 +194,9 @@ const Search: React.FC = () => {
   }, []);
 
   return (
-    <Container>
-      <Header>
-        <AnimatePresence>
+    <AnimatePresence>
+      <Container>
+        <Header>
           {isFocused && (
             <BackIcon
               initial={{ opacity: 0, x: -20 }}
@@ -209,47 +209,47 @@ const Search: React.FC = () => {
               <Icon id="back-upload" width="9" height="16" />
             </BackIcon>
           )}
-        </AnimatePresence>
-        <Title $isFocused={isFocused}>검색</Title>
-        <div style={{ width: "9px", height: "16px" }} />
-      </Header>
-      <SearchInputContainer>
-        <SearchInputWrapper>
-          <SearchInput
-            ref={inputRef}
-            placeholder="콘티, 노래 또는 가사 등"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onKeyDown={handleKeyDown}
-          />
-          {searchQuery && isFocused && (
-            <ClearIcon className="clear-icon" onClick={handleClearSearch}>
-              <Icon id="clear-search" width="18" height="18" />
-            </ClearIcon>
+          <Title $isFocused={isFocused}>검색</Title>
+          <div style={{ width: "9px", height: "16px" }} />
+        </Header>
+        <SearchInputContainer>
+          <SearchInputWrapper>
+            <SearchInput
+              ref={inputRef}
+              placeholder="콘티, 노래 또는 가사 등"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onKeyDown={handleKeyDown}
+            />
+            {searchQuery && isFocused && (
+              <ClearIcon className="clear-icon" onClick={handleClearSearch}>
+                <Icon id="clear-search" width="18" height="18" />
+              </ClearIcon>
+            )}
+            <SearchIcon viewBox="0 0 18 18" onClick={handleSearch}>
+              <Icon id="search-search" width="18" height="18" />
+            </SearchIcon>
+          </SearchInputWrapper>
+          <SearchBar />
+        </SearchInputContainer>
+        <Content>
+          {isLoading ? (
+            <Loading />
+          ) : isFocused && recentSearches.length > 0 ? (
+            renderRecentSearches()
+          ) : isFocused ? (
+            <EmptyState message={"최근 검색한 기록이 없어요."} top="52%" />
+          ) : (
+            <SearchSuggestions
+              suggestions={lyricsSuggestions}
+              onSuggestionClick={handleSuggestionClick}
+            />
           )}
-          <SearchIcon viewBox="0 0 18 18" onClick={handleSearch}>
-            <Icon id="search-search" width="18" height="18" />
-          </SearchIcon>
-        </SearchInputWrapper>
-        <SearchBar />
-      </SearchInputContainer>
-      <Content>
-        {isLoading ? (
-          <Loading />
-        ) : isFocused && recentSearches.length > 0 ? (
-          renderRecentSearches()
-        ) : isFocused ? (
-          <EmptyState message={"최근 검색한 기록이 없어요."} top="52%" />
-        ) : (
-          <SearchSuggestions
-            suggestions={lyricsSuggestions}
-            onSuggestionClick={handleSuggestionClick}
-          />
-        )}
-      </Content>
-      <TabBar />
-    </Container>
+        </Content>
+        <TabBar />
+      </Container>
+    </AnimatePresence>
   );
 };
 
