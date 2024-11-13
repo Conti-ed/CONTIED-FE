@@ -3,9 +3,27 @@ import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
 import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
 
 function Root() {
   const isDark = useRecoilValue(isDarkAtom);
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVh();
+    window.addEventListener("resize", setVh);
+
+    // 모바일 기기에서 orientation 변경 시에도 적용
+    window.addEventListener("orientationchange", setVh);
+
+    return () => {
+      window.removeEventListener("resize", setVh);
+      window.removeEventListener("orientationchange", setVh);
+    };
+  }, []);
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
@@ -105,6 +123,9 @@ input {
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.textColor};
 }
+#root, html, body {
+    height: 100%;
+  }
 `;
 
 export default Root;
