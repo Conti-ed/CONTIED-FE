@@ -10,7 +10,7 @@ const Container = styled.div`
   height: 53px;
   background-color: #fff;
   border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
+  // border-bottom: 1px solid #e0e0e0;
   position: absolute;
   bottom: 0;
 `;
