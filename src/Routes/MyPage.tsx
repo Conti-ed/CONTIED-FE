@@ -153,7 +153,7 @@ export const EmptyStateContainer = styled(motion.div)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 80%;
   width: 100%;
 `;
 

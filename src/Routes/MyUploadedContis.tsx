@@ -45,12 +45,14 @@ const MyUploadedContis: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getConties();
-        const userNickname = await getUserNickname();
+        const [contiesResponse, userNickname] = await Promise.all([
+          getConties(),
+          getUserNickname(),
+        ]);
 
-        const conties = Array.isArray(response)
-          ? response
-          : response.contiData || [];
+        const conties = Array.isArray(contiesResponse)
+          ? contiesResponse
+          : contiesResponse.contiData || [];
 
         const filteredContis = conties.filter(
           (conti: ContiType) =>
@@ -59,7 +61,6 @@ const MyUploadedContis: React.FC = () => {
 
         setUploadedContis(filteredContis);
         setNickname(userNickname);
-
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);

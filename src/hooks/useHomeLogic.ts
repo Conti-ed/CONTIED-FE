@@ -1,40 +1,47 @@
 import { useState, useEffect, useCallback } from "react";
 import { NavigateFunction } from "react-router-dom";
-
-interface Conti {
-  id: string;
-  title: string;
-  thumbnail: string;
-}
+import { getConties, getUserNickname } from "../utils/axios";
+import { ContiType } from "../types";
 
 export const useHomeLogic = (navigate: NavigateFunction) => {
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [isButtonClicked, setIsButtonClicked] = useState<string | null>(null);
-  const [contiList, setContiList] = useState<Conti[]>([]);
-  const [selectedConti, setSelectedConti] = useState<Conti | null>(null);
+  const [contiList, setContiList] = useState<ContiType[]>([]);
+  const [selectedConti, setSelectedConti] = useState<ContiType | null>(null);
 
-  // 콘티 목록 중에서 랜덤으로 하나 선택하는 함수
-  const selectRandomConti = useCallback((list: Conti[]) => {
+  const selectRandomConti = useCallback((list: ContiType[]) => {
     if (list.length > 0) {
       const randomIndex = Math.floor(Math.random() * list.length);
       setSelectedConti(list[randomIndex]);
     } else {
-      setSelectedConti(null); // 콘티 목록이 비어 있을 경우
+      setSelectedConti(null);
     }
   }, []);
 
-  // 로컬 스토리지에서 콘티 데이터를 불러오고, 없을 경우 안전하게 처리
   useEffect(() => {
-    const storedContiData = Object.keys(localStorage)
-      .filter((key) => key.startsWith("conti_"))
-      .map((key) => {
-        const conti = localStorage.getItem(key);
-        return conti ? JSON.parse(conti) : null; // null인 경우 안전하게 처리
-      })
-      .filter((conti): conti is Conti => conti !== null); // null 값을 제외
+    const fetchContiData = async () => {
+      try {
+        const [contiesResponse, userNickname] = await Promise.all([
+          getConties(),
+          getUserNickname(),
+        ]);
 
-    setContiList(storedContiData); // 콘티 목록 설정
-    selectRandomConti(storedContiData); // 랜덤으로 콘티 선택
+        const conties = Array.isArray(contiesResponse)
+          ? contiesResponse
+          : contiesResponse.contiData || [];
+
+        const filteredContiData = conties.filter(
+          (conti: ContiType) => conti.User.nickname === userNickname
+        );
+
+        setContiList(filteredContiData);
+        selectRandomConti(filteredContiData);
+      } catch (error) {
+        console.error("Failed to fetch conti data:", error);
+      }
+    };
+
+    fetchContiData();
   }, [selectRandomConti]);
 
   // 마우스가 버튼 위에 올려졌을 때 호출되는 함수
@@ -48,7 +55,7 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
   };
 
   // 앨범 클릭 시 호출되는 함수
-  const handleAlbumClick = (id: string) => {
+  const handleAlbumClick = (id: number) => {
     navigate(`/conti-detail/${id}`);
   };
 
