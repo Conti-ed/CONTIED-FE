@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-// import Cookies from "js-cookie";
-import { /* getAccessToken */ setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
+import { getAccessToken, setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
 import { ContiType } from "../types";
 
 // 서버 URL 설정
@@ -21,10 +20,10 @@ const api: AxiosInstance = axios.create({
 // 요청 interceptors: Authorization header에 token 추가
 api.interceptors.request.use(
   (config) => {
-    // const token = getAccessToken();
-    // if (token) {
-    //   config.headers["Authorization"] = `Bearer ${token}`;
-    // }
+    const token = getAccessToken();
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -115,6 +114,30 @@ export async function getAllMyConties(): Promise<ContiType[]> {
   }
 
   return allContis;
+}
+
+export async function postContiByAi(
+  keywordsArray: string[],
+  bibleVerseRange: string | null
+) {
+  const payload: { keywords: string[]; bible_verse_range?: string } = {
+    keywords: keywordsArray,
+  };
+
+  if (bibleVerseRange) {
+    payload.bible_verse_range = bibleVerseRange;
+  }
+
+  console.log("Payload to be sent:", payload); // 추가된 디버그 로그
+
+  try {
+    const response = await api.post("/conti/myconti/ai", payload);
+    console.log("Response data:", response.data); // 응답 데이터 확인용 로그
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create AI-based conti:", error);
+    throw error;
+  }
 }
 
 // 콘티 정보 수정하기

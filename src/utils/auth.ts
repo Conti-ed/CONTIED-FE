@@ -11,7 +11,7 @@ interface TokenResponse {
 // 현재의 Access Token Get
 export const getAccessToken = (): string | undefined => {
   const accessToken = cookies.get("accessToken");
-  console.log(accessToken);
+  // console.log(accessToken);
   return accessToken;
 };
 

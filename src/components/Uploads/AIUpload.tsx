@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Oval } from "react-loader-spinner";
-import { SERVER_URL } from "../../api";
 import Icon from "../Icon";
 import BibleVerseSelector from "../BibleVerseSelector";
 import {
@@ -19,6 +18,7 @@ import {
   VisibilityInputWrapper,
   KeywordErrorMessage,
 } from "../../styles/Upload.styles";
+import { postContiByAi } from "../../utils/axios";
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
@@ -56,11 +56,19 @@ const AIUpload = () => {
   };
 
   const handleBibleVerseFromChange = (verse: string, abbreviation: string) => {
-    setContiBibleVerseFrom(`${abbreviation}${verse}`);
+    if (!verse.startsWith(abbreviation)) {
+      setContiBibleVerseFrom(`${abbreviation}${verse}`);
+    } else {
+      setContiBibleVerseFrom(verse);
+    }
   };
 
   const handleBibleVerseToChange = (verse: string, abbreviation: string) => {
-    setContiBibleVerseTo(`${abbreviation}${verse}`);
+    if (!verse.startsWith(abbreviation)) {
+      setContiBibleVerseTo(`${abbreviation}${verse}`);
+    } else {
+      setContiBibleVerseTo(verse);
+    }
   };
 
   const handleNext = () => {
@@ -98,35 +106,35 @@ const AIUpload = () => {
       .map((keyword) => keyword.trim())
       .filter((keyword) => keyword !== "");
 
-    let bibleVerseRange = "";
+    let bibleVerseRange = null;
     if (contiBibleVerseFrom && contiBibleVerseTo) {
-      bibleVerseRange = `${contiBibleVerseFrom}~${contiBibleVerseTo}`;
+      const fromVerseMatch = contiBibleVerseFrom.match(/\d+:\d+/);
+      const toVerseMatch = contiBibleVerseTo.match(/\d+:\d+/);
+
+      const fromVerse = fromVerseMatch
+        ? contiBibleVerseFrom.replace(/^(\D+)(.*)/, "$1") + fromVerseMatch[0]
+        : contiBibleVerseFrom;
+
+      const toVerse = toVerseMatch
+        ? contiBibleVerseTo.replace(/^(\D+)(.*)/, "$1") + toVerseMatch[0]
+        : contiBibleVerseTo;
+
+      bibleVerseRange = `${fromVerse}~${toVerse}`;
     } else if (contiBibleVerseFrom) {
-      bibleVerseRange = contiBibleVerseFrom;
+      const fromVerseMatch = contiBibleVerseFrom.match(/\d+:\d+/);
+      bibleVerseRange = fromVerseMatch
+        ? contiBibleVerseFrom.replace(/^(\D+)(.*)/, "$1") + fromVerseMatch[0]
+        : contiBibleVerseFrom;
     } else if (contiBibleVerseTo) {
-      bibleVerseRange = contiBibleVerseTo;
+      const toVerseMatch = contiBibleVerseTo.match(/\d+:\d+/);
+      bibleVerseRange = toVerseMatch
+        ? contiBibleVerseTo.replace(/^(\D+)(.*)/, "$1") + toVerseMatch[0]
+        : contiBibleVerseTo;
     }
 
     setIsLoading(true);
     try {
-      const body = {
-        keywords: keywordsArray,
-        bible_verse_range: bibleVerseRange,
-        visibility,
-      };
-      const response = await fetch(`${SERVER_URL}/api/conti`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create conti");
-      }
-
-      const data = await response.json();
+      const data = await postContiByAi(keywordsArray, bibleVerseRange);
       console.log(data);
 
       const contiData = {

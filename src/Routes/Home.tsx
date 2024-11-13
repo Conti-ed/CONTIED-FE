@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { SERVER_URL } from "../api";
 import { UserInfo } from "../types";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import TabBar from "../components/TabBar";
@@ -26,7 +25,7 @@ import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
-import api from "../utils/axios";
+import api, { SERVER_URL } from "../utils/axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
