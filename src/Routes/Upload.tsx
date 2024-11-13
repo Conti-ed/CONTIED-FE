@@ -125,7 +125,6 @@ const Upload: React.FC = () => {
 
   return (
     <Container>
-      <StatusBar />
       <Header>
         <BackIcon width="9" viewBox="0 0 9 16" onClick={() => navigate(-1)}>
           <Icon id="back-upload" width="9" height="16" />
@@ -133,7 +132,6 @@ const Upload: React.FC = () => {
         <Title>{renderTitle()}</Title>
       </Header>
       {renderContent()}
-      <SafariSpace $isFocused={false} />
     </Container>
   );
 };

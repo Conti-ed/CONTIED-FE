@@ -160,7 +160,7 @@ export const EmptyStateContainer = styled(motion.div)`
 `;
 
 export const EmptyStateImage = styled.img`
-  width: 100px;
+  width: auto;
   height: 100px;
   margin-bottom: 20px;
 `;
