@@ -80,7 +80,7 @@ const Notification: React.FC<NotificationProps> = ({
     const timer = setTimeout(() => {
       setVisible(false);
       setTimeout(onClose, 500);
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [onClose]);

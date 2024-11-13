@@ -29,6 +29,7 @@ import Icon from "../components/Icon";
 
 const Result: React.FC = () => {
   const location = useLocation();
+  const { contiId } = location.state || {};
   const navigate = useNavigate();
   const initialQuery = location.state?.query || "";
   const [query, setQuery] = useState(initialQuery);
@@ -63,6 +64,14 @@ const Result: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleBackClick = () => {
+    if (contiId) {
+      navigate(`/conti/${contiId}`);
+    } else {
+      navigate("/search");
+    }
+  };
 
   const handleClearSearch = () => {
     setQuery("");
@@ -116,7 +125,7 @@ const Result: React.FC = () => {
             initial={{ opacity: 1, x: 21 }}
             width="9"
             height="16"
-            onClick={() => navigate("/search")}
+            onClick={handleBackClick}
           >
             <Icon id="back-upload" width="9" height="16" />
           </BackIcon>

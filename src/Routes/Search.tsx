@@ -40,6 +40,7 @@ const Search: React.FC = () => {
   const recentSearchesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { contiId } = location.state || {};
 
   useEffect(() => {
     if (location.state) {
@@ -108,7 +109,7 @@ const Search: React.FC = () => {
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
-          state: { query: searchQuery },
+          state: { query: searchQuery, contiId: contiId },
         }); // 결과 페이지로 이동
       }, 1000); // 1초 후에 로딩 종료
     }

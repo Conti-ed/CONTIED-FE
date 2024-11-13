@@ -48,7 +48,6 @@ const MyUploadedContis: React.FC = () => {
         const response = await getConties();
         const userNickname = await getUserNickname();
 
-        console.log(response);
         const conties = Array.isArray(response)
           ? response
           : response.contiData || [];
@@ -57,6 +56,7 @@ const MyUploadedContis: React.FC = () => {
           (conti: ContiType) =>
             conti.state !== "DELETED" && conti.User.nickname === userNickname
         );
+
         setUploadedContis(filteredContis);
         setNickname(userNickname);
 

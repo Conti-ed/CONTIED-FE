@@ -8,14 +8,20 @@ import {
 } from "../../styles/Modal.styles";
 import ContiPlaceholder from "../ContiPlaceholder";
 import styled from "styled-components";
-import { getAllMyConties, patchConti, PatchContiDto } from "../../utils/axios";
+import {
+  getConties,
+  getUserNickname,
+  patchConti,
+  PatchContiDto,
+} from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
   parseLocalDateString,
 } from "../../utils/formatDuration";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ContiType } from "../../types";
+import Notification from "../Notification";
 
 const ContiList = styled.ul`
   list-style: none;
@@ -121,6 +127,10 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedContiId, setSelectedContiId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type?: "success" | "error" | "info";
+  } | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -128,11 +138,17 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         setIsLoading(true);
         setError(null);
         try {
-          const allContis = await getAllMyConties();
-          const activeContis = allContis.filter(
-            (conti: ContiType) => conti.state !== "DELETED"
+          const response = await getConties();
+          const userNickname = await getUserNickname();
+          const conties = Array.isArray(response)
+            ? response
+            : response.contiData || [];
+
+          const filteredContis = conties.filter(
+            (conti: ContiType) =>
+              conti.state !== "DELETED" && conti.User.nickname === userNickname
           );
-          setContis(activeContis);
+          setContis(filteredContis);
         } catch (error: any) {
           console.error("콘티 목록 가져오기 실패:", error);
           setError(
@@ -174,7 +190,10 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         );
 
         if (existingSongIds.includes(songId)) {
-          alert("이미 이 콘티에 추가된 곡입니다.");
+          setNotification({
+            message: "이미 이 콘티에 추가된 곡이에요.",
+            type: "info",
+          });
           setIsAdding(false);
           return;
         }
@@ -187,8 +206,16 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         };
 
         await patchConti(selectedContiId, dto);
+        const truncatedTitle =
+          selectedConti.title.length > 10
+            ? `${selectedConti.title.slice(0, 10)}...`
+            : selectedConti.title;
 
-        alert(`${selectedConti.title} 콘티에 곡이 추가되었습니다.`);
+        setNotification({
+          message: `${truncatedTitle} 콘티에 곡이 추가되었어요!`,
+          type: "success",
+        });
+
         onClose();
       } catch (error: any) {
         console.error("콘티에 곡 추가 실패:", error);
@@ -202,79 +229,94 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <OverlayModal
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <ModalContainer
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        style={{ width: "90vw", maxWidth: "500px" }}
-      >
-        <ModalTitle>추가할 콘티를 선택해주세요</ModalTitle>
-        {isLoading ? (
-          <LoadingIndicator>로딩 중...</LoadingIndicator>
-        ) : error ? (
-          <ErrorMessage>{error}</ErrorMessage>
-        ) : contis.length > 0 ? (
-          <ContiList>
-            {contis.map((conti) => (
-              <ContiItem
-                key={conti.id}
-                onClick={() => handleContiSelect(conti.id)}
-                $isSelected={selectedContiId === conti.id}
-              >
-                <ContiImageWrapper>
-                  <ContiPlaceholder size={80} />
-                  <ContiImage
-                    src={conti.thumbnail || "/images/WhitePiano.png"}
-                    alt="Album Image"
-                    style={{
-                      height:
-                        conti.thumbnail === null ||
-                        conti.thumbnail === "/images/WhitePiano.png"
-                          ? "50px"
-                          : "80px",
-                    }}
-                  />
-                </ContiImageWrapper>
-                <InfoText>
-                  <Title>{conti.title}</Title>
-                  <Subtitle>{`${formatRelativeTime(
-                    parseLocalDateString(conti.updatedAt)
-                  )} • ${formatTotalDuration(conti.duration)}`}</Subtitle>
-                </InfoText>
-              </ContiItem>
-            ))}
-          </ContiList>
-        ) : (
-          <div>생성된 콘티가 없어요...</div>
-        )}
-        <ModalActions>
-          {selectedContiId !== null && (
-            <AddButton
-              onClick={handleAddToConti}
-              disabled={isAdding}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <OverlayModal
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            key="overlay"
+          >
+            <ModalContainer
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
+              style={{ width: "90vw", maxWidth: "500px" }}
             >
-              {isAdding ? "추가 중..." : "추가"}
-            </AddButton>
-          )}
-          <CancelButton onClick={onClose} disabled={isLoading || isAdding}>
-            취소
-          </CancelButton>
-        </ModalActions>
-      </ModalContainer>
-    </OverlayModal>
+              <ModalTitle>추가할 콘티를 선택해주세요</ModalTitle>
+              {isLoading ? (
+                <LoadingIndicator>로딩 중...</LoadingIndicator>
+              ) : error ? (
+                <ErrorMessage>{error}</ErrorMessage>
+              ) : contis.length > 0 ? (
+                <ContiList>
+                  {contis.map((conti) => (
+                    <ContiItem
+                      key={conti.id}
+                      onClick={() => handleContiSelect(conti.id)}
+                      $isSelected={selectedContiId === conti.id}
+                    >
+                      <ContiImageWrapper>
+                        <ContiPlaceholder size={80} />
+                        <ContiImage
+                          src={conti.thumbnail || "/images/WhitePiano.png"}
+                          alt="Album Image"
+                          style={{
+                            height:
+                              conti.thumbnail === null ||
+                              conti.thumbnail === "/images/WhitePiano.png"
+                                ? "50px"
+                                : "80px",
+                          }}
+                        />
+                      </ContiImageWrapper>
+                      <InfoText>
+                        <Title>{conti.title}</Title>
+                        <Subtitle>{`${formatRelativeTime(
+                          parseLocalDateString(conti.updatedAt)
+                        )} • ${formatTotalDuration(conti.duration)}`}</Subtitle>
+                      </InfoText>
+                    </ContiItem>
+                  ))}
+                </ContiList>
+              ) : (
+                <div>생성된 콘티가 없어요...</div>
+              )}
+              <ModalActions>
+                {selectedContiId !== null && (
+                  <AddButton
+                    onClick={handleAddToConti}
+                    disabled={isAdding}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {isAdding ? "추가 중..." : "추가"}
+                  </AddButton>
+                )}
+                <CancelButton
+                  onClick={onClose}
+                  disabled={isLoading || isAdding}
+                >
+                  취소
+                </CancelButton>
+              </ModalActions>
+            </ModalContainer>
+          </OverlayModal>
+        )}
+      </AnimatePresence>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
+    </>
   );
 };
 

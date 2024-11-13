@@ -189,7 +189,9 @@ const ContiDetail: React.FC = () => {
     setIsAddSongLoading(true);
     setTimeout(() => {
       setIsAddSongLoading(false);
-      navigate("/search", { state: { isFocused: true, query: "" } });
+      navigate("/search", {
+        state: { isFocused: true, query: "", contiId: contiId },
+      });
     }, 1000);
   };
 
