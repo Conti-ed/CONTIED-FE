@@ -33,7 +33,7 @@ const fadeOut = keyframes`
 `;
 
 const Container = styled.div`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 `;
 
 const Content = styled.div<{ $isFading: boolean }>`

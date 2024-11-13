@@ -3,13 +3,11 @@ import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
-import StatusBar from "../components/StatusBar";
-import SafariSpace from "../components/SafariSpace";
 import Icon from "../components/Icon";
 import { Oval } from "react-loader-spinner";
 
 const Container = styled.div`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 `;
 
 const Content = styled.div`
@@ -17,7 +15,7 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 663px;
+  height: 100%;
   width: 100%;
   background-color: #fff;
 `;
@@ -49,14 +47,14 @@ const Box = styled(motion.div)<{ $isSelected: boolean }>`
       : "#f0f0f0"};
   width: 300px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* 트랜지션 시간 단축 */
+  transition: background-color 0.3s ease;
 `;
 
 const Text = styled.div<{ $isSelected: boolean }>`
   font-size: 15px;
   font-weight: 500;
   color: ${({ $isSelected }) => ($isSelected ? "#f0f0f0" : "#000")};
-  transition: color 0.3s ease; /* 트랜지션 시간 단축 */
+  transition: color 0.3s ease;
 `;
 
 const Button = styled(motion.button)`
@@ -166,7 +164,6 @@ const Select: React.FC = () => {
 
   return (
     <Container>
-      <StatusBar />
       <Content>
         <Title>주로 어떤 역할이신가요?!</Title>
         <TextContainer>
@@ -242,7 +239,6 @@ const Select: React.FC = () => {
           </Button>
         )}
       </Content>
-      <SafariSpace $isFocused={false} />
     </Container>
   );
 };
