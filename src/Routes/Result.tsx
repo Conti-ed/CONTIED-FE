@@ -110,7 +110,7 @@ const Result: React.FC = () => {
       selectedTab === "전체"
         ? "검색 결과가 없어요."
         : `${selectedTab} 검색 결과가 없어요.`;
-    return <EmptyState message={tabText} top="49.5%" />;
+    return <EmptyState message={tabText} top="56%" />;
   };
 
   return (
