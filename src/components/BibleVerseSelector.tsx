@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import bibleData from "../data/bibleData.json";
 
 const SelectorContainer = styled(motion.div)`
   display: flex;
   gap: 10px;
   width: 100%;
+  border: 2px solid #94b4ed;
+  border-radius: 10px;
 `;
 
 const Select = styled(motion.select)`
   border-radius: 10px;
-  border: 2px solid #94b4ed;
+  border: none;
   font-size: 13.7px;
   font-weight: 300;
   color: #171a1f;
@@ -37,23 +40,19 @@ const Select = styled(motion.select)`
 `;
 
 const BookSelect = styled(Select)`
-  width: 50%;
+  flex: 2; /* 50% */
 `;
 
 const ChapterSelect = styled(Select)`
-  width: 25%;
+  flex: 1; /* 25% */
 `;
 
 const VerseSelect = styled(Select)`
-  width: 25%;
+  flex: 1; /* 25% */
 `;
 
-const bibleBooks = ["창세기", "출애굽기", "레위기" /* ... */];
-const chapters = Array.from({ length: 50 }, (_, i) => i + 1);
-const verses = Array.from({ length: 50 }, (_, i) => i + 1);
-
 interface BibleVerseSelectorProps {
-  onChange: (verse: string) => void;
+  onChange: (verse: string, abbreviation: string) => void;
   $hasError: boolean;
   expanded: boolean;
   placeholder: string;
@@ -68,14 +67,32 @@ const BibleVerseSelector: React.FC<BibleVerseSelectorProps> = ({
   const [book, setBook] = useState("");
   const [chapter, setChapter] = useState("");
   const [verse, setVerse] = useState("");
+  const [abbreviation, setAbbreviation] = useState("");
 
   useEffect(() => {
-    if (book && chapter && verse) {
-      onChange(`${book} ${chapter}:${verse}`);
+    const selectedBook = bibleData.books.find((b) => b.name === book);
+    if (selectedBook) {
+      setAbbreviation(selectedBook.abbreviation);
     } else {
-      onChange("");
+      setAbbreviation("");
     }
-  }, [book, chapter, verse, onChange]);
+  }, [book]);
+
+  useEffect(() => {
+    if (book && chapter && verse && abbreviation) {
+      onChange(`${abbreviation}${chapter}:${verse}`, abbreviation);
+    } else {
+      onChange("", abbreviation);
+    }
+  }, [book, chapter, verse, abbreviation, onChange]);
+
+  const selectedBook = bibleData.books.find((b) => b.name === book);
+  const totalChapters = selectedBook ? selectedBook.chapters.length : 0;
+  const totalVerses =
+    selectedBook && chapter
+      ? selectedBook.chapters.find((c) => c.number === Number(chapter))
+          ?.verses || 0
+      : 0;
 
   return (
     <SelectorContainer
@@ -99,28 +116,33 @@ const BibleVerseSelector: React.FC<BibleVerseSelectorProps> = ({
         }}
       >
         <option value="">{placeholder}</option>
-        {bibleBooks.map((b) => (
-          <option key={b} value={b}>
-            {b}
+        {bibleData.books.map((b) => (
+          <option key={b.name} value={b.name}>
+            {b.name}
           </option>
         ))}
       </BookSelect>
       <ChapterSelect
         value={chapter}
         onChange={(e) => setChapter(e.target.value)}
+        disabled={!book}
       >
         <option value="">장</option>
-        {chapters.map((c) => (
+        {Array.from({ length: totalChapters }, (_, i) => i + 1).map((c) => (
           <option key={c} value={c}>
-            {c}
+            {c}장
           </option>
         ))}
       </ChapterSelect>
-      <VerseSelect value={verse} onChange={(e) => setVerse(e.target.value)}>
+      <VerseSelect
+        value={verse}
+        onChange={(e) => setVerse(e.target.value)}
+        disabled={!chapter}
+      >
         <option value="">절</option>
-        {verses.map((v) => (
+        {Array.from({ length: totalVerses }, (_, i) => i + 1).map((v) => (
           <option key={v} value={v}>
-            {v}
+            {v}절
           </option>
         ))}
       </VerseSelect>

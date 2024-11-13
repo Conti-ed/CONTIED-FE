@@ -27,11 +27,6 @@ const AIUpload = () => {
   const [visibility, setVisibility] = useState("공개");
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState({
-    keyword: false,
-    bibleVerseFrom: false,
-    bibleVerseTo: false,
-  });
   const [keywordError, setKeywordError] = useState("");
   const [step, setStep] = useState(1);
   const [expandedFrom, setExpandedFrom] = useState(false);
@@ -45,6 +40,7 @@ const AIUpload = () => {
     if (field === "keyword") {
       setContiKeyword("");
       keywordRef.current?.focus();
+      setKeywordError("");
     } else if (field === "bibleVerseFrom") {
       setContiBibleVerseFrom("");
     } else {
@@ -59,78 +55,63 @@ const AIUpload = () => {
     return trimmedKeyword.split(",").every((word) => word.trim() !== "");
   };
 
-  const handleBibleVerseFromChange = (verse: string) => {
-    setContiBibleVerseFrom(verse);
+  const handleBibleVerseFromChange = (verse: string, abbreviation: string) => {
+    setContiBibleVerseFrom(`${abbreviation}${verse}`);
   };
 
-  const handleBibleVerseToChange = (verse: string) => {
-    setContiBibleVerseTo(verse);
+  const handleBibleVerseToChange = (verse: string, abbreviation: string) => {
+    setContiBibleVerseTo(`${abbreviation}${verse}`);
   };
 
   const handleNext = () => {
     if (step === 1) {
       if (!validateKeyword(contiKeyword)) {
         setKeywordError("키워드를 하나 이상 적어주세요!");
-        setHasError((prev) => ({ ...prev, keyword: true }));
         setTimeout(() => {
           setKeywordError("");
-          setHasError((prev) => ({ ...prev, keyword: false }));
         }, 2000);
       } else {
-        setStep(2);
+        setStep((prevStep) => prevStep + 1);
       }
     } else if (step === 2) {
-      if (contiBibleVerseFrom.trim() === "") {
-        setHasError((prev) => ({ ...prev, bibleVerseFrom: true }));
-        setTimeout(() => {
-          setHasError((prev) => ({ ...prev, bibleVerseFrom: false }));
-        }, 2000);
-      } else {
-        setStep(3);
-        setExpandedFrom(true);
-      }
+      setStep((prevStep) => prevStep + 1);
+      setExpandedFrom(true);
     } else if (step === 3) {
-      if (contiBibleVerseTo.trim() === "") {
-        setHasError((prev) => ({ ...prev, bibleVerseTo: true }));
-        setTimeout(() => {
-          setHasError((prev) => ({ ...prev, bibleVerseTo: false }));
-        }, 2000);
-      } else {
-        setStep(4);
-        setExpandedTo(true);
-      }
+      setStep((prevStep) => prevStep + 1);
+      setExpandedTo(true);
     } else if (step === 4) {
-      setStep(5);
+      setStep((prevStep) => prevStep + 1);
     }
   };
 
   const handleComplete = async () => {
-    if (
-      !validateKeyword(contiKeyword) ||
-      !contiBibleVerseFrom ||
-      !contiBibleVerseTo
-    ) {
-      setHasError({
-        keyword: !validateKeyword(contiKeyword),
-        bibleVerseFrom: !contiBibleVerseFrom,
-        bibleVerseTo: !contiBibleVerseTo,
-      });
+    if (!validateKeyword(contiKeyword)) {
+      setKeywordError("키워드를 하나 이상 적어주세요!");
       setTimeout(() => {
-        setHasError({
-          keyword: false,
-          bibleVerseFrom: false,
-          bibleVerseTo: false,
-        });
+        setKeywordError("");
       }, 2000);
       return;
+    }
+
+    const keywordsArray = contiKeyword
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword !== "");
+
+    let bibleVerseRange = "";
+    if (contiBibleVerseFrom && contiBibleVerseTo) {
+      bibleVerseRange = `${contiBibleVerseFrom}~${contiBibleVerseTo}`;
+    } else if (contiBibleVerseFrom) {
+      bibleVerseRange = contiBibleVerseFrom;
+    } else if (contiBibleVerseTo) {
+      bibleVerseRange = contiBibleVerseTo;
     }
 
     setIsLoading(true);
     try {
       const body = {
-        keyword: contiKeyword,
-        bibleVerseFrom: contiBibleVerseFrom,
-        bibleVerseTo: contiBibleVerseTo,
+        keywords: keywordsArray,
+        bible_verse_range: bibleVerseRange,
         visibility,
       };
       const response = await fetch(`${SERVER_URL}/api/conti`, {
@@ -195,7 +176,7 @@ const AIUpload = () => {
           >
             어떤 주제를 담아낼 콘티인가요?
           </AnimatedTitle>
-        ) : (
+        ) : step === 2 || step === 3 ? (
           <AnimatedTitle
             key="title2"
             initial="initial"
@@ -205,7 +186,27 @@ const AIUpload = () => {
           >
             콘티의 주제가 될 성경 구절을 선택해주세요!
           </AnimatedTitle>
-        )}
+        ) : step === 4 ? (
+          <AnimatedTitle
+            key="title3"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={inputVariants}
+          >
+            공개 여부를 선택해주세요!
+          </AnimatedTitle>
+        ) : step === 5 ? (
+          <AnimatedTitle
+            key="title4"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={inputVariants}
+          >
+            완성된 콘티를 확인해볼까요?
+          </AnimatedTitle>
+        ) : null}
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
@@ -217,16 +218,16 @@ const AIUpload = () => {
             <InputWrapper>
               <MotionInput
                 ref={keywordRef}
-                placeholder="예) 사랑, 생명, 삶의 예배"
+                placeholder="예) 사랑, 생명, 삶의 예배 (필수)"
                 value={contiKeyword}
                 onChange={(e) => setContiKeyword(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onKeyDown={handleKeyDown}
-                $hasError={hasError.keyword}
+                $hasError={keywordError !== ""}
                 initial={{ width: "90%" }}
                 animate={{
                   width: step > 1 ? "100%" : "90%",
-                  borderColor: hasError.keyword ? "#ea8c8c" : "#94b4ed",
+                  borderColor: keywordError ? "#ea8c8c" : "#94b4ed",
                 }}
                 transition={{
                   duration: 0.3,
@@ -255,6 +256,7 @@ const AIUpload = () => {
             </InputWrapper>
             {keywordError && (
               <KeywordErrorMessage
+                as={motion.div}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -277,9 +279,9 @@ const AIUpload = () => {
                 <InputWrapper>
                   <BibleVerseSelector
                     onChange={handleBibleVerseFromChange}
-                    $hasError={hasError.bibleVerseFrom}
+                    $hasError={false}
                     expanded={expandedFrom}
-                    placeholder="성경"
+                    placeholder="성경 (선택)"
                   />
                   {step === 2 && (
                     <NextButton onClick={handleNext}>부터</NextButton>
@@ -301,9 +303,9 @@ const AIUpload = () => {
                 <InputWrapper>
                   <BibleVerseSelector
                     onChange={handleBibleVerseToChange}
-                    $hasError={hasError.bibleVerseTo}
+                    $hasError={false}
                     expanded={expandedTo}
-                    placeholder="성경"
+                    placeholder="성경 (선택)"
                   />
                   {step === 3 && (
                     <NextButton onClick={handleNext}>까지</NextButton>

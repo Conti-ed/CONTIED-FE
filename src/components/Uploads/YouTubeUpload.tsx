@@ -144,7 +144,7 @@ const YouTubeUpload = () => {
           </AnimatedTitle>
         ) : step === 4 ? (
           <AnimatedTitle
-            key="title3"
+            key="title4"
             initial="initial"
             animate="animate"
             exit="exit"

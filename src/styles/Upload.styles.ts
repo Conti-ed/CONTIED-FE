@@ -171,3 +171,16 @@ export const VisibilityInputWrapper = styled(InputWrapper)`
     text-align: center;
   }
 `;
+
+export const ToggleButton = styled.button`
+  background: none;
+  border: none;
+  color: #94b4ed;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 5px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
