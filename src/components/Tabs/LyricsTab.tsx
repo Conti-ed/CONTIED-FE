@@ -20,7 +20,7 @@ const SongSection = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-bottom: 74px;
+  margin-top: 35px;
   display: flex;
   flex-direction: column;
   justify-content: center;

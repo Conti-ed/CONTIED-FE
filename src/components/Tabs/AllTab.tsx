@@ -14,11 +14,10 @@ import { ContiType, SongType } from "../../types";
 import { useQuery } from "react-query";
 
 const Container = styled(motion.div)`
-  height: 60%;
+  height: 70%;
   width: 100%;
-  padding-bottom: 60px;
   position: absolute;
-  top: 25%;
+  top: 22%;
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -102,7 +101,7 @@ const SongInfo = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-bottom: 74px;
+  margin-top: 35px;
   display: flex;
   flex-direction: column;
   justify-content: center;

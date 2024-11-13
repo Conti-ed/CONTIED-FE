@@ -7,12 +7,11 @@ import { SongType } from "../../types";
 
 const Container = styled(motion.div)`
   position: absolute;
-  top: 25%;
+  top: 23%;
   width: 100%;
-  height: 60%;
+  height: 70%;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-bottom: 70px;
 `;
 
 const SongSection = styled.div`
@@ -21,7 +20,7 @@ const SongSection = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-bottom: 74px;
+  margin-top: 35px;
   display: flex;
   flex-direction: column;
   justify-content: center;

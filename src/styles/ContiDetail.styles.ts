@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import styled, { css, keyframes } from "styled-components";
 
 export const Container = styled(motion.div)`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
@@ -358,7 +358,7 @@ export const DEContiData = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 70.5%;
+  margin-top: 35vh;
 `;
 
 export const DEImage = styled.img`
