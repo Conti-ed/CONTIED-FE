@@ -42,9 +42,13 @@ const NotificationContainer = styled.div`
   z-index: 1000;
 `;
 
-const NotificationContent = styled.div<{ type: string; visible: boolean }>`
-  background-color: ${({ type }) =>
-    type === "success" ? "#4CAF50" : type === "error" ? "#F44336" : "#2196F3"};
+const NotificationContent = styled.div<{ $type: string; $visible: boolean }>`
+  background-color: ${({ $type }) =>
+    $type === "success"
+      ? "#4CAF50"
+      : $type === "error"
+      ? "#F44336"
+      : "#2196F3"};
   color: white;
   padding: 12px 20px;
   border-radius: 4px;
@@ -54,8 +58,8 @@ const NotificationContent = styled.div<{ type: string; visible: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 300px;
-  animation: ${({ visible }) =>
-    visible
+  animation: ${({ $visible }) =>
+    $visible
       ? css`
           ${fadeIn} 0.5s forwards
         `
@@ -83,7 +87,7 @@ const Notification: React.FC<NotificationProps> = ({
 
   return (
     <NotificationContainer>
-      <NotificationContent type={type} visible={visible}>
+      <NotificationContent $type={type} $visible={visible}>
         {message}
       </NotificationContent>
     </NotificationContainer>

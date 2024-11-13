@@ -6,13 +6,12 @@ import TabBar from "../components/TabBar";
 import api, { SERVER_URL } from "../utils/axios";
 import { UserInfo } from "../types";
 
-// Reusable styled components
 export const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background-color: #fff;
 `;
 
