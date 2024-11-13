@@ -65,7 +65,7 @@ const ButtonContainer = styled.div`
 
 export const SquareButton = styled.div<{ $isActive: boolean }>`
   width: 48%;
-  aspect-ratio: 4 / 3.5; // 높이를 줄이기 위해 aspect-ratio 수정
+  aspect-ratio: 4 / 3.5;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -86,7 +86,6 @@ export const ButtonText = styled.span<{ $isActive: boolean }>`
   line-height: 1.2;
 `;
 
-// Reusable components for ContiItem
 export const ContiItem = styled(motion.div)`
   display: flex;
   align-items: center;
