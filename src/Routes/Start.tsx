@@ -19,7 +19,7 @@ const StartPage = styled.div<{ $isFading: boolean }>`
   justify-content: center;
   align-items: center;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   min-height: -webkit-fill-available;
   background-color: #92b5f0;
   ${({ $isFading }) =>
