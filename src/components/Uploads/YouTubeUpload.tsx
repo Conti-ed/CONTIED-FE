@@ -122,7 +122,7 @@ const YouTubeUpload = () => {
           >
             링크만으로도 콘티가 생성돼요!
           </AnimatedTitle>
-        ) : (
+        ) : step === 2 ? (
           <AnimatedTitle
             key="title2"
             initial="initial"
@@ -132,7 +132,27 @@ const YouTubeUpload = () => {
           >
             콘티에 대한 설명을 추가해주세요!
           </AnimatedTitle>
-        )}
+        ) : step === 3 ? (
+          <AnimatedTitle
+            key="title3"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={titleVariants}
+          >
+            공개 여부를 선택해주세요!
+          </AnimatedTitle>
+        ) : step === 4 ? (
+          <AnimatedTitle
+            key="title3"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={titleVariants}
+          >
+            완성된 콘티를 확인해볼까요?
+          </AnimatedTitle>
+        ) : null}
       </AnimatePresence>
       <InputContainer>
         <InputGroup>
