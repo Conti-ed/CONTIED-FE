@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
-import Cookies from "js-cookie";
-import { getAccessToken, setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
+// import Cookies from "js-cookie";
+import { /* getAccessToken */ setupTokenRefresh } from "./auth"; // auth.ts에서 토큰 갱신 로직 가져옴
 import { ContiType } from "../types";
 
 // 서버 URL 설정
