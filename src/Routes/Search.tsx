@@ -15,7 +15,6 @@ import {
   BackIcon,
   SearchBar,
   Content,
-  TabBarWrapper,
   RecentSearchContainer,
   RecentSearchesHeader,
   ClearAllButton,
@@ -23,8 +22,6 @@ import {
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
 import EmptyState from "../components/EmptyState";
-import InputSafariSpace from "../components/InputSafariSpace";
-import Keyboard from "../components/Keyboard";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
 import { getRandomSuggestions } from "../utils/randomUtils";
 import { getAllSongs } from "../utils/axios";
@@ -243,7 +240,7 @@ const Search: React.FC = () => {
         ) : isFocused && recentSearches.length > 0 ? (
           renderRecentSearches()
         ) : isFocused ? (
-          <EmptyState message={"최근 검색한 기록이 없어요."} top="35%" />
+          <EmptyState message={"최근 검색한 기록이 없어요."} top="52%" />
         ) : (
           <SearchSuggestions
             suggestions={lyricsSuggestions}
@@ -251,11 +248,7 @@ const Search: React.FC = () => {
           />
         )}
       </Content>
-      <TabBarWrapper $isFocused={isFocused}>
-        <TabBar onHomeClick={() => setIsFocused(false)} />
-        <InputSafariSpace $isFocused={isFocused} />
-      </TabBarWrapper>
-      {isFocused && <Keyboard />}
+      <TabBar />
     </Container>
   );
 };

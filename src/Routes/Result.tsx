@@ -11,14 +11,11 @@ import {
   BackIcon,
   SearchBar,
   Content,
-  TabBarWrapper,
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
 import { AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
-import InputSafariSpace from "../components/InputSafariSpace";
-import Keyboard from "../components/Keyboard";
 import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
 import ContiTab from "../components/Tabs/ContiTab";
@@ -183,11 +180,7 @@ const Result: React.FC = () => {
           renderEmptyState()
         )}
       </Content>
-      <TabBarWrapper $isFocused={isFocused}>
-        <TabBar onHomeClick={() => setIsFocused(false)} />
-        <InputSafariSpace $isFocused={isFocused} />
-      </TabBarWrapper>
-      {isFocused && <Keyboard />}
+      <TabBar />
     </Container>
   );
 };

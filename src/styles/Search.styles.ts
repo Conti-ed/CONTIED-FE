@@ -128,7 +128,7 @@ export const RecentSearchContainer = styled.div`
   position: absolute;
   top: 18%;
   width: 90%;
-  max-height: 33%;
+  max-height: 40%;
   overflow-y: auto;
 `;
 
