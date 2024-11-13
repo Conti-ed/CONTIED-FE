@@ -141,12 +141,10 @@ const AIUpload = () => {
         id: data.id,
         title: data.title,
         description: data.description,
-        ownerName: data.owner.name,
-        updated_at: data.updated_at,
-        lyrics: data.lyrics,
+        userId: data.userId,
+        updatedAt: data.updatedAt,
         duration: data.duration,
-        songs: data.songs,
-        thumbnail: "/images/WhitePiano.png",
+        thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
 
