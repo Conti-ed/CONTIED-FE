@@ -7,7 +7,7 @@ export const Container = styled(motion.div)`
   align-items: center;
   background-color: #ffffff;
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   position: relative;
 `;
