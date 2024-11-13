@@ -1,5 +1,7 @@
-import Cookies from "js-cookie";
+import { Cookies } from "react-cookie";
 import api from "./axios";
+
+const cookies = new Cookies();
 
 interface TokenResponse {
   access_token: string;
@@ -8,24 +10,26 @@ interface TokenResponse {
 
 // 현재의 Access Token Get
 export const getAccessToken = (): string | undefined => {
-  return Cookies.get("accessToken");
+  const accessToken = cookies.get("accessToken");
+  console.log(accessToken);
+  return accessToken;
 };
 
 // Access Token과 Refresh Token을 설정
 export const setTokens = (accessToken: string, refreshToken: string): void => {
-  Cookies.set("accessToken", accessToken);
-  Cookies.set("refreshToken", refreshToken);
+  cookies.set("accessToken", accessToken, { path: "/" });
+  cookies.set("refreshToken", refreshToken, { path: "/" });
 };
 
 // Token 제거
 export const removeTokens = (): void => {
-  Cookies.remove("accessToken");
-  Cookies.remove("refreshToken");
+  cookies.remove("accessToken", { path: "/" });
+  cookies.remove("refreshToken", { path: "/" });
 };
 
 // Update Access Token
 export const refreshAccessToken = async (): Promise<string | null> => {
-  const refreshToken = Cookies.get("refreshToken");
+  const refreshToken = cookies.get("refreshToken");
 
   if (!refreshToken) {
     console.error("Refresh token not found");
@@ -58,6 +62,7 @@ export const setupTokenRefresh = (api: any): void => {
         originalRequest._retry = true;
 
         const newAccessToken = await refreshAccessToken();
+        console.log(newAccessToken);
         if (newAccessToken) {
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
