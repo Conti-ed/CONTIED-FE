@@ -10,6 +10,7 @@ import {
 } from "../../utils/formatDuration";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "react-query";
+import { ContiType } from "../../types";
 
 const Conties = styled(motion.div)`
   position: absolute;
@@ -118,11 +119,17 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
     const fetchConties = async () => {
       try {
         const response = await getConties();
+        const userNickname = await getUserNickname();
         const conties = Array.isArray(response)
           ? response
           : response.contiData || [];
 
-        const sortedConties = conties.sort(
+        const filteredContis = conties.filter(
+          (conti: ContiType) =>
+            conti.state !== "DELETED" && conti.User.nickname === userNickname
+        );
+
+        const sortedConties = filteredContis.sort(
           (a: any, b: any) =>
             new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );

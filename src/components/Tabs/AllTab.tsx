@@ -156,12 +156,18 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
       try {
         const songsResponse = await getAllSongs();
         const contiesResponse = await getConties();
+        const userNickname = await getUserNickname();
         const songs = songsResponse.songData || [];
         const conties = Array.isArray(contiesResponse)
           ? contiesResponse
           : contiesResponse.contiData || [];
 
-        const sortedConties = conties.sort(
+        const filteredContis = conties.filter(
+          (conti: ContiType) =>
+            conti.state !== "DELETED" && conti.User.nickname === userNickname
+        );
+
+        const sortedConties = filteredContis.sort(
           (a: any, b: any) =>
             new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );

@@ -63,7 +63,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
   return (
     <SuggestionsWrapper>
-      <Title>랜덤 검색어</Title>
+      <Title>추천 검색어</Title>
       <SuggestionsContainer>
         {randomSuggestions.map((suggestion, index) => (
           <Suggestion key={index} onClick={() => onSuggestionClick(suggestion)}>

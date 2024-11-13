@@ -51,7 +51,7 @@ export const MotionInput = styled(motion.input)<{ $hasError: boolean }>`
   width: 90%;
   border-radius: 10px;
   border: 2px solid #94b4ed;
-  font-size: 13.7px;
+  font-size: 16px;
   font-weight: 300;
   color: #171a1f;
   background-color: transparent;
