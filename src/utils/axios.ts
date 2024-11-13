@@ -6,7 +6,7 @@ import { ContiType } from "../types";
 // 서버 URL 설정
 // export const SERVER_URL = "http://localhost:5000";
 export const SERVER_URL =
-  "https://port-0-contied-api-m3d8djgv98deef95.sel4.cloudtype.app/";
+  "https://port-0-contied-api-m3d8djgv98deef95.sel4.cloudtype.app";
 
 // Axios Instance 생성
 const api: AxiosInstance = axios.create({
