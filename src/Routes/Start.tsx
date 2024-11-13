@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
-import { SERVER_URL } from "../api";
 import { useLocation, useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../utils/axios";
 
 const fadeOut = keyframes`
   from {
