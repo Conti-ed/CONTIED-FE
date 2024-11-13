@@ -25,7 +25,6 @@ export const OverlayModal = styled(motion.div)`
   animation: ${fadeIn} 0.3s ease-out;
 `;
 
-// 모달 컨테이너
 export const ModalContainer = styled(motion.div)`
   background-color: white;
   padding: 20px;
@@ -34,7 +33,7 @@ export const ModalContainer = styled(motion.div)`
   z-index: 1001;
   max-width: 600px;
   width: 100%;
-  max-height: 50vh; /* 최대 높이 설정 */
+  max-height: 60vh;
   text-align: center;
   animation: ${fadeIn} 0.3s ease-out;
 `;

@@ -14,10 +14,8 @@ import {
   TabBarWrapper,
 } from "../styles/Search.styles";
 import TabBar from "../components/TabBar";
-import SafariSpace from "../components/SafariSpace";
 import { AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
 import InputSafariSpace from "../components/InputSafariSpace";
 import Keyboard from "../components/Keyboard";

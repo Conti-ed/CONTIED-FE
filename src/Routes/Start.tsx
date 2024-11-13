@@ -19,8 +19,8 @@ const StartPage = styled.div<{ $isFading: boolean }>`
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
-  background-color: #92b5f0; /* 배경 색상 */
+  height: 100dvh;
+  background-color: #92b5f0;
   ${({ $isFading }) =>
     $isFading &&
     css`
