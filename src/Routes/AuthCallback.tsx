@@ -1,22 +1,20 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleAuth = async () => {
-      const token = Cookies.get("accessToken");
-      if (token) {
+      try {
         navigate("/waiting");
-      } else {
+      } catch (error) {
+        console.error("인증 과정에서 오류가 발생했습니다:", error);
         navigate("/?error=auth_failed");
       }
     };
     handleAuth();
   }, [navigate]);
-
   return null;
 };
 
