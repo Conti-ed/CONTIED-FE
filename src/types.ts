@@ -43,7 +43,7 @@ export type ContiToSongType = {
 
 export type ContiType = {
   id: number;
-  userId: number;
+  User: UserInfo;
   title: string;
   keywords?: string[];
   ContiToSong: ContiToSongType[];

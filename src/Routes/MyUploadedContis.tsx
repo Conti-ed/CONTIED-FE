@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import styled from "styled-components";
@@ -22,8 +22,7 @@ import {
   EmptyStateText1,
   EmptyStateText2,
 } from "./MyPage";
-import { useQuery } from "react-query";
-import { getUserNickname, getAllMyConties } from "../utils/axios";
+import { getUserNickname, getConties } from "../utils/axios";
 import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
@@ -36,26 +35,41 @@ const ContiList = styled(motion.div)`
 
 const MyUploadedContis: React.FC = () => {
   const navigate = useNavigate();
+  const [uploadedContis, setUploadedContis] = useState<ContiType[] | null>(
+    null
+  );
+  const [nickname, setNickname] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
 
-  const {
-    data: uploadedContis,
-    isLoading,
-    isError,
-  } = useQuery<ContiType[], Error>("uploadedContis", getAllMyConties, {
-    staleTime: 1000,
-    retry: 1,
-    select: (data: ContiType[]) =>
-      data.filter((conti) => conti.state !== "DELETED"),
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getConties();
+        const userNickname = await getUserNickname();
 
-  const {
-    data: nickname,
-    isLoading: isNicknameLoading,
-    isError: isNicknameError,
-  } = useQuery<string, Error>("nickname", getUserNickname, {
-    staleTime: 1000 * 60 * 5,
-    retry: 1,
-  });
+        console.log(response);
+        const conties = Array.isArray(response)
+          ? response
+          : response.contiData || [];
+
+        const filteredContis = conties.filter(
+          (conti: ContiType) =>
+            conti.state !== "DELETED" && conti.User.nickname === userNickname
+        );
+        setUploadedContis(filteredContis);
+        setNickname(userNickname);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        setIsError(true);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleContiClick = useCallback(
     (id: number) => {
@@ -64,7 +78,7 @@ const MyUploadedContis: React.FC = () => {
     [navigate]
   );
 
-  if (isLoading || isNicknameLoading) {
+  if (isLoading) {
     return (
       <Container
         initial={{ opacity: 0 }}
@@ -85,7 +99,7 @@ const MyUploadedContis: React.FC = () => {
     );
   }
 
-  if (isError || isNicknameError) {
+  if (isError) {
     return (
       <Container
         initial={{ opacity: 0 }}
