@@ -5,8 +5,8 @@
 <img alt="image" src="https://github.com/Conti-ed/client/blob/main/public/images/fulllogo_dark.png?raw=true">
 </div>
 
-## Conti:ed (현재 개발 중) 📅
-> **개발 기간: 2024.01 ~ Present**
+## Conti:ed (1차 배포 완료) 📅
+> **1차 개발 기간: 2024.01 ~ 2024.11**
 
 ## 관련 링크 🔗
 
