@@ -15,6 +15,8 @@
 
 ## 프로젝트 소개 🫱🏻‍🫲🏻
 
+<img alt="image" src="https://github.com/Conti-ed/client/blob/main/public/images/Contied_작품설명.png?raw=true">
+
 - 콘티는 영화 등의 촬영을 위하여 각본을 바탕으로 필요한 모든 사항을 기록한 것을 의미합니다. <br>
 Conti:ed 서비스에서의 콘티는 교회 및 밴드에서 진행되는 콘서트 형식의 곡들이 어떻게 진행되어 가는지를 상세히 기록하기 위해 사용됩니다. <br>
 
