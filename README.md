@@ -10,7 +10,7 @@
 
 ## 관련 링크 🔗
 
-> **개발 버전** : [https://conti-ed.vercel.app/](https://conti-ed.vercel.app/) <br>
+> **개발 버전** : [client-20h.pages.dev/](client-20h.pages.dev/) <br>
 > **기록 일지** : [https://www.notion.so/Conti-ed-8e533187ef4d4d5e90b3916aac7101f5?pvs=4](https://www.notion.so/Conti-ed-8e533187ef4d4d5e90b3916aac7101f5?pvs=4) <br>
 
 ## 프로젝트 소개 🫱🏻‍🫲🏻
