@@ -1,8 +1,7 @@
 # Conti:ed
 
 <div align="center">
-<img alt="image" src="https://github.com/Conti-ed/client/blob/main/public/images/fulllogo_light.png?raw=true">
-<img alt="image" src="https://github.com/Conti-ed/client/blob/main/public/images/fulllogo_dark.png?raw=true">
+<img alt="image" src="https://github.com/Conti-ed/client/blob/main/public/images/contiedv2_logo.png?raw=true">
 </div>
 
 ## Conti:ed (1차 배포 완료) 📅
