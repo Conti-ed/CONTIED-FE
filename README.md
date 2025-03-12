@@ -111,56 +111,105 @@ $ npm start
 
 ### 디렉토리 구조
 ```bash
-├── README.md
-├── package-lock.json
-├── package.json
-├── public
-│   ├── images : 로고 및 기타 이미지 저장 폴더
-│   │   ├── logo.png
-│   │   ├── placeholder.png
-│   └── └── login.png
-└── src : 프론트엔드
-    ├── components
-    │   ├── StatusBar.tsx : IOS 헤더
-    │   ├── EmptyState.tsx : 특정 요소가 없을 경우
-    │   ├── ContiPlaceholder.tsx
-    │   ├── AlbumPlaceholder.tsx
-    │   ├── SongPlaceholder.tsx
-    │   ├── SafariSpace.tsx : IOS footer
-    │   ├── InputSafariSpace.tsx : 입력 시 IOS footer
-    │   ├── Keyboard.tsx : IOS 키보드
-    │   ├── TabBar.tsx : 페이지 하단 옵션 바
-    │   ├── SongItem.tsx : 곡 상세 정보
-    │   ├── SongList.tsx : 곡 리스트
-    │   └── Uploads : 업로드 관련
-    │       ├── CustomUpload.tsx : 커스텀 콘티 생성 관리
-    │       ├── AIUpload.tsx : AI 콘티 생성 관리
-    │       └── YouTubeUpload.tsx : 유튜브 콘티 생성 관리
-    │   └── Tabs : 검색 결과 탭 관련
-    │       ├── AllTab.tsx : 전체 탭 관리
-    │       ├── SongsTab.tsx : 곡 탭 관리
-    │       ├── ContiTab.tsx : 콘티 탭 관리
-    │       └── LyricsTab.tsx : 가사 탭 관리
-    ├── Routes
-    │   ├── Start.tsx : 시작 페이지
-    │   ├── Wait.tsx : 로그인 대기 페이지
-    │   ├── Home.tsx : 메인 페이지
-    │   ├── Search.tsx : 검색 페이지
-    │   ├── Result.tsx : 검색 결과 페이지
-    │   ├── MyPage.tsx : 설정 및 관리 페이지
-    │   └── ContiDetail.tsx : 콘티 상세 페이지
-    ├── utils
-    │   └── formatDuration.ts : 시간 포맷 설정
-    ├── styles
-    │   ├── Home.styles.ts
-    │   ├── TabBar.styles.ts
-    │   └── LoadingSpinner.styles.ts : 로딩 시 출력되는 화면
-    ├── Router.tsx : 이동 로직 관리
-    ├── Root.tsx
-    ├── index.tsx
-    ├── api.ts : API 관리
-    ├── atoms.ts
-    └── types.ts
+client
+├─ .gitignore
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ favicon.ico
+│  ├─ fonts
+│  │  ├─ ESAMANRU BOLD.TTF
+│  │  ├─ ESAMANRU LIGHT.TTF
+│  │  └─ ESAMANRU MEDIUM.TTF
+│  └─ index.html
+├─ README.md
+├─ src
+│  ├─ api.ts
+│  ├─ atoms.ts
+│  ├─ components
+│  │  ├─ AddLoading.tsx
+│  │  ├─ AlbumPlaceholder.tsx
+│  │  ├─ BibleVerseSelector.tsx
+│  │  ├─ Conti.tsx
+│  │  ├─ ContiPlaceholder.tsx
+│  │  ├─ DetailOptions.tsx
+│  │  ├─ EmptyState.tsx
+│  │  ├─ HomeButton.tsx
+│  │  ├─ Icon.tsx
+│  │  ├─ InputSafariSpace.tsx
+│  │  ├─ Keyboard.tsx
+│  │  ├─ Loading.tsx
+│  │  ├─ LyricsOnlySongItem.tsx
+│  │  ├─ Modals
+│  │  │  ├─ AddSongToConti.tsx
+│  │  │  ├─ ConfirmModal.tsx
+│  │  │  └─ DescriptionModal.tsx
+│  │  ├─ Notification.tsx
+│  │  ├─ SafariSpace.tsx
+│  │  ├─ SearchSuggestions.tsx
+│  │  ├─ SectionTabs.tsx
+│  │  ├─ SongItem.tsx
+│  │  ├─ SongList.tsx
+│  │  ├─ SongPlaceholder.tsx
+│  │  ├─ StatusBar.tsx
+│  │  ├─ TabBar.tsx
+│  │  ├─ Tabs
+│  │  │  ├─ AllTab.tsx
+│  │  │  ├─ ContiTab.tsx
+│  │  │  ├─ LyricsTab.tsx
+│  │  │  └─ SongsTab.tsx
+│  │  ├─ Uploads
+│  │  │  ├─ AIUpload.tsx
+│  │  │  ├─ CustomUpload.tsx
+│  │  │  └─ YouTubeUpload.tsx
+│  │  └─ waitingAnimation.json
+│  ├─ constants
+│  │  └─ homeConstants.tsx
+│  ├─ data
+│  │  └─ bibleData.json
+│  ├─ GlobalSVGProvider.tsx
+│  ├─ hooks
+│  │  ├─ useAdaptiveTextColor.ts
+│  │  ├─ useContiDetailState.ts
+│  │  ├─ useHashtags.ts
+│  │  └─ useHomeLogic.ts
+│  ├─ index.tsx
+│  ├─ Root.tsx
+│  ├─ Router.tsx
+│  ├─ Routes
+│  │  ├─ AddSong.tsx
+│  │  ├─ AuthCallback.tsx
+│  │  ├─ ContiDetail.tsx
+│  │  ├─ Home.tsx
+│  │  ├─ MyFavoriteContis.tsx
+│  │  ├─ MyPage.tsx
+│  │  ├─ MyUploadedContis.tsx
+│  │  ├─ Result.tsx
+│  │  ├─ Search.tsx
+│  │  ├─ Select.tsx
+│  │  ├─ Start.tsx
+│  │  ├─ Upload.tsx
+│  │  └─ Wait.tsx
+│  ├─ styled.d.ts
+│  ├─ styles
+│  │  ├─ Conti.styles.ts
+│  │  ├─ ContiDetail.styles.ts
+│  │  ├─ Header.styles.ts
+│  │  ├─ Home.styles.ts
+│  │  ├─ LoadingSpinner.ts
+│  │  ├─ Modal.styles.ts
+│  │  ├─ Search.styles.ts
+│  │  ├─ TabBar.styles.ts
+│  │  └─ Upload.styles.ts
+│  ├─ Theme.ts
+│  ├─ types.ts
+│  └─ utils
+│     ├─ auth.ts
+│     ├─ axios.ts
+│     ├─ formatDuration.ts
+│     ├─ lyricsUtils.ts
+│     └─ randomUtils.ts
+└─ tsconfig.json
 
 ```
 ---
