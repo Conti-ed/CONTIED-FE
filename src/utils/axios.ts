@@ -3,8 +3,7 @@ import { getAccessToken, setupTokenRefresh } from "./auth"; // auth.ts에서 토
 import { ContiType } from "../types";
 
 // 서버 URL 설정
-// export const SERVER_URL = "https://port-0-contied-api-m3d8djgv98deef95.sel4.cloudtype.app";
-export const SERVER_URL = "http://localhost:8080/api/v1";
+export const SERVER_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api/v1";
 
 // Axios Instance 생성
 const api: AxiosInstance = axios.create({
