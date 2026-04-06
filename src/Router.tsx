@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: "", element: <Start /> },
-      { path: "callback", element: <AuthCallback /> },
+      { path: "auth/callback", element: <AuthCallback /> },
       { path: "waiting", element: <Wait /> },
       { path: "select", element: <Select /> },
       { path: "home", element: <Home /> },

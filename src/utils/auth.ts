@@ -1,18 +1,12 @@
 import { Cookies } from "react-cookie";
-import api from "./axios";
+import { supabase } from "./supabase";
 
 const cookies = new Cookies();
-
-interface TokenResponse {
-  access_token: string;
-  refresh_token: string;
-}
+// ... (TokenResponse interface can stay if needed, but not strictly required now)
 
 // 현재의 Access Token Get
 export const getAccessToken = (): string | undefined => {
-  const accessToken = cookies.get("accessToken");
-  // console.log(accessToken);
-  return accessToken;
+  return cookies.get("accessToken");
 };
 
 // Access Token과 Refresh Token을 설정
@@ -27,26 +21,21 @@ export const removeTokens = (): void => {
   cookies.remove("refreshToken", { path: "/" });
 };
 
-// Update Access Token
+// Update Access Token (Supabase 방식)
 export const refreshAccessToken = async (): Promise<string | null> => {
-  const refreshToken = cookies.get("refreshToken");
-
-  if (!refreshToken) {
-    console.error("Refresh token not found");
-    return null;
-  }
-
   try {
-    const response = await api.post<TokenResponse>("/auth/refresh", {
-      refresh_token: refreshToken,
-    });
-    const { access_token, refresh_token } = response.data;
-
-    setTokens(access_token, refresh_token); // new token 설정
+    const { data, error } = await supabase.auth.refreshSession();
+    if (error || !data.session) {
+      console.error("Failed to refresh token:", error?.message);
+      removeTokens();
+      return null;
+    }
+    const { access_token, refresh_token } = data.session;
+    setTokens(access_token, refresh_token);
     return access_token;
   } catch (error) {
-    console.error("Failed to refresh token:", error);
-    removeTokens(); // update 실패 시, token 제거
+    console.error("Refresh token error:", error);
+    removeTokens();
     return null;
   }
 };

@@ -3,6 +3,7 @@ import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SERVER_URL } from "../utils/axios";
+import { supabase } from "../utils/supabase";
 
 const fadeOut = keyframes`
   from {
@@ -100,11 +101,19 @@ const Start: React.FC = () => {
     }
   }, [location, navigate]);
 
-  const handleLoginClick = () => {
+  const handleLogin = async (provider: "kakao" | "google" | "github") => {
     setIsFading(true);
-    setTimeout(() => {
-      window.location.href = `${SERVER_URL}/auth/kakao`;
-    }, 300);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      setError(`로그인 실패: ${error.message}`);
+      setIsFading(false);
+    }
   };
 
   return (
@@ -113,12 +122,31 @@ const Start: React.FC = () => {
         <Logo src="/images/StartLogov2.png" alt="Contied Logo" />
       </LogoContainer>
       <ButtonContainer>
-        <StartButton onClick={handleLoginClick}>
-          <IconContainer>
-            <Icon id="kakao-start" width="32" height="32" />
-          </IconContainer>
-          <TextContainer>카카오로 3초 만에 시작하기</TextContainer>
-        </StartButton>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%", padding: "0 40px" }}>
+          {/* Kakao Login */}
+          <StartButton onClick={() => handleLogin("kakao")} style={{ backgroundColor: "#ffe812" }}>
+            <IconContainer>
+              <Icon id="kakao-start" width="24" height="24" />
+            </IconContainer>
+            <TextContainer>카카오 로그인</TextContainer>
+          </StartButton>
+
+          {/* Google Login */}
+          <StartButton onClick={() => handleLogin("google")} style={{ backgroundColor: "#ffffff", border: "1px solid #ddd" }}>
+            <IconContainer>
+              <Icon id="google-start" width="24" height="24" />
+            </IconContainer>
+            <TextContainer>구글 로그인</TextContainer>
+          </StartButton>
+
+          {/* GitHub Login */}
+          <StartButton onClick={() => handleLogin("github")} style={{ backgroundColor: "#24292e", color: "#fff" }}>
+            <IconContainer>
+              <Icon id="github-start" width="24" height="24" />
+            </IconContainer>
+            <TextContainer>깃허브 로그인</TextContainer>
+          </StartButton>
+        </div>
       </ButtonContainer>
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </StartPage>
