@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { SERVER_URL } from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import { setTokens } from "../utils/auth"; // auth.ts에서 setTokens 가져옴
 

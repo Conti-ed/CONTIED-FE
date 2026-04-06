@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
 import { useLocation, useNavigate } from "react-router-dom";
-import { SERVER_URL } from "../utils/axios";
 import { supabase } from "../utils/supabase";
 
 const fadeOut = keyframes`
