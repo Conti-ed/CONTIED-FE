@@ -47,7 +47,7 @@ export const setupTokenRefresh = (api: any): void => {
     async (error: any) => {
       const originalRequest = error.config;
 
-      if (error.response.status === 401 && !originalRequest._retry) {
+      if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
         const newAccessToken = await refreshAccessToken();
