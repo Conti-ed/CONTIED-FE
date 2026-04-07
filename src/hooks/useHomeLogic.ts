@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { NavigateFunction } from "react-router-dom";
+import { useQuery } from "react-query";
 import { getConties, getUserNickname } from "../utils/axios";
 import { ContiType } from "../types";
 
 export const useHomeLogic = (navigate: NavigateFunction) => {
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [isButtonClicked, setIsButtonClicked] = useState<string | null>(null);
-  const [contiList, setContiList] = useState<ContiType[]>([]);
   const [selectedConti, setSelectedConti] = useState<ContiType | null>(null);
 
   const selectRandomConti = useCallback((list: ContiType[]) => {
-    if (list.length > 0) {
+    if (list && list.length > 0) {
       const randomIndex = Math.floor(Math.random() * list.length);
       setSelectedConti(list[randomIndex]);
     } else {
@@ -18,31 +18,37 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
     }
   }, []);
 
+  const { data } = useQuery(
+    ["myContis"],
+    async () => {
+      const [contiesResponse, userNickname] = await Promise.all([
+        getConties(),
+        getUserNickname(),
+      ]);
+
+      const conties = Array.isArray(contiesResponse)
+        ? contiesResponse
+        : (contiesResponse as any).contiData || [];
+
+      const filteredContis = conties.filter(
+        (conti: ContiType) =>
+          conti.state !== "DELETED" && conti.User.nickname === userNickname
+      );
+
+      return { filteredContis, userNickname };
+    },
+    {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 10,
+    }
+  );
+
+  const contiList = data?.filteredContis || [];
+
   useEffect(() => {
-    const fetchContiData = async () => {
-      try {
-        const [contiesResponse, userNickname] = await Promise.all([
-          getConties(),
-          getUserNickname(),
-        ]);
+    selectRandomConti(contiList);
+  }, [contiList, selectRandomConti]);
 
-        const conties = Array.isArray(contiesResponse)
-          ? contiesResponse
-          : contiesResponse.contiData || [];
-
-        const filteredContiData = conties.filter(
-          (conti: ContiType) => conti.User.nickname === userNickname
-        );
-
-        setContiList(filteredContiData);
-        selectRandomConti(filteredContiData);
-      } catch (error) {
-        console.error("Failed to fetch conti data:", error);
-      }
-    };
-
-    fetchContiData();
-  }, [selectRandomConti]);
 
   // 마우스가 버튼 위에 올려졌을 때 호출되는 함수
   const handleMouseEnter = (buttonName: string) => {
