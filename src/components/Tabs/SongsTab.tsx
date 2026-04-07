@@ -4,6 +4,7 @@ import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
 import { getAllSongs } from "../../utils/axios";
 import { SongType } from "../../types";
+import { useQuery } from "react-query";
 
 const Container = styled(motion.div)`
   position: absolute;
@@ -61,18 +62,15 @@ const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
   const [songsData, setSongsData] = useState<any[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
 
+  const { data: response } = useQuery("allSongs", () => getAllSongs(), {
+    staleTime: 1000 * 60 * 5,
+  });
+
   useEffect(() => {
-    const fetchSongs = async () => {
-      try {
-        const response = await getAllSongs();
-        const songs = response.songData || [];
-        setSongsData(songs);
-      } catch (error) {
-        console.error("Failed to fetch songs:", error);
-      }
-    };
-    fetchSongs();
-  }, []);
+    if (response) {
+      setSongsData(response.songData || []);
+    }
+  }, [response]);
 
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();

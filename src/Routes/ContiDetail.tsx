@@ -132,16 +132,29 @@ const ContiDetail: React.FC = () => {
     const newIsFavorite = !isFavorite;
     setIsFavorite(newIsFavorite); // Optimistic UI update
 
+    // 캐시도 즉시 업데이트 (Optimistic Cache Update)
+    queryClient.setQueryData<ContiType[] | undefined>("likedContis", (old) => {
+      if (!old || !contiData) return old;
+      if (newIsFavorite) {
+        return [...old, contiData];
+      } else {
+        return old.filter((c) => c.id !== Number(contiId));
+      }
+    });
+
     try {
       if (newIsFavorite) {
         await likeConti(Number(contiId));
       } else {
         await unlikeConti(Number(contiId));
       }
+      // 백그라운드 검증용 refetch
       queryClient.invalidateQueries("likedContis");
     } catch (error) {
       console.error("Failed to toggle like:", error);
       setIsFavorite(!newIsFavorite); // Rollback on failure
+      // 캐시도 롤백
+      queryClient.invalidateQueries("likedContis");
     }
   };
 
@@ -195,13 +208,9 @@ const ContiDetail: React.FC = () => {
   }, [contiData]);
 
   const handleAddSongClick = () => {
-    setIsAddSongLoading(true);
-    setTimeout(() => {
-      setIsAddSongLoading(false);
-      navigate("/search", {
-        state: { isFocused: true, query: "", contiId: contiId },
-      });
-    }, 1000);
+    navigate("/search", {
+      state: { isFocused: true, query: "", contiId: contiId },
+    });
   };
 
   const renderEmptyState = () => (
@@ -338,7 +347,7 @@ const ContiDetail: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
-  if (isContiLoading || isNicknameLoading) {
+  if (isContiLoading) {
     return <Loading />;
   }
 

@@ -115,32 +115,33 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   const [contiData, setContiData] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: nickname } = useQuery("userProfile", getUserNickname, {
+    staleTime: 1000 * 60 * 30,
+  });
+
   useEffect(() => {
-    const fetchConties = async () => {
-      try {
-        const response = await getConties();
-        const userNickname = await getUserNickname();
-        const conties = Array.isArray(response)
-          ? response
-          : response.contiData || [];
+    if (!contiesResponse || !nickname) return;
 
-        const filteredContis = conties.filter(
-          (conti: ContiType) =>
-            conti.state !== "DELETED" && conti.User.nickname === userNickname
-        );
+    const conties = Array.isArray(contiesResponse)
+      ? contiesResponse
+      : contiesResponse.contiData || [];
 
-        const sortedConties = filteredContis.sort(
-          (a: any, b: any) =>
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        );
+    const filteredContis = conties.filter(
+      (conti: ContiType) =>
+        conti.state !== "DELETED" && conti.User.nickname === nickname
+    );
 
-        setContiData(sortedConties);
-      } catch (error) {
-        console.error("Failed to fetch conties:", error);
-      }
-    };
-    fetchConties();
-  }, []);
+    const sortedConties = filteredContis.sort(
+      (a: any, b: any) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
+    setContiData(sortedConties);
+  }, [contiesResponse, nickname]);
 
   const filteredTitles = contiData.filter((data) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
@@ -155,10 +156,6 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
             (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
         ))
     );
-  });
-
-  const { data: nickname } = useQuery("nickname", getUserNickname, {
-    retry: false,
   });
 
   const handleContiClick = (id: string) => {
@@ -195,7 +192,10 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
                 <Subtitle>{nickname || "사용자"}</Subtitle>
                 <SongInfo>{`${formatRelativeTime(
                   parseLocalDateString(data.updatedAt)
-                )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
+                )} • ${formatTotalDuration(
+                  data.duration || 
+                  (Array.isArray(data.ContiToSong) ? data.ContiToSong.reduce((acc: number, cts: any) => acc + (cts.song?.duration || 0), 0) : 0)
+                )}`}</SongInfo>
               </InfoText>
             </ContiItem>
           ))}

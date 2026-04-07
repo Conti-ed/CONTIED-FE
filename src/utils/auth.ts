@@ -51,10 +51,14 @@ export const setupTokenRefresh = (api: any): void => {
         originalRequest._retry = true;
 
         const newAccessToken = await refreshAccessToken();
-        console.log(newAccessToken);
         if (newAccessToken) {
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
+        } else {
+          // 토큰 갱신 실패 → 로그인 페이지로 강제 이동
+          removeTokens();
+          window.location.href = "/";
+          return Promise.reject(error);
         }
       }
 

@@ -221,6 +221,9 @@ const LyricsText = styled.p`
   white-space: pre-wrap;
   text-align: left;
   padding: 0 16px;
+  line-height: 1.4;
+  font-size: 12px;
+  margin: 0;
 `;
 
 const NoLyrics = styled.p`

@@ -79,13 +79,9 @@ const Result: React.FC = () => {
 
   const handleSearch = () => {
     if (query.trim() !== "") {
-      setIsLoading(true);
       setIsFocused(false);
       saveRecentSearch(query);
-      setTimeout(() => {
-        setIsLoading(false);
-        setSearchQuery(query);
-      }, 1000);
+      setSearchQuery(query);
     }
   };
 

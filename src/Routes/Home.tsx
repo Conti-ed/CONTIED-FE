@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { UserInfo } from "../types";
+import { useQuery } from "react-query";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import TabBar from "../components/TabBar";
 import {
@@ -25,11 +25,14 @@ import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
-import api, { SERVER_URL } from "../utils/axios";
+import { getUserNickname } from "../utils/axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState<string | null>(null);
+
+  const { data: userName } = useQuery("userProfile", getUserNickname, {
+    staleTime: 1000 * 60 * 30, // 30분 캐시
+  });
 
   const {
     selectedConti,
@@ -44,20 +47,6 @@ const Home: React.FC = () => {
   const defaultImageUrl = "/images/WhitePiano.png";
   const albumThumbnail = selectedConti?.thumbnail || defaultImageUrl;
   const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await api.get<UserInfo>(`${SERVER_URL}/users`);
-        setUserName(response.data.nickname);
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-        setUserName("사용자");
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
 
   if (isLoading) {
     return <Loading />;

@@ -145,7 +145,10 @@ const MyFavoriteContis: React.FC = () => {
                   <Subtitle>{nickname || "사용자"}</Subtitle>
                   <SongInfo>{`${formatRelativeTime(
                     parseLocalDateString(data.updatedAt)
-                  )} • ${formatTotalDuration(data.duration)}`}</SongInfo>
+                  )} • ${formatTotalDuration(
+                    data.duration || 
+                    (Array.isArray(data.ContiToSong) ? data.ContiToSong.reduce((acc: number, cts: any) => acc + (cts.song?.duration || 0), 0) : 0)
+                  )}`}</SongInfo>
                 </InfoText>
               </ContiItem>
             </AnimatePresence>
