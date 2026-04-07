@@ -249,6 +249,8 @@ export async function postContiByYouTube(
     const response = await api.post("/conti/myconti/youtube", {
       youtubeURL: playlistUrl,
       description: description || "",
+    }, {
+      timeout: 60000,
     });
     return response.data;
   } catch (error) {
