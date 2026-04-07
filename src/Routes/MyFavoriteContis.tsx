@@ -21,9 +21,10 @@ import {
   EmptyStateText1,
   EmptyStateText2,
 } from "./MyPage";
+
 import { styled } from "styled-components";
 import { useQuery } from "react-query";
-import { getConti, getUserNickname } from "../utils/axios";
+import { getConti, getUserNickname, getLikedContis } from "../utils/axios";
 import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
@@ -35,51 +36,28 @@ const ContiList = styled(motion.div)`
 `;
 
 const MyFavoriteContis: React.FC = () => {
-  const [favoriteContis, setFavoriteContis] = useState<ContiType[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadFavoriteContis = async () => {
-      const storedFavorites = JSON.parse(
-        localStorage.getItem("favoriteContis") || "{}"
-      );
-      const favoriteContiIds = Object.keys(storedFavorites);
-
-      try {
-        const favoriteContiData: ContiType[] = await Promise.all(
-          favoriteContiIds.map(async (contiId) => {
-            try {
-              const contiData = await getConti(Number(contiId));
-              return contiData;
-            } catch (error) {
-              console.error(`Failed to fetch conti with ID ${contiId}:`, error);
-              return null;
-            }
-          })
-        );
-
-        const validContis = favoriteContiData
-          .filter(
-            (data): data is ContiType =>
-              data !== null && data.state !== "DELETED"
-          )
-          .sort(
-            (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          );
-
-        setFavoriteContis(validContis);
-      } catch (error) {
-        console.error("Failed to load favorite contis:", error);
-      }
-    };
-
-    loadFavoriteContis();
-  }, []);
-
-  const { data: nickname } = useQuery("nickname", getUserNickname, {
-    retry: false,
+  const { data: nickname } = useQuery("userProfile", getUserNickname, {
+    staleTime: 1000 * 60 * 30, // 30 mins
   });
+
+  const { data: favoriteContis, isLoading, isError } = useQuery(
+    ["likedContis"],
+    async () => {
+      const response = await getLikedContis();
+      const validContis = response
+        .filter((data: ContiType) => data && data.state !== "DELETED")
+        .sort(
+          (a: ContiType, b: ContiType) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      return validContis;
+    },
+    {
+      staleTime: 1000 * 60 * 5,
+    }
+  );
 
   const handleContiClick = useCallback(
     (id: number) => {
@@ -88,6 +66,48 @@ const MyFavoriteContis: React.FC = () => {
     [navigate]
   );
 
+  if (isLoading) {
+    return (
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <EmptyStateContainer
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
+          <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
+          <EmptyStateText2>잠시만요...</EmptyStateText2>
+        </EmptyStateContainer>
+      </Container>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <EmptyStateContainer
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <EmptyStateImage src="/images/WhitePiano.png" alt="Error" />
+          <EmptyStateText1>에러가 발생했어요!</EmptyStateText1>
+          <EmptyStateText2>콘티를 불러오는 데 실패했어요.</EmptyStateText2>
+        </EmptyStateContainer>
+      </Container>
+    );
+  }
+
   return (
     <Container
       initial={{ opacity: 0 }}
@@ -95,9 +115,9 @@ const MyFavoriteContis: React.FC = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {favoriteContis.length > 0 ? (
+      {favoriteContis && favoriteContis.length > 0 ? (
         <ContiList>
-          {favoriteContis.map((data, index) => (
+          {favoriteContis.map((data: ContiType, index: number) => (
             <AnimatePresence key={data.id}>
               <ContiItem
                 onClick={() => handleContiClick(data.id)}

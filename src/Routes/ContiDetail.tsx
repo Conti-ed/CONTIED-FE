@@ -58,6 +58,9 @@ import {
   deleteContiById,
   patchConti,
   PatchContiDto,
+  getLikedContis,
+  likeConti,
+  unlikeConti,
 } from "../utils/axios";
 import { ContiType } from "../types";
 
@@ -95,6 +98,7 @@ const ContiDetail: React.FC = () => {
     ["cid", contiId],
     () => (contiId ? getConti(Number(contiId)) : Promise.resolve(null)),
     {
+      staleTime: 1000 * 60 * 5, // 5 mins cache
       retry: false,
       onSuccess: (data) => {
         setEditedTitle(data.title);
@@ -112,30 +116,33 @@ const ContiDetail: React.FC = () => {
     { retry: false }
   );
 
-  useEffect(() => {
-    if (contiId) {
-      const favoriteContis = JSON.parse(
-        localStorage.getItem("favoriteContis") || "{}"
-      );
-      setIsFavorite(!!favoriteContis[contiId]);
-    }
-  }, [contiId]);
+  const { data: likedContis } = useQuery<ContiType[]>("likedContis", getLikedContis, {
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const handleHeartClick = () => {
+  useEffect(() => {
+    if (contiId && likedContis) {
+      setIsFavorite(likedContis.some((c) => c.id === Number(contiId)));
+    }
+  }, [contiId, likedContis]);
+
+  const handleHeartClick = async () => {
     if (!contiId) return;
 
     const newIsFavorite = !isFavorite;
-    setIsFavorite(newIsFavorite);
+    setIsFavorite(newIsFavorite); // Optimistic UI update
 
-    const favoriteContis = JSON.parse(
-      localStorage.getItem("favoriteContis") || "{}"
-    );
-    if (newIsFavorite) {
-      favoriteContis[contiId] = true;
-    } else {
-      delete favoriteContis[contiId];
+    try {
+      if (newIsFavorite) {
+        await likeConti(Number(contiId));
+      } else {
+        await unlikeConti(Number(contiId));
+      }
+      queryClient.invalidateQueries("likedContis");
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+      setIsFavorite(!newIsFavorite); // Rollback on failure
     }
-    localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
   };
 
   const handleEditConti = () => {
@@ -161,6 +168,8 @@ const ContiDetail: React.FC = () => {
         localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
 
         queryClient.removeQueries(["cid", contiId]);
+        queryClient.invalidateQueries(["myContis"]);
+        queryClient.invalidateQueries("likedContis");
 
         navigate(-1);
       } catch (error) {

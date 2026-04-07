@@ -12,6 +12,10 @@ export async function getConti(cid: number) {
   return (await fetch(`${SERVER_URL}/conti/myconti/${cid}`)).json();
 }
 
+export async function getLikedContis() {
+  return (await fetch(`${SERVER_URL}/conti/like`)).json();
+}
+
 export async function getMyConties() {
   if (
     !localStorage.getItem("user_info") ||

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 import TabBar from "../components/TabBar";
-import api, { SERVER_URL } from "../utils/axios";
-import { UserInfo } from "../types";
+import { getUserNickname } from "../utils/axios";
 
 export const Container = styled(motion.div)`
   display: flex;
@@ -177,25 +177,13 @@ export const EmptyStateText2 = styled.div`
 `;
 
 const MyPage: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
+  const { data: username = "사용자" } = useQuery("userProfile", getUserNickname, {
+    staleTime: 1000 * 60 * 30, // 30 mins
+  });
   const [activeTab, setActiveTab] = useState<"uploaded" | "favorites">(
     "uploaded"
   );
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await api.get<UserInfo>(`${SERVER_URL}/users`);
-        setUsername(response.data.nickname);
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-        setUsername("사용자");
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
 
   const handleTabClick = (tab: "uploaded" | "favorites") => {
     setActiveTab(tab);

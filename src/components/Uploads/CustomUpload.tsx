@@ -18,6 +18,7 @@ import {
   ErrorMessage,
 } from "../../styles/Upload.styles";
 import api from "../../utils/axios";
+import { useQueryClient } from "react-query";
 
 const CustomUpload = () => {
   const [contiTitle, setContiTitle] = useState("");
@@ -35,6 +36,7 @@ const CustomUpload = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleClearSearch = (field: "title" | "description") => {
     if (field === "title") {
@@ -98,6 +100,8 @@ const CustomUpload = () => {
       if (!data.id) {
         throw new Error("Invalid response data: ID not found");
       }
+
+      queryClient.invalidateQueries(["myContis"]);
 
       navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {

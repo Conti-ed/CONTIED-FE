@@ -18,6 +18,7 @@ import {
   VisibilityInputWrapper,
 } from "../../styles/Upload.styles";
 import { postContiByYouTube } from "../../utils/axios";
+import { useQueryClient } from "react-query";
 
 const YouTubeUpload = () => {
   const [playlistUrl, setPlaylistUrl] = useState("");
@@ -34,6 +35,7 @@ const YouTubeUpload = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const validateYouTubePlaylistUrl = (url: string) => {
     const youtubePlaylistRegex =
@@ -86,6 +88,8 @@ const YouTubeUpload = () => {
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+
+      queryClient.invalidateQueries(["myContis"]);
 
       navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {

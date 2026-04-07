@@ -79,6 +79,37 @@ export async function getConti(cid: number) {
   }
 }
 
+// 좋아요 한 콘티 가져오기
+export async function getLikedContis(): Promise<ContiType[]> {
+  try {
+    const response = await api.get("/conti/like");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch liked contis:", error);
+    throw error;
+  }
+}
+
+// 콘티 좋아요
+export async function likeConti(id: number): Promise<void> {
+  try {
+    await api.post(`/conti/${id}/like`);
+  } catch (error) {
+    console.error(`Failed to like conti with id ${id}:`, error);
+    throw error;
+  }
+}
+
+// 콘티 좋아요 취소
+export async function unlikeConti(id: number): Promise<void> {
+  try {
+    await api.delete(`/conti/${id}/like`);
+  } catch (error) {
+    console.error(`Failed to unlike conti with id ${id}:`, error);
+    throw error;
+  }
+}
+
 // 사용자 정보로 콘티 가져오기
 export interface GetMyContiesResponse {
   myContiData: ContiType[];

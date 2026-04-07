@@ -19,6 +19,7 @@ import {
   KeywordErrorMessage,
 } from "../../styles/Upload.styles";
 import { postContiByAi } from "../../utils/axios";
+import { useQueryClient } from "react-query";
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
@@ -33,6 +34,7 @@ const AIUpload = () => {
   const [expandedTo, setExpandedTo] = useState(false);
   const keywordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleClearSearch = (
     field: "keyword" | "bibleVerseFrom" | "bibleVerseTo"
@@ -147,6 +149,8 @@ const AIUpload = () => {
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+
+      queryClient.invalidateQueries(["myContis"]);
 
       navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {

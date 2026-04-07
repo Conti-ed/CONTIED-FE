@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "react-query";
 import Loading from "../components/Loading";
 import SearchSuggestions from "../components/SearchSuggestions";
 import {
@@ -32,7 +33,6 @@ const Search: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [lyricsSuggestions, setLyricsSuggestions] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const recentSearchesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -161,37 +161,27 @@ const Search: React.FC = () => {
     </RecentSearchContainer>
   );
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllSongs();
-
-        const songArray = response.songData;
-        if (Array.isArray(songArray)) {
-          const allLyrics = songArray.flatMap(
-            (song: { lyrics: string }) => song.lyrics
-          );
-          const allWords = allLyrics.flatMap((lyrics: string) =>
-            extractWordsFromLyrics(lyrics)
-          );
-          const randomWords = getRandomSuggestions(allWords, 14);
-
-          setLyricsSuggestions(randomWords);
-        } else {
-          console.warn(
-            "Expected songArray to be an array but received:",
-            songArray
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch song data for suggestions:", error);
-      } finally {
-        setIsLoading(false);
+  const { data: lyricsSuggestions = [], isLoading: isSuggestionsLoading } = useQuery(
+    "lyricsSuggestions",
+    async () => {
+      const response = await getAllSongs();
+      const songArray = response.songData;
+      if (Array.isArray(songArray)) {
+        const allLyrics = songArray.flatMap(
+          (song: { lyrics: string }) => song.lyrics
+        );
+        const allWords = allLyrics.flatMap((lyrics: string) =>
+          extractWordsFromLyrics(lyrics)
+        );
+        return getRandomSuggestions(allWords, 14);
       }
-    };
-    fetchSuggestions();
-  }, []);
+      return [];
+    },
+    {
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours cache since suggestions are random anyway and songs grow slowly
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <AnimatePresence>
