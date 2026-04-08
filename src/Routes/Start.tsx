@@ -3,6 +3,7 @@ import styled, { keyframes, css } from "styled-components";
 import Icon from "../components/Icon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
+import { getAccessToken } from "../utils/auth";
 
 const fadeOut = keyframes`
   from {
@@ -104,6 +105,12 @@ const Start: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 이미 로그인된 토큰이 있는 경우 홈으로 리다이렉트
+    const token = getAccessToken();
+    if (token) {
+      navigate("/home", { replace: true });
+    }
+
     const searchParams = new URLSearchParams(location.search);
     const errorParam = searchParams.get("error");
 

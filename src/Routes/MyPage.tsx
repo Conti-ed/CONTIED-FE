@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import TabBar from "../components/TabBar";
 import { getUserNickname } from "../utils/axios";
+import { logout } from "../utils/auth";
+import ConfirmModal from "../components/Modals/ConfirmModal";
 
 export const Container = styled(motion.div)`
   display: flex;
@@ -16,21 +18,53 @@ export const Container = styled(motion.div)`
 `;
 
 export const Header = styled.div`
+  position: relative;
   width: 100%;
+  padding: 0 20px;
   margin-top: 23px;
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 42px;
 `;
 
 export const Title = styled.h1`
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 500;
   color: #171a1f;
   text-align: center;
+  padding: 0 45px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   span {
     color: #94b4ed;
+  }
+`;
+
+const LogoutButton = styled.button`
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #f3f4f6;
+  border: none;
+  color: #9095a1;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 20px;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #94b4ed;
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
   }
 `;
 
@@ -183,11 +217,27 @@ const MyPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"uploaded" | "favorites">(
     "uploaded"
   );
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleTabClick = (tab: "uploaded" | "favorites") => {
     setActiveTab(tab);
     navigate(`/mypage/${tab}`);
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    try {
+      await logout();
+      queryClient.clear();
+    } finally {
+      setShowLogoutModal(false);
+      window.location.href = "/";
+    }
   };
 
   return (
@@ -201,6 +251,7 @@ const MyPage: React.FC = () => {
         <Title>
           <span>{username}</span> 님의 Conti:ed
         </Title>
+        <LogoutButton onClick={handleLogoutClick}>로그아웃</LogoutButton>
       </Header>
       <Content>
         <ButtonContainer>
@@ -232,6 +283,15 @@ const MyPage: React.FC = () => {
       <TabBar />
       {window.location.pathname === "/mypage" && (
         <Navigate to="/mypage/uploaded" replace />
+      )}
+      {showLogoutModal && (
+        <ConfirmModal
+          title="정말 로그아웃 하시겠습니까?"
+          onConfirm={handleLogoutConfirm}
+          onCancel={() => setShowLogoutModal(false)}
+          confirmText="로그아웃"
+          cancelText="취소"
+        />
       )}
     </Container>
   );

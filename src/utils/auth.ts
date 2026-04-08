@@ -1,5 +1,5 @@
-import { Cookies } from "react-cookie";
 import { supabase } from "./supabase";
+import { Cookies } from "react-cookie";
 
 const cookies = new Cookies();
 // ... (TokenResponse interface can stay if needed, but not strictly required now)
@@ -17,8 +17,33 @@ export const setTokens = (accessToken: string, refreshToken: string): void => {
 
 // Token 제거
 export const removeTokens = (): void => {
+  const cookies = new Cookies();
   cookies.remove("accessToken", { path: "/" });
   cookies.remove("refreshToken", { path: "/" });
+};
+
+// 로그아웃 처리
+export const logout = async (): Promise<void> => {
+  try {
+    // 1. Supabase SignOut (Internal session)
+    await supabase.auth.signOut();
+
+    // 2. Clear our own app cookies
+    cookies.remove("accessToken", { path: "/" });
+    cookies.remove("refreshToken", { path: "/" });
+
+    // 3. Clear ALL localStorage items starting with 'sb-' (Supabase storage)
+    // This is crucial to prevent session ghosting in SPAs.
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("sb-")) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    console.log("Logged out successfully, session cleared.");
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
 };
 
 // Update Access Token (Supabase 방식)
