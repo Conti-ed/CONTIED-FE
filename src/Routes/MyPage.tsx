@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "react-query";
 import TabBar from "../components/TabBar";
 import { getUserNickname } from "../utils/axios";
-import { logout } from "../utils/auth";
+import { getAccessToken, logout } from "../utils/auth";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 
 export const Container = styled(motion.div)`
@@ -212,7 +212,8 @@ export const EmptyStateText2 = styled.div`
 
 const MyPage: React.FC = () => {
   const { data: username = "사용자" } = useQuery("userProfile", getUserNickname, {
-    staleTime: 1000 * 60 * 30, // 30 mins
+    staleTime: 1000 * 60 * 5, // 캐시 시간을 5분으로 단축
+    enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
   });
   const [activeTab, setActiveTab] = useState<"uploaded" | "favorites">(
     "uploaded"

@@ -25,6 +25,7 @@ import {
 import { styled } from "styled-components";
 import { useQuery } from "react-query";
 import { getConti, getUserNickname, getLikedContis } from "../utils/axios";
+import { getAccessToken } from "../utils/auth";
 import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
@@ -40,6 +41,7 @@ const MyFavoriteContis: React.FC = () => {
 
   const { data: nickname } = useQuery("userProfile", getUserNickname, {
     staleTime: 1000 * 60 * 30, // 30 mins
+    enabled: !!getAccessToken(),
   });
 
   const { data: favoriteContis, isLoading, isError } = useQuery(
@@ -56,6 +58,7 @@ const MyFavoriteContis: React.FC = () => {
     },
     {
       staleTime: 1000 * 60 * 5,
+      enabled: !!getAccessToken(),
     }
   );
 

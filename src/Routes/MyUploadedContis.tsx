@@ -23,7 +23,8 @@ import {
   EmptyStateText1,
   EmptyStateText2,
 } from "./MyPage";
-import { getUserNickname, getConties } from "../utils/axios";
+import { getUserNickname, getAllMyConties } from "../utils/axios";
+import { getAccessToken } from "../utils/auth";
 import { ContiType } from "../types";
 
 const ContiList = styled(motion.div)`
@@ -39,25 +40,17 @@ const MyUploadedContis: React.FC = () => {
   const { data, isLoading, isError } = useQuery(
     ["myContis"],
     async () => {
-      const [contiesResponse, userNickname] = await Promise.all([
-        getConties(),
+      const [conties, userNickname] = await Promise.all([
+        getAllMyConties(),
         getUserNickname(),
       ]);
 
-      const conties = Array.isArray(contiesResponse)
-        ? contiesResponse
-        : (contiesResponse as any).contiData || [];
-
-      const filteredContis = conties.filter(
-        (conti: ContiType) =>
-          conti.state !== "DELETED" && conti.User.nickname === userNickname
-      );
-
-      return { filteredContis, userNickname };
+      return { filteredContis: conties, userNickname };
     },
     {
-      staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지 (불필요한 재요청 방지)
-      cacheTime: 1000 * 60 * 10, // 10분 동안 메모리에 데이터 보존
+      staleTime: 1000 * 60, // 1분 동안 데이터 유지
+      cacheTime: 1000 * 60 * 5,
+      enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
     }
   );
 
