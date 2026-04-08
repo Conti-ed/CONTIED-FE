@@ -25,14 +25,15 @@ import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
-import { getUserNickname } from "../utils/axios";
+import { getUserProfile } from "../utils/axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: userName } = useQuery("userProfile", getUserNickname, {
+  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 30, // 30분 캐시
   });
+  const userName = userProfile?.nickname;
 
   const {
     selectedConti,

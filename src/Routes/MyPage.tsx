@@ -4,7 +4,7 @@ import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "react-query";
 import TabBar from "../components/TabBar";
-import { getUserNickname } from "../utils/axios";
+import { getUserProfile } from "../utils/axios";
 import { getAccessToken, logout } from "../utils/auth";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 
@@ -211,10 +211,11 @@ export const EmptyStateText2 = styled.div`
 `;
 
 const MyPage: React.FC = () => {
-  const { data: username = "사용자" } = useQuery("userProfile", getUserNickname, {
+  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 5, // 캐시 시간을 5분으로 단축
     enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
   });
+  const username = userProfile?.nickname || "사용자";
   const [activeTab, setActiveTab] = useState<"uploaded" | "favorites">(
     "uploaded"
   );

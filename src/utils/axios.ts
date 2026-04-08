@@ -57,6 +57,16 @@ export async function getUserNickname(): Promise<string> {
   }
 }
 
+export async function getUserProfile(): Promise<{ id: number; nickname: string; email: string; role: string }> {
+  try {
+    const response = await api.get("/users");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user profile:", error);
+    throw error;
+  }
+}
+
 // 모든 콘티 가져오기
 export async function getConties() {
   try {
@@ -71,7 +81,7 @@ export async function getConties() {
 // 특정 콘티 가져오기
 export async function getConti(cid: number) {
   try {
-    const response = await api.get(`/conti/myconti/${cid}`);
+    const response = await api.get(`/conti/${cid}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch conti with id ${cid}:`, error);

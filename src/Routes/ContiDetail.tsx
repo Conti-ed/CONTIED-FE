@@ -52,9 +52,10 @@ import DescriptionModal from "../components/Modals/DescriptionModal";
 import Notification from "../components/Notification";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 import { useQuery, useQueryClient } from "react-query";
+import { getAccessToken } from "../utils/auth";
 import {
   getConti,
-  getUserNickname,
+  getUserProfile,
   deleteContiById,
   patchConti,
   PatchContiDto,
@@ -63,6 +64,17 @@ import {
   unlikeConti,
 } from "../utils/axios";
 import { ContiType } from "../types";
+import styled from "styled-components";
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const ContiDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -110,11 +122,32 @@ const ContiDetail: React.FC = () => {
     }
   );
 
-  const { data: nickname, isLoading: isNicknameLoading } = useQuery(
-    "nickname",
-    getUserNickname,
-    { retry: false }
+  const { data: userProfile } = useQuery(
+    "userProfile",
+    getUserProfile,
+    { 
+      retry: false, 
+      staleTime: 1000 * 60 * 30,
+      enabled: !!getAccessToken()
+    }
   );
+
+  const isOwner = useMemo(() => {
+    if (!userProfile || !contiData?.User) return false;
+
+    // 1. ID 기반 검증 (가장 확실함)
+    if (userProfile.id && contiData.User.id) {
+      if (userProfile.id === contiData.User.id) return true;
+    }
+
+    // 2. 이메일 기반 검증 (서브)
+    const myEmail = userProfile.email?.toLowerCase().trim();
+    const creatorEmail = contiData.User.email?.toLowerCase().trim();
+    
+    if (myEmail && creatorEmail && myEmail === creatorEmail) return true;
+
+    return false;
+  }, [userProfile, contiData]);
 
   const { data: likedContis } = useQuery<ContiType[]>("likedContis", getLikedContis, {
     staleTime: 1000 * 60 * 5,
@@ -399,12 +432,16 @@ const ContiDetail: React.FC = () => {
               >
                 <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"></path>
               </HeartIcon>
-              <DetailOptions
-                onEdit={handleEditConti}
-                onDelete={handleDeleteConti}
-              >
-                <Icon id="option-detail" width="15" height="3" />
-              </DetailOptions>
+              {isOwner && (
+                <DetailOptions
+                  onEdit={handleEditConti}
+                  onDelete={handleDeleteConti}
+                >
+                  <IconButton>
+                    <Icon id="option-detail" width="24" height="24" color="#323743" />
+                  </IconButton>
+                </DetailOptions>
+              )}
             </IconContainer>
           </Header>
           <Content>
@@ -437,7 +474,7 @@ const ContiDetail: React.FC = () => {
                       contiData.title
                     )}
                   </Title>
-                  <Subtitle>{nickname || "사용자"}</Subtitle>
+                  <Subtitle>{contiData.User?.nickname || "사용자"}</Subtitle>
                   <SongInfo>{`${contiData.ContiToSong.length}곡 ${
                     formatTotalDuration(totalDuration) === "0분"
                       ? ""
@@ -517,7 +554,7 @@ const ContiDetail: React.FC = () => {
             onClose={handleCloseModal}
             thumbnail={contiData.thumbnail}
             title={contiData.title}
-            userNickname={(("by " + nickname) as string) || "사용자"}
+            userNickname={(("by " + (contiData.User?.nickname || "사용자")) as string) || "사용자"}
             description={contiData.description}
           />
           {isAddSongLoading && (

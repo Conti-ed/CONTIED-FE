@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
-import { getUserNickname, getAllMyConties } from "../../utils/axios";
+import { getUserProfile, getConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -112,44 +112,44 @@ interface ContiTabProps {
 }
 
 const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
-  const [contiData, setContiData] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  const { data: contiesResponse } = useQuery("myContis", () => getAllMyConties(), {
+  const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
     staleTime: 1000 * 60 * 5,
   });
 
-  const { data: nickname } = useQuery("userProfile", getUserNickname, {
+  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 30,
   });
+  const userNickname = userProfile?.nickname;
 
-  useEffect(() => {
-    if (!contiesResponse) return;
+  const sortedContiData = React.useMemo(() => {
+    if (!contiesResponse || !Array.isArray(contiesResponse)) return [];
 
-    const sortedConties = [...contiesResponse].sort(
+    return [...contiesResponse].sort(
       (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
-
-    setContiData(sortedConties);
   }, [contiesResponse]);
 
-  const filteredTitles = contiData.filter((data) => {
+  const filteredTitles = React.useMemo(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    return (
-      data.title.toLowerCase().includes(lowerCaseQuery) ||
-      (Array.isArray(data.songs) &&
-        data.songs.some(
-          (song: { title: string; artist: string; lyrics: string }) =>
-            (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
-            (song.artist &&
-              song.artist.toLowerCase().includes(lowerCaseQuery)) ||
-            (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-        ))
-    );
-  });
+    return sortedContiData.filter((data) => {
+      return (
+        data.title.toLowerCase().includes(lowerCaseQuery) ||
+        (Array.isArray(data.songs) &&
+          data.songs.some(
+            (song: { title: string; artist: string; lyrics: string }) =>
+              (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
+              (song.artist &&
+                song.artist.toLowerCase().includes(lowerCaseQuery)) ||
+              (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
+          ))
+      );
+    });
+  }, [searchQuery, sortedContiData]);
 
-  const handleContiClick = (id: string) => {
+  const handleContiClick = (id: number) => {
     navigate(`/conti-detail/${id}`);
   };
 
@@ -180,7 +180,7 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
               </ContiImageWrapper>
               <InfoText>
                 <Title>{data.title}</Title>
-                <Subtitle>{nickname || "사용자"}</Subtitle>
+                <Subtitle>{data.User?.nickname || "사용자"}</Subtitle>
                 <SongInfo>{`${formatRelativeTime(
                   parseLocalDateString(data.updatedAt)
                 )} • ${formatTotalDuration(

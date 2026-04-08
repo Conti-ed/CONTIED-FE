@@ -32,7 +32,12 @@ export const logout = async (): Promise<void> => {
     cookies.remove("accessToken", { path: "/" });
     cookies.remove("refreshToken", { path: "/" });
 
-    // 3. Clear ALL localStorage items starting with 'sb-' (Supabase storage)
+    // 3. Clear specific localStorage items
+    localStorage.removeItem("recentSearches");
+    localStorage.removeItem("user_id"); // If used
+    localStorage.removeItem("user_info"); // If used
+
+    // 4. Clear ALL localStorage items starting with 'sb-' (Supabase storage)
     // This is crucial to prevent session ghosting in SPAs.
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith("sb-")) {

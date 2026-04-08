@@ -59,75 +59,65 @@ interface FilteredSongItem {
 }
 
 const SongsTab: React.FC<SongsTabProps> = ({ searchQuery }) => {
-  const [songsData, setSongsData] = useState<any[]>([]);
-  const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
-
   const { data: response } = useQuery("allSongs", () => getAllSongs(), {
     staleTime: 1000 * 60 * 5,
   });
+  const songsData = response?.songData || [];
 
-  useEffect(() => {
-    if (response) {
-      setSongsData(response.songData || []);
-    }
-  }, [response]);
-
-  useEffect(() => {
+  const filteredSongs = React.useMemo(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
 
-    const filteredSongs = Array.isArray(songsData)
-      ? songsData
-          .map((song): FilteredSongItem | null => {
-            const titleIndex = song.title
-              ? song.title.toLowerCase().indexOf(lowerCaseQuery)
-              : -1;
-            const artistIndex = song.artist
-              ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
-              : -1;
-            const lyricsIndex = song.lyrics
-              ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
-              : -1;
+    if (!Array.isArray(songsData)) return [];
 
-            if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) {
-              return null;
-            }
+    return songsData
+      .map((song): FilteredSongItem | null => {
+        const titleIndex = song.title
+          ? song.title.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
+        const artistIndex = song.artist
+          ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
+        const lyricsIndex = song.lyrics
+          ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
 
-            return {
-              song,
-              titleIndex,
-              artistIndex,
-              lyricsIndex,
-            };
-          })
-          .filter((item): item is FilteredSongItem => item !== null)
-          .sort((a, b) => {
-            // 제목 비교
-            if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
-            if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
-            if (a.titleIndex !== -1 && b.titleIndex !== -1) {
-              return a.titleIndex - b.titleIndex;
-            }
+        if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) {
+          return null;
+        }
 
-            // 아티스트 비교
-            if (a.artistIndex !== -1 && b.artistIndex === -1) return -1;
-            if (a.artistIndex === -1 && b.artistIndex !== -1) return 1;
-            if (a.artistIndex !== -1 && b.artistIndex !== -1) {
-              return a.artistIndex - b.artistIndex;
-            }
+        return {
+          song,
+          titleIndex,
+          artistIndex,
+          lyricsIndex,
+        };
+      })
+      .filter((item): item is FilteredSongItem => item !== null)
+      .sort((a, b) => {
+        // 제목 비교
+        if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
+        if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
+        if (a.titleIndex !== -1 && b.titleIndex !== -1) {
+          return a.titleIndex - b.titleIndex;
+        }
 
-            // 가사 비교
-            if (a.lyricsIndex !== -1 && b.lyricsIndex === -1) return -1;
-            if (a.lyricsIndex === -1 && b.lyricsIndex !== -1) return 1;
-            if (a.lyricsIndex !== -1 && b.lyricsIndex !== -1) {
-              return a.lyricsIndex - b.lyricsIndex;
-            }
+        // 아티스트 비교
+        if (a.artistIndex !== -1 && b.artistIndex === -1) return -1;
+        if (a.artistIndex === -1 && b.artistIndex !== -1) return 1;
+        if (a.artistIndex !== -1 && b.artistIndex !== -1) {
+          return a.artistIndex - b.artistIndex;
+        }
 
-            return 0;
-          })
-          .map((item) => item.song)
-      : [];
+        // 가사 비교
+        if (a.lyricsIndex !== -1 && b.lyricsIndex === -1) return -1;
+        if (a.lyricsIndex === -1 && b.lyricsIndex !== -1) return 1;
+        if (a.lyricsIndex !== -1 && b.lyricsIndex !== -1) {
+          return a.lyricsIndex - b.lyricsIndex;
+        }
 
-    setFilteredSongs(filteredSongs);
+        return 0;
+      })
+      .map((item) => item.song);
   }, [searchQuery, songsData]);
 
   return (
