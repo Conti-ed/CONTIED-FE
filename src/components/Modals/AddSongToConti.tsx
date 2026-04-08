@@ -9,7 +9,7 @@ import {
 import ContiPlaceholder from "../ContiPlaceholder";
 import styled from "styled-components";
 import {
-  getConties,
+  getAllMyConties,
   getUserNickname,
   patchConti,
   PatchContiDto,
@@ -138,17 +138,8 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         setIsLoading(true);
         setError(null);
         try {
-          const response = await getConties();
-          const userNickname = await getUserNickname();
-          const conties = Array.isArray(response)
-            ? response
-            : response.contiData || [];
-
-          const filteredContis = conties.filter(
-            (conti: ContiType) =>
-              conti.state !== "DELETED" && conti.User.nickname === userNickname
-          );
-          setContis(filteredContis);
+          const conties = await getAllMyConties();
+          setContis(conties);
         } catch (error: any) {
           console.error("콘티 목록 가져오기 실패:", error);
           setError(

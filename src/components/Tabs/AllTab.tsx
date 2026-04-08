@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
-import { getUserNickname, getAllSongs, getConties } from "../../utils/axios";
+import { getUserNickname, getAllSongs, getAllMyConties } from "../../utils/axios";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -156,7 +156,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   });
   const currentSongsData = songsDataRaw?.songData || [];
 
-  const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
+  const { data: contiesResponse } = useQuery("myContis", () => getAllMyConties(), {
     staleTime: 1000 * 60 * 5, // 5분 캐시
   });
 
@@ -165,24 +165,15 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   });
 
   useEffect(() => {
-    if (!contiesResponse || !nickname) return;
+    if (!contiesResponse) return;
 
-    const conties = Array.isArray(contiesResponse)
-      ? contiesResponse
-      : contiesResponse.contiData || [];
-
-    const filteredContis = conties.filter(
-      (conti: ContiType) =>
-        conti.state !== "DELETED" && conti.User.nickname === nickname
-    );
-
-    const sortedConties = filteredContis.sort(
+    const sortedConties = [...contiesResponse].sort(
       (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
 
     setContiData(sortedConties);
-  }, [contiesResponse, nickname]);
+  }, [contiesResponse]);
 
   useEffect(() => {
     setSongsData(currentSongsData);

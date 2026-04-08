@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { useQuery } from "react-query";
-import { getConties, getUserNickname } from "../utils/axios";
+import { getAllMyConties, getUserNickname } from "../utils/axios";
+import { getAccessToken } from "../utils/auth";
 import { ContiType } from "../types";
 
 export const useHomeLogic = (navigate: NavigateFunction) => {
@@ -21,25 +22,17 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
   const { data } = useQuery(
     ["myContis"],
     async () => {
-      const [contiesResponse, userNickname] = await Promise.all([
-        getConties(),
+      const [conties, userNickname] = await Promise.all([
+        getAllMyConties(),
         getUserNickname(),
       ]);
 
-      const conties = Array.isArray(contiesResponse)
-        ? contiesResponse
-        : (contiesResponse as any).contiData || [];
-
-      const filteredContis = conties.filter(
-        (conti: ContiType) =>
-          conti.state !== "DELETED" && conti.User.nickname === userNickname
-      );
-
-      return { filteredContis, userNickname };
+      return { filteredContis: conties, userNickname };
     },
     {
-      staleTime: 1000 * 60 * 5,
-      cacheTime: 1000 * 60 * 10,
+      staleTime: 1000 * 60,
+      cacheTime: 1000 * 60 * 5,
+      enabled: !!getAccessToken(),
     }
   );
 
