@@ -133,26 +133,32 @@ const ContiDetail: React.FC = () => {
   );
 
   const isOwner = useMemo(() => {
-    if (!userProfile || !contiData) return false;
-
-    // 1. ID 기반 검증 (최우선 - 로컬/향후 배포용)
-    if (userProfile.id && contiData.User?.id) {
-      if (userProfile.id === contiData.User.id) return true;
+    if (!userProfile || !contiData?.User) {
+      console.log("[OwnerCheck] Missing profile or user data", { userProfile, user: contiData?.User });
+      return false;
     }
 
-    // 2. 이메일 기반 검증 (차선 - 로컬/향후 배포용)
+    // 1. ID 기반 검증 (최우선)
+    if (userProfile.id && contiData.User.id) {
+      const matchId = userProfile.id === contiData.User.id;
+      if (matchId) return true;
+    }
+
+    // 2. 이메일 기반 검증 (차선)
     const myEmail = userProfile.email?.toLowerCase().trim();
-    const creatorEmail = contiData.User?.email?.toLowerCase().trim();
-    if (myEmail && creatorEmail && myEmail === creatorEmail) return true;
+    const creatorEmail = contiData.User.email?.toLowerCase().trim();
+    
+    const matchEmail = myEmail && creatorEmail && myEmail === creatorEmail;
+    
+    console.log("[OwnerCheck] Result:", {
+      matchEmail,
+      myEmail,
+      creatorEmail,
+      myId: userProfile.id,
+      creatorId: contiData.User?.id
+    });
 
-    // 3. 닉네임 기반 검증 (최후 수단 - 리모트 서버/구버전 대응용)
-    // 배포되지 않은 서버에서는 이메일/ID 정보가 없을 수 있으므로 닉네임으로 비교합니다.
-    const myNickname = userProfile.nickname?.trim();
-    const creatorNickname = (contiData.User?.nickname || contiData.creatorNickname)?.trim();
-
-    if (myNickname && creatorNickname && myNickname === creatorNickname) return true;
-
-    return false;
+    return !!matchEmail;
   }, [userProfile, contiData]);
 
   const { data: likedContis } = useQuery<ContiType[]>("likedContis", getLikedContis, {
