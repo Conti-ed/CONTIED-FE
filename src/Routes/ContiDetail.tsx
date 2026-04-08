@@ -66,14 +66,13 @@ import {
 import { ContiType } from "../types";
 import styled from "styled-components";
 
-const IconButton = styled.button`
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
+const OptionIconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  width: 20px; /* HeartIcon과 동일한 너비 */
+  height: 20px; /* 정렬을 위한 높이 설정 */
 `;
 
 const ContiDetail: React.FC = () => {
@@ -134,7 +133,6 @@ const ContiDetail: React.FC = () => {
 
   const isOwner = useMemo(() => {
     if (!userProfile || !contiData?.User) {
-      console.log("[OwnerCheck] Missing profile or user data", { userProfile, user: contiData?.User });
       return false;
     }
 
@@ -149,14 +147,6 @@ const ContiDetail: React.FC = () => {
     const creatorEmail = contiData.User.email?.toLowerCase().trim();
     
     const matchEmail = myEmail && creatorEmail && myEmail === creatorEmail;
-    
-    console.log("[OwnerCheck] Result:", {
-      matchEmail,
-      myEmail,
-      creatorEmail,
-      myId: userProfile.id,
-      creatorId: contiData.User?.id
-    });
 
     return !!matchEmail;
   }, [userProfile, contiData]);
@@ -449,9 +439,9 @@ const ContiDetail: React.FC = () => {
                   onEdit={handleEditConti}
                   onDelete={handleDeleteConti}
                 >
-                  <IconButton>
-                    <Icon id="option-detail" width="24" height="24" color="#323743" />
-                  </IconButton>
+                  <OptionIconWrapper style={{ width: '24px', height: '24px' }}>
+                    <Icon id="more-vertical" width="24" height="24" />
+                  </OptionIconWrapper>
                 </DetailOptions>
               )}
             </IconContainer>

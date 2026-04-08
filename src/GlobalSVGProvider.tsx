@@ -239,6 +239,11 @@ const spriteSvgCode = (
             fill="#8C8C8C"
           />
         </symbol>
+        <symbol id="more-vertical" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="6" r="1.5" fill="#545F71" />
+          <circle cx="12" cy="12" r="1.5" fill="#545F71" />
+          <circle cx="12" cy="18" r="1.5" fill="#545F71" />
+        </symbol>
       </svg>
     )}
   </ClassNames>
