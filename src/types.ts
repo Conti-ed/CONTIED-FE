@@ -54,6 +54,7 @@ export type ContiType = {
   duration: number;
   youtubeUrl: string;
   state?: string;
+  creatorNickname?: string;
   createdAt: string;
   updatedAt: string;
 };
