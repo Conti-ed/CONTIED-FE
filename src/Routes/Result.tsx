@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Container,
   Header,
@@ -12,7 +12,6 @@ import {
   SearchBar,
   Content,
 } from "../styles/Search.styles";
-import TabBar from "../components/TabBar";
 import { AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
@@ -35,6 +34,10 @@ const Result: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState("전체");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
+  const inputId = useMemo(() => `search-input-result-${Math.random().toString(36).substr(2, 9)}`, []);
+  const inputName = useMemo(() => `search-query-result-${Math.random().toString(36).substr(2, 9)}`, []);
 
   useEffect(() => {
     setIsFocused(false);
@@ -129,6 +132,8 @@ const Result: React.FC = () => {
       <SearchInputContainer>
         <SearchInputWrapper>
           <SearchInput
+            id={inputId}
+            name={inputName}
             ref={inputRef}
             value={query}
             placeholder="콘티, 노래 또는 가사 등"
@@ -176,7 +181,6 @@ const Result: React.FC = () => {
           renderEmptyState()
         )}
       </Content>
-      <TabBar />
     </Container>
   );
 };

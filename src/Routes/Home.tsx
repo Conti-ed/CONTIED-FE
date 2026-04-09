@@ -1,9 +1,6 @@
-import React from "react";
-import { AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import ContiPlaceholder from "../components/ContiPlaceholder";
-import TabBar from "../components/TabBar";
 import {
   Container,
   Content,
@@ -29,6 +26,8 @@ import { getUserProfile } from "../utils/axios";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { fromTabBar, direction = 0 } = (location.state as any) || {};
 
   const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 30, // 30분 캐시
@@ -57,9 +56,8 @@ const Home: React.FC = () => {
   const albumId = selectedConti?.id;
 
   return (
-    <AnimatePresence mode="wait">
-      <Container>
-        <Content>
+    <Container>
+      <Content>
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
           </Header>
@@ -108,10 +106,8 @@ const Home: React.FC = () => {
               />
             ))}
           </ButtonGroup>
-        </Content>
-        <TabBar />
-      </Container>
-    </AnimatePresence>
+      </Content>
+    </Container>
   );
 };
 

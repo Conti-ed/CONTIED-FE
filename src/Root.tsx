@@ -2,11 +2,34 @@ import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-import { Outlet } from "react-router-dom";
-import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import styled from "styled-components";
+import TabBar from "./components/TabBar";
+
+const PageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: ${(props) => props.theme.bgColor};
+`;
+
+const ContentWrapper = styled(motion.div)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: ${(props) => props.theme.bgColor};
+  /* 페이지 간의 경계선을 부드럽게 감추기 위한 그림자 추가 */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+`;
 
 function Root() {
   const isDark = useRecoilValue(isDarkAtom);
+  const location = useLocation();
+  const { fromTabBar, direction = 0 } = (location.state as any) || {};
+
   useEffect(() => {
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
@@ -15,8 +38,6 @@ function Root() {
 
     setVh();
     window.addEventListener("resize", setVh);
-
-    // 모바일 기기에서 orientation 변경 시에도 적용
     window.addEventListener("orientationchange", setVh);
 
     return () => {
@@ -24,11 +45,57 @@ function Root() {
       window.removeEventListener("orientationchange", setVh);
     };
   }, []);
+
+  const showTabBar =
+    location.pathname === "/home" ||
+    location.pathname === "/search" ||
+    location.pathname === "/result" ||
+    location.pathname.startsWith("/mypage");
+
+  const getTransitionKey = (path: string) => {
+    if (path === "/home") return "/home";
+    if (path.startsWith("/search") || path === "/result") return "/search";
+    if (path.startsWith("/mypage")) return "/mypage";
+    return "default";
+  };
+
+  const variants = {
+    enter: {
+      opacity: 0,
+      zIndex: 1,
+    },
+    center: {
+      opacity: 1,
+      zIndex: 1,
+    },
+    exit: {
+      opacity: 0, // We can still fade out, but popLayout keeps them layered
+      zIndex: 0,
+    },
+  };
+
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-        <Outlet />
+        <PageWrapper>
+          <AnimatePresence mode="popLayout" initial={false}>
+            <ContentWrapper
+              key={getTransitionKey(location.pathname)}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                duration: 0.25,
+                ease: "easeInOut",
+              }}
+            >
+              <Outlet />
+            </ContentWrapper>
+          </AnimatePresence>
+          {showTabBar && <TabBar />}
+        </PageWrapper>
       </ThemeProvider>
     </>
   );

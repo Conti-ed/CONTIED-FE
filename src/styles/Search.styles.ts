@@ -27,7 +27,7 @@ export const BackIcon = styled(motion.svg)`
   cursor: pointer;
 `;
 
-export const Title = styled.h1`
+export const Title = styled.h1<{ $isFocused?: boolean }>`
   font-size: 18px;
   font-weight: 500;
   color: #171A1F;

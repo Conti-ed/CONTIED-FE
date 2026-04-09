@@ -72,17 +72,8 @@ const MyFavoriteContis: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <EmptyStateContainer
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+      <Container>
+        <EmptyStateContainer>
           <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
           <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
           <EmptyStateText2>잠시만요...</EmptyStateText2>
@@ -93,17 +84,8 @@ const MyFavoriteContis: React.FC = () => {
 
   if (isError) {
     return (
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <EmptyStateContainer
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+      <Container>
+        <EmptyStateContainer>
           <EmptyStateImage src="/images/WhitePiano.png" alt="Error" />
           <EmptyStateText1>에러가 발생했어요!</EmptyStateText1>
           <EmptyStateText2>콘티를 불러오는 데 실패했어요.</EmptyStateText2>
@@ -113,12 +95,7 @@ const MyFavoriteContis: React.FC = () => {
   }
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <Container>
       {favoriteContis && favoriteContis.length > 0 ? (
         <ContiList>
           {favoriteContis.map((data: ContiType, index: number) => (
@@ -159,19 +136,11 @@ const MyFavoriteContis: React.FC = () => {
           ))}
         </ContiList>
       ) : (
-        <AnimatePresence>
-          <EmptyStateContainer
-            key="empty-state"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
-            <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
-            <EmptyStateText1>앗!</EmptyStateText1>
-            <EmptyStateText2>'좋아요' 한 콘티가 없어요.</EmptyStateText2>
-          </EmptyStateContainer>
-        </AnimatePresence>
+        <EmptyStateContainer>
+          <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
+          <EmptyStateText1>앗!</EmptyStateText1>
+          <EmptyStateText2>'좋아요' 한 콘티가 없어요.</EmptyStateText2>
+        </EmptyStateContainer>
       )}
     </Container>
   );

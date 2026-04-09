@@ -13,6 +13,7 @@ const Container = styled.div`
   // border-bottom: 1px solid #e0e0e0;
   position: absolute;
   bottom: 0;
+  z-index: 1000;
 `;
 
 interface ButtonProps {
@@ -53,19 +54,25 @@ interface TabBarProps {
   onHomeClick?: () => void;
 }
 
+const PATH_INDEX: Record<string, number> = {
+  home: 0,
+  search: 1,
+  mypage: 2,
+};
+
 const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getActiveButton = useCallback(() => {
-    if (
-      location.pathname.startsWith("/search") ||
-      location.pathname === "/result"
-    )
-      return "search";
-    if (location.pathname.startsWith("/mypage")) return "mypage";
+  const getPathKey = useCallback((path: string) => {
+    if (path.startsWith("/search") || path === "/result") return "search";
+    if (path.startsWith("/mypage")) return "mypage";
     return "home";
-  }, [location.pathname]);
+  }, []);
+
+  const getActiveButton = useCallback(() => {
+    return getPathKey(location.pathname);
+  }, [location.pathname, getPathKey]);
 
   const [activeButton, setActiveButton] = React.useState(getActiveButton);
 
@@ -77,8 +84,13 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
     if (onHomeClick) {
       onHomeClick();
     }
+    const currentPathKey = getPathKey(location.pathname);
+    const targetPathKey = "home";
+    const direction =
+      PATH_INDEX[targetPathKey] > PATH_INDEX[currentPathKey] ? 1 : -1;
+
     setActiveButton("home");
-    navigate("/home");
+    navigate("/home", { state: { fromTabBar: true, direction } });
   };
 
   return (
@@ -103,8 +115,13 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
       <Button
         $active={activeButton === "search"}
         onClick={() => {
+          const currentPathKey = getPathKey(location.pathname);
+          const targetPathKey = "search";
+          const direction =
+            PATH_INDEX[targetPathKey] > PATH_INDEX[currentPathKey] ? 1 : -1;
+
           setActiveButton("search");
-          navigate("/search");
+          navigate("/search", { state: { fromTabBar: true, direction } });
         }}
       >
         <svg
@@ -126,8 +143,13 @@ const TabBar: React.FC<TabBarProps> = ({ onHomeClick }) => {
       <Button
         $active={activeButton === "mypage"}
         onClick={() => {
+          const currentPathKey = getPathKey(location.pathname);
+          const targetPathKey = "mypage";
+          const direction =
+            PATH_INDEX[targetPathKey] > PATH_INDEX[currentPathKey] ? 1 : -1;
+
           setActiveButton("mypage");
-          navigate("/mypage");
+          navigate("/mypage", { state: { fromTabBar: true, direction } });
         }}
       >
         <svg

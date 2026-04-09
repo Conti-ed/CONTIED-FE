@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useNavigate, Outlet, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "react-query";
-import TabBar from "../components/TabBar";
 import { getUserProfile } from "../utils/axios";
 import { getAccessToken, logout } from "../utils/auth";
 import ConfirmModal from "../components/Modals/ConfirmModal";
@@ -45,16 +44,16 @@ export const Title = styled.h1`
 
 const LogoutButton = styled.button`
   position: absolute;
-  right: 15px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   background-color: #f3f4f6;
   border: none;
   color: #9095a1;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   cursor: pointer;
-  padding: 4px 10px;
+  padding: 5px 15px;
   border-radius: 20px;
   transition: all 0.2s;
 
@@ -243,12 +242,7 @@ const MyPage: React.FC = () => {
   };
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <Container>
       <Header>
         <Title>
           <span>{username}</span> 님의 Conti:ed
@@ -282,7 +276,6 @@ const MyPage: React.FC = () => {
           <Outlet />
         </ScrollableContainer>
       </Content>
-      <TabBar />
       {window.location.pathname === "/mypage" && (
         <Navigate to="/mypage/uploaded" replace />
       )}

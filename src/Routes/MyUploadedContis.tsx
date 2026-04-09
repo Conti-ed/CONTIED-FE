@@ -66,17 +66,8 @@ const MyUploadedContis: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <EmptyStateContainer
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+      <Container>
+        <EmptyStateContainer>
           <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
           <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
           <EmptyStateText2>잠시만요...</EmptyStateText2>
@@ -87,17 +78,8 @@ const MyUploadedContis: React.FC = () => {
 
   if (isError) {
     return (
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <EmptyStateContainer
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+      <Container>
+        <EmptyStateContainer>
           <EmptyStateImage src="/images/WhitePiano.png" alt="Error" />
           <EmptyStateText1>에러가 발생했어요!</EmptyStateText1>
           <EmptyStateText2>콘티를 불러오는 데 실패했어요.</EmptyStateText2>
@@ -107,12 +89,7 @@ const MyUploadedContis: React.FC = () => {
   }
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <Container>
       {uploadedContis && uploadedContis.length > 0 ? (
         <ContiList>
           {uploadedContis.map((data: ContiType, index: number) => (
@@ -151,11 +128,7 @@ const MyUploadedContis: React.FC = () => {
           ))}
         </ContiList>
       ) : (
-        <EmptyStateContainer
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+        <EmptyStateContainer>
           <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
           <EmptyStateText1>앗!</EmptyStateText1>
           <EmptyStateText2>아직 업로드한 콘티가 없어요.</EmptyStateText2>

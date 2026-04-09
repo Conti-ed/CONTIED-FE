@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
+import { useMemo } from "react";
 import Loading from "../components/Loading";
 import SearchSuggestions from "../components/SearchSuggestions";
 import {
@@ -21,10 +21,9 @@ import {
   ClearAllButton,
   RecentSearchItem,
 } from "../styles/Search.styles";
-import TabBar from "../components/TabBar";
+import { getRandomSuggestions } from "../utils/randomUtils";
 import EmptyState from "../components/EmptyState";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
-import { getRandomSuggestions } from "../utils/randomUtils";
 import { getAllSongs } from "../utils/axios";
 import Icon from "../components/Icon";
 
@@ -32,33 +31,45 @@ const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const storedSearches = localStorage.getItem("recentSearches");
+      return storedSearches ? JSON.parse(storedSearches) : [];
+    } catch (e) {
+      console.error("Failed to load recent searches", e);
+      return [];
+    }
+  });
+
+  // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
+  const inputId = useMemo(() => `search-input-${Math.random().toString(36).substr(2, 9)}`, []);
+  const inputName = useMemo(() => `search-query-${Math.random().toString(36).substr(2, 9)}`, []);
   const inputRef = useRef<HTMLInputElement>(null);
   const recentSearchesRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { contiId } = location.state || {};
 
+  // 1. 초기 진입 시 네비게이션 상태 동기화 (마운트 시 1회만 실행)
   useEffect(() => {
     if (location.state) {
       setSearchQuery(location.state.query || "");
-      setIsFocused(location.state.isFocused || false);
+      if (location.state.isFocused !== undefined) {
+        setIsFocused(location.state.isFocused);
+      }
     }
+  }, []); // 의존성 배열을 비워 최초 마운트 시에만 동기화 하도록 제한
+
+  // 2. 포커스 상태 변경에 따른 DOM 포커스 관리
+  useEffect(() => {
     if (isFocused && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [location.state, isFocused]);
+  }, [isFocused]);
 
-  useEffect(() => {
-    const storedSearches = localStorage.getItem("recentSearches");
-    if (storedSearches) {
-      setRecentSearches(JSON.parse(storedSearches));
-    }
-  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
-  }, [recentSearches]);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -99,10 +110,13 @@ const Search: React.FC = () => {
     if (searchQuery.trim() !== "") {
       setIsFocused(false); // 포커스 해제
       setIsLoading(true); // 로딩 시작
-      setRecentSearches((prevSearches) => [
+      const updatedSearches = [
         searchQuery,
-        ...prevSearches.filter((item) => item !== searchQuery),
-      ]); // 검색어 저장 및 중복 제거
+        ...recentSearches.filter((item) => item !== searchQuery),
+      ];
+      setRecentSearches(updatedSearches); // 검색어 저장 및 중복 제거
+      localStorage.setItem("recentSearches", JSON.stringify(updatedSearches)); // 검색어 저장 즉시 실행
+      
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
         navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
@@ -120,6 +134,7 @@ const Search: React.FC = () => {
 
   const handleClearAll = () => {
     setRecentSearches([]);
+    localStorage.setItem("recentSearches", JSON.stringify([]));
   };
 
   const handleRecentSearchClick = (search: string) => {
@@ -130,9 +145,9 @@ const Search: React.FC = () => {
   };
 
   const handleRemoveRecentSearch = (search: string) => {
-    setRecentSearches((prevSearches) =>
-      prevSearches.filter((item) => item !== search)
-    );
+    const updated = recentSearches.filter((item) => item !== search);
+    setRecentSearches(updated);
+    localStorage.setItem("recentSearches", JSON.stringify(updated));
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -184,8 +199,7 @@ const Search: React.FC = () => {
   );
 
   return (
-    <AnimatePresence>
-      <Container>
+    <Container>
         <Header>
           {isFocused && (
             <BackIcon
@@ -205,6 +219,8 @@ const Search: React.FC = () => {
         <SearchInputContainer>
           <SearchInputWrapper>
             <SearchInput
+              id={inputId}
+              name={inputName}
               ref={inputRef}
               placeholder="콘티, 노래 또는 가사 등"
               value={searchQuery}
@@ -237,9 +253,7 @@ const Search: React.FC = () => {
             />
           )}
         </Content>
-        <TabBar />
-      </Container>
-    </AnimatePresence>
+    </Container>
   );
 };
 

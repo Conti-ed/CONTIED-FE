@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import StatusBar from "../components/StatusBar";
 import Loading from "../components/Loading";
@@ -84,6 +84,11 @@ const SearchAddSong: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
+  const inputId = useMemo(() => `search-input-addsong-${Math.random().toString(36).substr(2, 9)}`, []);
+  const inputName = useMemo(() => `search-query-addsong-${Math.random().toString(36).substr(2, 9)}`, []);
+
   const {
     recentSearches,
     addRecentSearch,
@@ -167,6 +172,8 @@ const SearchAddSong: React.FC = () => {
       <SearchInputContainer>
         <SearchInputWrapper>
           <SearchInput
+            id={inputId}
+            name={inputName}
             ref={inputRef}
             placeholder="콘티, 노래 또는 가사 등"
             value={searchQuery}
