@@ -4,7 +4,10 @@ import styled from "styled-components";
 
 const Container = styled.div`
   width: 100%;
-  padding-bottom: calc(2px + env(safe-area-inset-bottom));
+  height: calc(54px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background-color: ${(props) =>
     props.theme.bgColor === "#292929"
       ? "rgba(41, 41, 41, 0.8)"
@@ -19,6 +22,7 @@ const Container = styled.div`
   bottom: 0;
   left: 0;
   z-index: 1000;
+  padding-bottom: 4px; /* 바닥에 너무 붙지 않게 미세한 여백 */
 `;
 
 const NavItems = styled.div`
@@ -26,7 +30,7 @@ const NavItems = styled.div`
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  height: 50px;
+  height: 100%;
   padding: 0 10px;
 `;
 
@@ -56,7 +60,7 @@ const Button = styled.button<ButtonProps>`
   }
 
   & svg {
-    margin-bottom: 2px;
+    margin-bottom: 3px;
     width: 22px;
     height: 22px;
     path {
