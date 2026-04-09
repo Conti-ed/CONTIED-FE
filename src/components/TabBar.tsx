@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 
 const Container = styled.div`
   width: 100%;
-  height: calc(48px + env(safe-area-inset-bottom));
+  height: calc(44px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* 상단부터 채우고 나머지는 세이프 에리어 여백으로 활용 */
   background-color: ${(props) =>
     props.theme.bgColor === "#292929"
       ? "rgba(41, 41, 41, 0.75)"
@@ -24,7 +24,6 @@ const Container = styled.div`
   left: 0;
   z-index: 1000;
   
-  /* Top Sheen (Inner Glow) */
   &::after {
     content: "";
     position: absolute;
@@ -41,8 +40,8 @@ const NavItems = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 100%;
-  padding: 0 40px; /* 양옆 아이콘의 시작점을 깔끔하게 잡기 위해 여백 조정 */
+  height: 44px; /* 버튼 콘텐츠 영역의 높이를 고정 */
+  padding: 0 45px;
   position: relative;
 `;
 
@@ -58,21 +57,21 @@ const Button = styled(motion.button)<ButtonProps>`
   background-color: transparent;
   border: none;
   padding: 0;
-  width: 60px;
+  width: 64px;
   height: 100%;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.3px;
   color: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
   cursor: pointer;
   position: relative;
   
   & svg {
-    margin-bottom: 4px;
-    width: 22px;
-    height: 22px;
+    margin-bottom: 2px;
+    width: 20px;
+    height: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: ${({ $active }) => ($active ? "scale(1.1)" : "scale(1)")};
+    transform: ${({ $active }) => ($active ? "scale(1.12)" : "scale(1)")};
     path {
       fill: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
       transition: fill 0.3s ease;
@@ -82,7 +81,7 @@ const Button = styled(motion.button)<ButtonProps>`
 
 const ActiveDot = styled(motion.div)`
   position: absolute;
-  bottom: 6px;
+  bottom: -6px; /* 텍스트 바로 아래에 붙도록 위치 조정 */
   width: 4px;
   height: 4px;
   border-radius: 50%;
