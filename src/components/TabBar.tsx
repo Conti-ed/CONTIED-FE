@@ -7,12 +7,21 @@ const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 53px;
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
-  // border-bottom: 1px solid #e0e0e0;
-  position: absolute;
+  min-height: 53px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: ${(props) =>
+    props.theme.bgColor === "#292929"
+      ? "rgba(41, 41, 41, 0.8)"
+      : "rgba(255, 255, 255, 0.85)"};
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid
+    ${(props) =>
+      props.theme.bgColor === "#292929" ? "#404040" : "rgba(0, 0, 0, 0.05)"};
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.03);
+  position: fixed;
   bottom: 0;
+  left: 0;
   z-index: 1000;
 `;
 
@@ -25,7 +34,7 @@ const Button = styled.button<ButtonProps>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
+  background-color: transparent;
   border: none;
   padding: 0;
   font-size: 12px;

@@ -59,41 +59,12 @@ function Root() {
     return "default";
   };
 
-  const variants = {
-    enter: {
-      opacity: 0,
-      zIndex: 1,
-    },
-    center: {
-      opacity: 1,
-      zIndex: 1,
-    },
-    exit: {
-      opacity: 0, // We can still fade out, but popLayout keeps them layered
-      zIndex: 0,
-    },
-  };
-
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
         <PageWrapper>
-          <AnimatePresence mode="popLayout" initial={false}>
-            <ContentWrapper
-              key={getTransitionKey(location.pathname)}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                duration: 0.25,
-                ease: "easeInOut",
-              }}
-            >
-              <Outlet />
-            </ContentWrapper>
-          </AnimatePresence>
+          <Outlet />
           {showTabBar && <TabBar />}
         </PageWrapper>
       </ThemeProvider>

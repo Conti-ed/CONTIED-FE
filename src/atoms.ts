@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { ContiType, ModalType, SongType } from "./types";
 
-export const isDarkAtom = atom({ key: "isDark", default: true });
+export const isDarkAtom = atom({ key: "isDark", default: false });
 
 export const isLoginAtom = atom({ key: "isLogin", default: false });
 
