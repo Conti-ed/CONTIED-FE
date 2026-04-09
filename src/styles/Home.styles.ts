@@ -46,11 +46,11 @@ export const WelcomeSection = styled.div`
 `;
 
 export const UserName = styled.div`
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 500;
   text-align: left;
   line-height: 1.2;
-  color: #1b1b1b;
+  color: #171a1f;
   margin-bottom: 4px;
   span {
     color: #94b4ed;
@@ -82,31 +82,6 @@ export const AlbumContainer = styled.div`
   margin-bottom: 29px;
   flex-shrink: 0;
   overflow: hidden;
-`;
-
-export const ShuffleButton = styled(motion.button)`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  color: #545f71;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  & svg {
-    transition: transform 0.4s ease;
-  }
-  &:hover svg {
-    transform: rotate(180deg);
-  }
 `;
 
 export const AlbumThumbnail = styled.img`
@@ -174,16 +149,14 @@ export const TransitionTitle = styled(Title)<{ $isLoading: boolean }>`
 export const SectionTitle = styled.div`
   display: flex;
   align-items: center;
-  font-size: 20px;
-  color: #000;
+  font-size: 18px;
+  font-weight: 500;
+  color: #171a1f;
   align-self: flex-start;
   margin-left: 10px;
   margin-bottom: 22px;
   & span {
     color: #94b4ed;
-  }
-  & svg {
-    margin-right: 5px;
   }
 `;
 
@@ -192,14 +165,14 @@ export const ButtonGroup = styled.div`
   justify-content: space-between;
   width: 100%;
   max-width: 360px;
-  margin-bottom: 20px;
+  margin-bottom: 29px; /* AlbumContainer와 SectionTitle 사이의 간격과 맞춤 */
 `;
 
 interface ButtonProps {
   $hoverFillPath?: boolean;
   $hoverColor?: string;
   $isHovered: boolean;
-  $isClicked?: boolean; // 클릭 시 상태를 나타내는 속성 추가
+  $isClicked?: boolean;
 }
 
 export const Button = styled(motion.button)<ButtonProps>`
@@ -218,8 +191,7 @@ export const Button = styled(motion.button)<ButtonProps>`
   width: 31%;
   height: 95px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: background 0.4s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
   &:hover {
     background: ${(props) =>
@@ -252,4 +224,151 @@ export const Button = styled(motion.button)<ButtonProps>`
     margin-bottom: 12px;
     transition: all 0.3s ease;
   }
+`;
+
+export const ShuffleButton = styled(motion.div)`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  z-index: 20;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background: #fff;
+    color: #94b4ed; /* 포인트 컬러로 변경하여 가독성 확보 */
+    transform: scale(1.1);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.6);
+  }
+`;
+
+export const BadgeContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  white-space: nowrap;
+`;
+
+export const BadgePill = styled.div`
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+`;
+
+export const RecentSection = styled.section`
+  margin-top: 10px; /* Adjusting for visual balance since RecentHeader has margin */
+  padding: 0 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const RecentHeader = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+`;
+
+export const RecentTitle = styled(SectionTitle)`
+  margin-left: 0;
+  margin-bottom: 0;
+`;
+
+export const RecentList = styled(motion.div)`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const RecentItem = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 15px;
+  border: 2px solid #9dbbe9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  cursor: pointer;
+`;
+
+export const RecentImageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+`;
+
+export const RecentImage = styled.img`
+  position: absolute;
+  height: 100px;
+  border-radius: 20px;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const RecentInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 13px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const RecentContiTitle = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 7px;
+  color: rgba(23, 26, 31, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const RecentSubtitle = styled.div`
+  font-size: 13px;
+  margin-bottom: 7px;
+  color: rgba(23, 26, 31, 0.5);
+`;
+
+export const RecentSongInfo = styled.div`
+  font-size: 11px;
+  color: rgba(23, 26, 31, 0.5);
 `;

@@ -5,13 +5,17 @@ import { RouterProvider } from "react-router-dom";
 import router from "./Router";
 import GlobalSVGProvider from "./GlobalSVGProvider";
 
+import GlobalErrorBoundary from "./components/ErrorBoundary";
+
 const queryClient = new QueryClient();
 const root = createRoot(document.getElementById("root")!);
 
 root.render(
   <RecoilRoot>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <GlobalErrorBoundary>
+        <RouterProvider router={router} />
+      </GlobalErrorBoundary>
       <GlobalSVGProvider />
     </QueryClientProvider>
   </RecoilRoot>

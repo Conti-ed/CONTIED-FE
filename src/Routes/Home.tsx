@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import {
@@ -21,15 +21,41 @@ import {
   SectionTitle,
   ButtonGroup,
   ShuffleButton,
+  BadgeContainer,
+  BadgePill,
+  RecentSection,
+  RecentHeader,
+  RecentTitle,
+  RecentList,
+  RecentItem,
+  RecentImageWrapper,
+  RecentImage,
+  RecentInfo,
+  RecentContiTitle,
+  RecentSubtitle,
+  RecentSongInfo,
 } from "../styles/Home.styles";
-import Icon from "../components/Icon";
 import { useHomeLogic } from "../hooks/useHomeLogic";
 import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
-import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
 import { getUserProfile } from "../utils/axios";
 import { HiRefresh } from "react-icons/hi";
+import { FiMusic, FiClock, FiCalendar } from "react-icons/fi";
+import Icon from "../components/Icon";
+import {
+  formatRelativeTime,
+  formatTotalDuration,
+  parseLocalDateString,
+} from "../utils/formatDuration";
+
+const getGreetingMessage = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return `좋은 아침이에요`;
+  if (hour >= 12 && hour < 17) return `나른한 오후네요`;
+  if (hour >= 17 && hour < 22) return `찬양 한 곡 어때요`;
+  return `오늘 하루 고생 많으셨어요`;
+};
 
 const CountUp: React.FC<{ value: number }> = ({ value }) => {
   const count = useMotionValue(0);
@@ -46,7 +72,6 @@ const CountUp: React.FC<{ value: number }> = ({ value }) => {
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { fromTabBar, direction = 0 } = (location.state as any) || {};
 
   const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 30, // 30분 캐시
@@ -72,6 +97,15 @@ const Home: React.FC = () => {
   const albumTitle = selectedConti?.title || "콘티를 등록해볼까요?";
   const albumId = selectedConti?.id;
 
+  const recentContis = useMemo(() => {
+    return [...contiList]
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )
+      .slice(0, 3);
+  }, [contiList]);
+
   return (
     <Container
       initial={{ opacity: 0 }}
@@ -85,7 +119,7 @@ const Home: React.FC = () => {
           </Header>
           <WelcomeSection>
             <UserName>
-              <span>{userName}</span> 님의 콘티 리스트
+              {getGreetingMessage()}, <span>{userName || "사용자"}</span>님!
             </UserName>
             <StatsText>
               지금까지 <CountUp value={contiList.length} /> 개의 콘티를 만드셨네요!
@@ -119,9 +153,26 @@ const Home: React.FC = () => {
             >
               {selectedConti ? albumTitle : "콘티를 등록해볼까요?"}
             </TransitionTitle>
+            {selectedConti && (
+              <BadgeContainer style={{ color: textColor }}>
+                <BadgePill>
+                  <FiMusic size={12} />
+                  {selectedConti.ContiToSong?.length || 0}곡
+                </BadgePill>
+                <BadgePill>
+                  <FiClock size={12} />
+                  {formatTotalDuration(selectedConti.duration || 0)}
+                </BadgePill>
+                <BadgePill>
+                  <FiCalendar size={12} />
+                  {formatRelativeTime(parseLocalDateString(selectedConti.updatedAt))}
+                </BadgePill>
+              </BadgeContainer>
+            )}
           </AlbumContainer>
+
           <SectionTitle>
-            <Icon id="note-home" width="20" height="20" />
+            <Icon id="note-home" width="18" height="18" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
           <ButtonGroup>
@@ -129,18 +180,61 @@ const Home: React.FC = () => {
               <HomeButton
                 key={button.name}
                 buttonInfo={button}
-                isHovered={
-                  hoveredButton === button.name ||
-                  isButtonClicked === button.name
-                }
+                isHovered={hoveredButton === button.name}
                 isClicked={isButtonClicked === button.name}
                 onMouseEnter={() => handleMouseEnter(button.name)}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => handleButtonClick(button.name)}
-                disabled={isButtonClicked !== null}
+                disabled={isButtonClicked !== null && isButtonClicked !== button.name}
               />
             ))}
           </ButtonGroup>
+
+          {recentContis.length > 0 && (
+            <RecentSection>
+              <RecentHeader>
+                <RecentTitle>
+                  <Icon id="note-home" width="18" height="18" />
+                  &nbsp;최근 작업한&nbsp;<span>콘티</span>
+                </RecentTitle>
+              </RecentHeader>
+              <RecentList>
+                {recentContis.map((conti, index) => (
+                  <RecentItem
+                    key={conti.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAlbumClick(conti.id)}
+                  >
+                    <RecentImageWrapper>
+                      <ContiPlaceholder size={100} />
+                      <RecentImage
+                        src={conti.thumbnail || defaultImageUrl}
+                        alt="Album Image"
+                        style={{
+                          height:
+                            !conti.thumbnail ||
+                            conti.thumbnail === defaultImageUrl
+                              ? "62px"
+                              : "100px",
+                        }}
+                      />
+                    </RecentImageWrapper>
+                    <RecentInfo>
+                      <RecentContiTitle>{conti.title}</RecentContiTitle>
+                      <RecentSubtitle>{userName || "사용자"}</RecentSubtitle>
+                      <RecentSongInfo>
+                        {`${formatRelativeTime(parseLocalDateString(conti.updatedAt))} • ${formatTotalDuration(conti.duration || 0)}`}
+                      </RecentSongInfo>
+                    </RecentInfo>
+                  </RecentItem>
+                ))}
+              </RecentList>
+            </RecentSection>
+          )}
       </Content>
     </Container>
   );

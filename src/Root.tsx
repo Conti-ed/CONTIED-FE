@@ -39,6 +39,27 @@ function Root() {
   const { direction = 0 } = (location.state as any) || {};
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const isPublicRoute =
+        location.pathname === "/" ||
+        location.pathname === "/auth/callback" ||
+        location.pathname === "/waiting";
+
+      if (!session && !isPublicRoute) {
+        console.log("No session found on protected route, redirecting...");
+        removeTokens(); // 쿠키 및 로컬스토리지 정리
+        navigate("/", { replace: true });
+      }
+    };
+
+    // 1. 초기 마운트 시 체크
+    checkAuth();
+
+    // 2. 윈도우 포커스 시 체크 (PWA/WebView 대응)
+    window.addEventListener("focus", checkAuth);
+
+    // 3. 인증 상태 변경 리스너
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -51,7 +72,6 @@ function Root() {
         removeTokens();
         if (!isPublicRoute) navigate("/", { replace: true });
       } else if (!session && !isPublicRoute) {
-        // 세션이 없는데 보호된 라우트에 접근하려 할 때
         removeTokens();
         navigate("/", { replace: true });
       }
@@ -59,6 +79,7 @@ function Root() {
 
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener("focus", checkAuth);
     };
   }, [navigate, location.pathname]);
 
