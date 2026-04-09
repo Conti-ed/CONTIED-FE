@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 const Container = styled.div`
   width: 100%;
+  max-width: 430px;
   height: calc(42px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
@@ -21,7 +22,8 @@ const Container = styled.div`
   box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.03);
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   
   &::after {

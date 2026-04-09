@@ -19,7 +19,7 @@ const StartPage = styled.div<{ $isFading: boolean }>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   height: calc(var(--vh, 1vh) * 100);
   background-color: #92b5f0;
   ${({ $isFading }) =>

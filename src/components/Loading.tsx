@@ -6,12 +6,15 @@ import animationData from "../components/waitingAnimation.json";
 const FullScreenContainer = styled.div`
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
   bottom: 0;
-  background-color: white;
+  background-color: ${(props) => props.theme.bgColor};
   display: flex;
   justify-content: center;
+  z-index: 3000;
 `;
 
 interface ContentContainerProps {

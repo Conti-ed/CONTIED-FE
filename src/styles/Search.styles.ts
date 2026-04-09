@@ -5,7 +5,7 @@ export const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   height: calc(var(--vh, 1vh) * 100);
   background-color: #fff;
   overflow: hidden;

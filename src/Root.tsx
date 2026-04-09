@@ -11,9 +11,16 @@ import TabBar from "./components/TabBar";
 const PageWrapper = styled.div`
   position: relative;
   width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
   height: 100%;
   overflow: hidden;
   background-color: ${(props) => props.theme.bgColor};
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 430px) {
+    box-shadow: none;
+  }
 `;
 
 const ContentWrapper = styled(motion.div)`
@@ -21,8 +28,6 @@ const ContentWrapper = styled(motion.div)`
   width: 100%;
   height: 100%;
   background-color: ${(props) => props.theme.bgColor};
-  /* 페이지 간의 경계선을 부드럽게 감추기 위한 그림자 추가 */
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 `;
 
 function Root() {
@@ -51,13 +56,6 @@ function Root() {
     location.pathname === "/search" ||
     location.pathname === "/result" ||
     location.pathname.startsWith("/mypage");
-
-  const getTransitionKey = (path: string) => {
-    if (path === "/home") return "/home";
-    if (path.startsWith("/search") || path === "/result") return "/search";
-    if (path.startsWith("/mypage")) return "/mypage";
-    return "default";
-  };
 
   return (
     <>
@@ -126,8 +124,10 @@ footer, header, hgroup, main, menu, nav, section {
 body {
   line-height: 1;
   font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
-  background-color:${(props) => props.theme.bgColor};
+  background-color: ${(props) =>
+    props.theme.bgColor === "#292929" ? "#1a1a1a" : "#e8e8e8"};
   color:${(props) => props.theme.textColor};
+  overflow: hidden; /* 바위의 스크롤은 PageWrapper에서 관리하도록 유도 */
 }
 menu, ol, ul {
   list-style: none;
@@ -153,8 +153,10 @@ a {
 }
 button {
   font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
-  background-color:${(props) => props.theme.bgColor};
+  background-color: transparent;
   color:${(props) => props.theme.textColor};
+  border: none;
+  cursor: pointer;
 }
 input {
   font-family: 'GongGothic', 'Noto Sans KR', sans-serif;
@@ -163,7 +165,7 @@ input {
 }
 #root, html, body {
     height: 100%;
-  }
+}
 `;
 
 export default Root;
