@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   width: 100%;
-  padding-bottom: 2px;
+  padding-bottom: calc(2px + env(safe-area-inset-bottom));
   background-color: ${(props) =>
     props.theme.bgColor === "#292929"
       ? "rgba(41, 41, 41, 0.8)"
@@ -26,7 +26,7 @@ const NavItems = styled.div`
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  height: 42px;
+  height: 50px;
   padding: 0 10px;
 `;
 
@@ -44,7 +44,7 @@ const Button = styled.button<ButtonProps>`
   padding: 0;
   width: 60px;
   height: 100%;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   color: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
   cursor: pointer;
@@ -56,9 +56,9 @@ const Button = styled.button<ButtonProps>`
   }
 
   & svg {
-    margin-bottom: 1px;
-    width: 19px;
-    height: 19px;
+    margin-bottom: 2px;
+    width: 22px;
+    height: 22px;
     path {
       fill: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
     }
