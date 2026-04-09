@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const Container = styled.div`
   width: 100%;
   max-width: 430px;
-  height: calc(42px + env(safe-area-inset-bottom));
+  height: calc(40px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   justify-content: center; /* 아이콘 그룹을 전체 높이의 정중앙에 배치 */
@@ -42,7 +42,7 @@ const NavItems = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 42px; /* 버튼 콘텐츠 영역 높이 일관성 유지 */
+  height: 40px; /* 버튼 콘텐츠 영역 높이 일관성 유지 */
   padding: 0 45px;
   position: relative;
 `;
@@ -69,9 +69,9 @@ const Button = styled(motion.button)<ButtonProps>`
   position: relative;
   
   & svg {
-    margin-bottom: 1px;
-    width: 18px;
-    height: 18px;
+    margin-bottom: 3.5px;
+    width: 20px;
+    height: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: ${({ $active }) => ($active ? "scale(1.15)" : "scale(1)")};
     path {
