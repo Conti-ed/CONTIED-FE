@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 
 const Container = styled.div`
   width: 100%;
-  height: calc(44px + env(safe-area-inset-bottom));
+  height: calc(42px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* 상단부터 채우고 나머지는 세이프 에리어 여백으로 활용 */
+  justify-content: center; /* 아이콘 그룹을 전체 높이의 정중앙에 배치 */
   background-color: ${(props) =>
     props.theme.bgColor === "#292929"
       ? "rgba(41, 41, 41, 0.75)"
@@ -40,7 +40,7 @@ const NavItems = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 44px; /* 버튼 콘텐츠 영역의 높이를 고정 */
+  height: 42px; /* 버튼 콘텐츠 영역 높이 일관성 유지 */
   padding: 0 45px;
   position: relative;
 `;
@@ -60,18 +60,18 @@ const Button = styled(motion.button)<ButtonProps>`
   width: 64px;
   height: 100%;
   font-size: 10.5px;
-  font-weight: 500;
+  font-weight: 550;
   letter-spacing: -0.3px;
   color: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
   cursor: pointer;
   position: relative;
   
   & svg {
-    margin-bottom: 2px;
-    width: 20px;
-    height: 20px;
+    margin-bottom: 1px;
+    width: 18px;
+    height: 18px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: ${({ $active }) => ($active ? "scale(1.12)" : "scale(1)")};
+    transform: ${({ $active }) => ($active ? "scale(1.15)" : "scale(1)")};
     path {
       fill: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
       transition: fill 0.3s ease;
@@ -81,9 +81,9 @@ const Button = styled(motion.button)<ButtonProps>`
 
 const ActiveDot = styled(motion.div)`
   position: absolute;
-  bottom: -6px; /* 텍스트 바로 아래에 붙도록 위치 조정 */
-  width: 4px;
-  height: 4px;
+  bottom: -4px; /* 높이가 줄어듦에 따라 위치 미세 조정 */
+  width: 3.5px;
+  height: 3.5px;
   border-radius: 50%;
   background-color: #94b4ed;
   box-shadow: 0 0 8px rgba(148, 180, 237, 0.5);
