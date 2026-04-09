@@ -26,7 +26,7 @@ const NavItems = styled.div`
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  height: 64px;
+  height: 48px;
   padding: 0 10px;
 `;
 
@@ -56,9 +56,9 @@ const Button = styled.button<ButtonProps>`
   }
 
   & svg {
-    margin-bottom: 4px;
-    width: 24px;
-    height: 24px;
+    margin-bottom: 2px;
+    width: 22px;
+    height: 22px;
     path {
       fill: ${({ $active }) => ($active ? "#94b4ed" : "#8C8C8C")};
     }
