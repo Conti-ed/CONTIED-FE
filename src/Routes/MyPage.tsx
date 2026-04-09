@@ -44,7 +44,7 @@ export const Title = styled.h1`
 
 const LogoutButton = styled.button`
   position: absolute;
-  right: 20px;
+  right: 25px;
   top: 50%;
   transform: translateY(-50%);
   background-color: #f3f4f6;
@@ -54,7 +54,7 @@ const LogoutButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   padding: 5px 15px;
-  border-radius: 20px;
+  border-radius: 15px;
   transition: all 0.2s;
 
   &:hover {

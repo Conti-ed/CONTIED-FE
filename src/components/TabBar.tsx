@@ -8,7 +8,7 @@ const Container = styled.div`
   align-items: center;
   width: 100%;
   min-height: 53px;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
   background-color: ${(props) =>
     props.theme.bgColor === "#292929"
       ? "rgba(41, 41, 41, 0.8)"
