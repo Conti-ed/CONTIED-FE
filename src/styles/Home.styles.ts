@@ -5,7 +5,7 @@ export const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #ffffff;
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
   width: 100%;
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
@@ -37,18 +37,38 @@ export const Logo = styled.img`
   margin-left: 10px;
 `;
 
+export const WelcomeSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  margin-left: 10px;
+  margin-bottom: 24px;
+`;
+
 export const UserName = styled.div`
   font-size: 28px;
-  font-weight: 500;
+  font-weight: 600;
   text-align: left;
-  align-self: flex-start;
-  margin-bottom: 12px;
-  margin-left: 10px;
   line-height: 1.2;
   color: #1b1b1b;
+  margin-bottom: 4px;
   span {
     color: #94b4ed;
   }
+`;
+
+export const StatsText = styled.div`
+  font-size: 15px;
+  color: #8c8c8c;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+export const HighlightCount = styled(motion.span)`
+  color: #94b4ed;
+  font-weight: 700;
+  font-size: 17px;
 `;
 
 export const AlbumContainer = styled.div`
@@ -58,10 +78,35 @@ export const AlbumContainer = styled.div`
   width: 360px;
   height: 360px;
   border-radius: 20px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 8px 24px rgba(148, 180, 237, 0.15);
   margin-bottom: 29px;
   flex-shrink: 0;
   overflow: hidden;
+`;
+
+export const ShuffleButton = styled(motion.button)`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #545f71;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  & svg {
+    transition: transform 0.4s ease;
+  }
+  &:hover svg {
+    transform: rotate(180deg);
+  }
 `;
 
 export const AlbumThumbnail = styled.img`

@@ -1,12 +1,17 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
+import { useEffect } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import {
   Container,
   Content,
   Header,
   Logo,
+  WelcomeSection,
   UserName,
+  StatsText,
+  HighlightCount,
   AlbumContainer,
   AlbumThumbnail,
   Mask,
@@ -15,6 +20,7 @@ import {
   TransitionTitle,
   SectionTitle,
   ButtonGroup,
+  ShuffleButton,
 } from "../styles/Home.styles";
 import Icon from "../components/Icon";
 import { useHomeLogic } from "../hooks/useHomeLogic";
@@ -23,6 +29,19 @@ import { HomeButton } from "../components/HomeButton";
 import Loading from "../components/Loading";
 import { useAdaptiveTextColor } from "../hooks/useAdaptiveTextColor";
 import { getUserProfile } from "../utils/axios";
+import { HiRefresh } from "react-icons/hi";
+
+const CountUp: React.FC<{ value: number }> = ({ value }) => {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+
+  useEffect(() => {
+    const controls = animate(count, value, { duration: 1.5, ease: "easeOut" });
+    return controls.stop;
+  }, [value, count]);
+
+  return <HighlightCount>{rounded}</HighlightCount>;
+};
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +54,7 @@ const Home: React.FC = () => {
   const userName = userProfile?.nickname;
 
   const {
+    contiList,
     selectedConti,
     hoveredButton,
     isButtonClicked,
@@ -42,15 +62,12 @@ const Home: React.FC = () => {
     handleMouseLeave,
     handleAlbumClick,
     handleButtonClick,
+    refreshSelectedConti,
   } = useHomeLogic(navigate);
 
   const defaultImageUrl = "/images/WhitePiano.png";
   const albumThumbnail = selectedConti?.thumbnail || defaultImageUrl;
   const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   const albumTitle = selectedConti?.title || "콘티를 등록해볼까요?";
   const albumId = selectedConti?.id;
@@ -66,14 +83,27 @@ const Home: React.FC = () => {
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
           </Header>
-          <UserName>
-            <span>{userName}</span> 님의
-            <br />
-            콘티 리스트
-          </UserName>
+          <WelcomeSection>
+            <UserName>
+              <span>{userName}</span> 님의 콘티 리스트
+            </UserName>
+            <StatsText>
+              지금까지 <CountUp value={contiList.length} /> 개의 콘티를 만드셨네요!
+            </StatsText>
+          </WelcomeSection>
           <AlbumContainer
-            onClick={albumId ? () => handleAlbumClick(albumId) : undefined} // albumId가 있을 때만 클릭 가능
+            onClick={albumId ? () => handleAlbumClick(albumId) : undefined}
           >
+            <ShuffleButton
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9, rotate: 180 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                refreshSelectedConti();
+              }}
+            >
+              <HiRefresh size={22} />
+            </ShuffleButton>
             {albumThumbnail !== defaultImageUrl ? (
               <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
             ) : (

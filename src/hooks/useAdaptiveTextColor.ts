@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 
+const colorCache: Record<string, string> = {};
+
 export const useAdaptiveTextColor = (imageUrl: string) => {
-  const [textColor, setTextColor] = useState<string>("#001438");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [textColor, setTextColor] = useState<string>(colorCache[imageUrl] || "#001438");
+  const [isLoading, setIsLoading] = useState<boolean>(!colorCache[imageUrl]);
 
   useEffect(() => {
+    if (colorCache[imageUrl]) {
+      setTextColor(colorCache[imageUrl]);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -35,7 +43,9 @@ export const useAdaptiveTextColor = (imageUrl: string) => {
         b = Math.floor(b / (data.length / 4));
 
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        setTextColor(brightness > 128 ? "#001438" : "#e1e8ed");
+        const finalColor = brightness > 128 ? "#001438" : "#e1e8ed";
+        colorCache[imageUrl] = finalColor;
+        setTextColor(finalColor);
         setIsLoading(false);
       }
     };
