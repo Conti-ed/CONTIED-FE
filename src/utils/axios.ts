@@ -21,7 +21,18 @@ const api: AxiosInstance = axios.create({
 // 요청 interceptors: Authorization header에 token 추가
 api.interceptors.request.use(
   (config) => {
+    // 인증이 반드시 필요한 경로들
+    const authRequiredPaths = ["/users/nickname", "/conti/myconti", "/users/profile"];
+    const isAuthRequired = authRequiredPaths.some(path => config.url?.includes(path));
+    
     const token = getAccessToken();
+    
+    // 토큰이 없는데 인증 필수 경로를 요청하는 경우 사전에 차단 (불필요한 403/500 방지)
+    if (isAuthRequired && !token) {
+      console.warn(`Request to ${config.url} blocked: No access token found.`);
+      return Promise.reject(new Error("No access token"));
+    }
+
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

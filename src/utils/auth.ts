@@ -82,22 +82,38 @@ export const setupTokenRefresh = (api: any): void => {
     (response: any) => response,
     async (error: any) => {
       const originalRequest = error.config;
+      const status = error.response?.status;
+      const url = originalRequest.url;
 
-      // 401 Unauthorized 에러 처리
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      // 401 Unauthorized 또는 403 Forbidden 에러 처리
+      if ((status === 401 || status === 403) && !originalRequest._retry) {
         originalRequest._retry = true;
 
+        console.warn(`Auth Error (${status}) on ${url}. Attempting to refresh token...`);
         const newAccessToken = await refreshAccessToken();
+        
         if (newAccessToken) {
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         } else {
           // 토큰 갱신 실패 → 모든 정보 삭제 후 시작 페이지로 이동
-          console.warn("Session expired. Redirecting to start page...");
+          console.error("Session expired or refresh failed. Redirecting to start page...");
           removeTokens();
           window.location.replace("/");
           return Promise.reject(error);
         }
+      }
+
+      // 특정 인증 필수 엔드포인트에서 500 에러 발생 시 세션 만료로 간주
+      // (백엔드 세션 처리 미흡으로 인한 크래시 대응)
+      const authRequiredPaths = ["/users/nickname", "/conti/myconti", "/users"];
+      const isAuthPath = authRequiredPaths.some(path => url?.includes(path));
+
+      if (status === 500 && isAuthPath) {
+        console.error(`Critical Auth Error (500) on ${url}. Force logout...`);
+        removeTokens();
+        window.location.replace("/");
+        return Promise.reject(error);
       }
 
       return Promise.reject(error);
