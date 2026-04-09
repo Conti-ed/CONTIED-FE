@@ -14,12 +14,13 @@ import { ContiType, SongType } from "../../types";
 import { useQuery } from "react-query";
 
 const Container = styled(motion.div)`
-  height: 70%;
+  flex: 1;
   width: 100%;
-  position: absolute;
-  top: 22%;
   overflow-x: hidden;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: 5px;
 `;
 
 const SongSection = styled.div`
@@ -36,7 +37,7 @@ const SectionTitle = styled.div`
   font-size: 15px;
   font-weight: 500;
   color: #171a1f;
-  margin: 22px 0 20px 22px;
+  margin: 15px 0 10px 22px;
 `;
 
 const Item = styled.div`
@@ -101,11 +102,12 @@ const SongInfo = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-top: 40px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-bottom: 50px;
 `;
 
 const EmptyStateImage = styled.img`

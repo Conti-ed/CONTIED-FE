@@ -27,10 +27,10 @@ export const BackIcon = styled(motion.svg)`
   cursor: pointer;
 `;
 
-export const Title = styled.h1<{ $isFocused: boolean }>`
-  font-size: ${(props) => (props.$isFocused ? "18px" : "23px")};
+export const Title = styled.h1`
+  font-size: 18px;
   font-weight: 500;
-  color: #171a1f;
+  color: #171A1F;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -100,10 +100,14 @@ export const SearchBar = styled.div`
 `;
 
 export const Content = styled.div`
-  margin-top: 150px;
+  flex: 1;
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 53px; /* TabBar height */
+  position: relative;
 `;
 
 export const SearchPageText = styled.h2`
@@ -125,11 +129,12 @@ export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
 `;
 
 export const RecentSearchContainer = styled.div`
-  position: absolute;
-  top: 18%;
   width: 90%;
-  max-height: 40%;
+  margin-top: 20px;
+  max-height: 80%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const RecentSearchesHeader = styled.div`

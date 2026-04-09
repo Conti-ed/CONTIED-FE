@@ -199,7 +199,7 @@ const Search: React.FC = () => {
               <Icon id="back-upload" width="9" height="16" />
             </BackIcon>
           )}
-          <Title $isFocused={isFocused}>검색</Title>
+          <Title>검색</Title>
           <div style={{ width: "9px", height: "16px" }} />
         </Header>
         <SearchInputContainer>
@@ -229,7 +229,7 @@ const Search: React.FC = () => {
           ) : isFocused && recentSearches.length > 0 ? (
             renderRecentSearches()
           ) : isFocused ? (
-            <EmptyState message={"최근 검색한 기록이 없어요."} top="52%" />
+            <EmptyState message={"최근 검색한 기록이 없어요."} top="50%" />
           ) : (
             <SearchSuggestions
               suggestions={lyricsSuggestions}

@@ -106,7 +106,7 @@ const Result: React.FC = () => {
       selectedTab === "전체"
         ? "검색 결과가 없어요."
         : `${selectedTab} 검색 결과가 없어요.`;
-    return <EmptyState message={tabText} top="56%" />;
+    return <EmptyState message={tabText} top="50%" />;
   };
 
   return (
@@ -123,7 +123,7 @@ const Result: React.FC = () => {
             <Icon id="back-upload" width="9" height="16" />
           </BackIcon>
         </AnimatePresence>
-        <Title $isFocused={isFocused}>검색</Title>
+        <Title>검색</Title>
         <div style={{ width: "9px", height: "16px" }} />
       </Header>
       <SearchInputContainer>

@@ -7,12 +7,14 @@ import { SongType } from "../../types";
 import { useQuery } from "react-query";
 
 const Container = styled(motion.div)`
-  position: absolute;
-  top: 23%;
-  width: 90vw;
-  height: 70%;
+  flex: 1;
+  width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
 `;
 
 const SongSection = styled.div`
@@ -20,11 +22,12 @@ const SongSection = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-top: 40px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-bottom: 50px;
 `;
 
 const EmptyStateImage = styled.img`

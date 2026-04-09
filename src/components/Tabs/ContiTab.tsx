@@ -13,11 +13,13 @@ import { useQuery } from "react-query";
 import { ContiType } from "../../types";
 
 const Conties = styled(motion.div)`
-  position: absolute;
-  top: 25%;
-  height: 60%;
+  flex: 1;
+  width: 100%;
   overflow-y: auto;
-  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
 `;
 
 const ContiItem = styled.div`
@@ -82,11 +84,12 @@ const SongInfo = styled.div`
 `;
 
 const EmptyStateContainer = styled.div`
-  margin-top: 40px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-bottom: 50px; /* Offset for visual balance */
 `;
 
 const EmptyStateImage = styled.img`
