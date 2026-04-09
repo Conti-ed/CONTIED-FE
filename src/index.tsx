@@ -7,7 +7,7 @@ import GlobalSVGProvider from "./GlobalSVGProvider";
 
 import GlobalErrorBoundary from "./components/ErrorBoundary";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error: any) => {

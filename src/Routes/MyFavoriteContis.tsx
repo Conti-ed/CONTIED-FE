@@ -65,7 +65,7 @@ const MyFavoriteContis: React.FC = () => {
 
   const handleContiClick = useCallback(
     (id: number) => {
-      navigate(`/conti-detail/${id}`);
+      navigate(`/conti/${id}`);
     },
     [navigate]
   );

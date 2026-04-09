@@ -153,7 +153,7 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   }, [searchQuery, sortedContiData]);
 
   const handleContiClick = (id: number) => {
-    navigate(`/conti-detail/${id}`);
+    navigate(`/conti/${id}`);
   };
 
   return (

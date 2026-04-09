@@ -1,5 +1,7 @@
 import { supabase } from "./supabase";
 import { Cookies } from "react-cookie";
+import { router } from "../Router"; // router 인스턴스 가져옴
+import { queryClient } from "../index"; // queryClient 가져옴
 
 const cookies = new Cookies();
 
@@ -31,6 +33,9 @@ export const removeTokens = (): void => {
       localStorage.removeItem(key);
     }
   });
+
+  // QueryClient 캐시 초기화
+  queryClient.clear();
 };
 
 // 로그아웃 처리
@@ -47,13 +52,13 @@ export const logout = async (): Promise<void> => {
 
     console.log("Logged out successfully, session cleared.");
     
-    // 4. Redirect to start page
-    window.location.replace("/");
+    // 4. Redirect to start page (SPA navigation)
+    router.navigate("/", { replace: true });
   } catch (error) {
     console.error("Error during logout:", error);
     // 에러가 나더라도 클라이언트 토큰은 지우고 리다이렉트
     removeTokens();
-    window.location.replace("/");
+    router.navigate("/", { replace: true });
   }
 };
 
@@ -99,7 +104,7 @@ export const setupTokenRefresh = (api: any): void => {
           // 토큰 갱신 실패 → 모든 정보 삭제 후 시작 페이지로 이동
           console.error("Session expired or refresh failed. Redirecting to start page...");
           removeTokens();
-          window.location.replace("/");
+          router.navigate("/", { replace: true });
           return Promise.reject(error);
         }
       }
@@ -112,7 +117,7 @@ export const setupTokenRefresh = (api: any): void => {
       if (status === 500 && isAuthPath) {
         console.error(`Critical Auth Error (500) on ${url}. Force logout...`);
         removeTokens();
-        window.location.replace("/");
+        router.navigate("/", { replace: true });
         return Promise.reject(error);
       }
 

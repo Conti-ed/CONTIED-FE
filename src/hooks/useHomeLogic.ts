@@ -55,7 +55,7 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
 
   // 앨범 클릭 시 호출되는 함수
   const handleAlbumClick = (id: number) => {
-    navigate(`/conti-detail/${id}`);
+    navigate(`/conti/${id}`);
   };
 
   // 버튼 클릭 시 호출되는 함수

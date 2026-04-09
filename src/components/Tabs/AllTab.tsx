@@ -282,7 +282,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
 
 
   const handleContiClick = (id: number) => {
-    navigate(`/conti-detail/${id}`);
+    navigate(`/conti/${id}`);
   };
 
   return (

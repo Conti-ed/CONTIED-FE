@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate, useParams } from "react-router-dom";
 import Root from "./Root";
 import Start from "./Routes/Start";
 import AuthCallback from "./Routes/AuthCallback";
@@ -14,7 +14,13 @@ import MyFavoriteContis from "./Routes/MyFavoriteContis";
 import Select from "./Routes/Select";
 import SearchAddSong from "./Routes/AddSong";
 
-const router = createBrowserRouter([
+// conti-detail/:contiId 경로를 /conti/:contiId로 리다이렉트하기 위한 컴포넌트
+const ContiDetailRedirect = () => {
+  const { contiId } = useParams();
+  return <Navigate to={`/conti/${contiId}`} replace />;
+};
+
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
@@ -28,7 +34,8 @@ const router = createBrowserRouter([
       { path: "searchadd", element: <SearchAddSong /> },
       { path: "result", element: <Result /> },
       { path: "upload", element: <Upload /> },
-      { path: "conti-detail/:contiId", element: <ContiDetail /> },
+      { path: "conti/:contiId", element: <ContiDetail /> },
+      { path: "conti-detail/:contiId", element: <ContiDetailRedirect /> },
       {
         path: "mypage",
         element: <MyPage />,

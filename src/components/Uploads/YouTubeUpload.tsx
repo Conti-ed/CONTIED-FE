@@ -91,7 +91,7 @@ const YouTubeUpload = () => {
 
       queryClient.invalidateQueries(["myContis"]);
 
-      navigate(`/conti-detail/${data.id}`, { state: { fromUpload: true } });
+      navigate(`/conti/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {
       console.error("Failed to create conti:", error);
       setUrlError(true);

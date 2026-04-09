@@ -40,15 +40,25 @@ function Root() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const isPublicRoute =
-        location.pathname === "/" ||
-        location.pathname === "/auth/callback" ||
-        location.pathname === "/waiting";
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        
+        const isPublicRoute =
+          location.pathname === "/" ||
+          location.pathname === "/auth/callback" ||
+          location.pathname === "/waiting";
 
-      if (!session && !isPublicRoute) {
-        console.log("No session found on protected route, redirecting...");
-        removeTokens(); // 쿠키 및 로컬스토리지 정리
+        if (!session && !isPublicRoute) {
+          console.log("No session found on protected route, redirecting...");
+          removeTokens(); // 쿠키 및 로컬스토리지 정리
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        // 에러 발생 시 화이트 스크린 방지를 위해 일단 세션 없음 처리
+        removeTokens();
         navigate("/", { replace: true });
       }
     };
@@ -56,8 +66,15 @@ function Root() {
     // 1. 초기 마운트 시 체크
     checkAuth();
 
-    // 2. 윈도우 포커스 시 체크 (PWA/WebView 대응)
+    // 2. 윈도우 포커스 및 가시성 변경 시 체크 (PWA/WebView 대응)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkAuth();
+      }
+    };
+
     window.addEventListener("focus", checkAuth);
+    window.addEventListener("visibilitychange", handleVisibilityChange);
 
     // 3. 인증 상태 변경 리스너
     const {
@@ -80,6 +97,7 @@ function Root() {
     return () => {
       subscription.unsubscribe();
       window.removeEventListener("focus", checkAuth);
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [navigate, location.pathname]);
 
