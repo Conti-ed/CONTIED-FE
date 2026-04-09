@@ -114,11 +114,16 @@ export const Title = styled.div`
 export const TransitionTitle = styled(Title)<{ $isLoading: boolean }>`
   transition: color 0.3s ease-in-out;
   opacity: ${(props) => (props.$isLoading ? 0 : 1)};
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 70%;
-  max-width: 80%;
+  white-space: normal;
+  font-size: 20px;
+  line-height: 1.3;
+  width: 80%;
+  max-width: 85%;
 `;
 
 export const SectionTitle = styled.div`
@@ -152,29 +157,34 @@ interface ButtonProps {
   $isClicked?: boolean; // 클릭 시 상태를 나타내는 속성 추가
 }
 
-export const Button = styled.button<ButtonProps>`
+export const Button = styled(motion.button)<ButtonProps>`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5;
-  border: none;
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.03);
   padding: 10px;
   font-size: 16px;
-  font-weight: 300;
-  color: #000;
-  border-radius: 10px;
+  font-weight: 400;
+  color: #333;
+  border-radius: 16px;
   width: 31%;
   height: 95px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: background 0.4s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
   &:hover {
     background: ${(props) =>
       props.$hoverColor
-        ? `linear-gradient(140.12deg, ${props.$hoverColor} 22.86%, #FFFFFF 126.99%)`
-        : "linear-gradient(140.12deg, #94B4ED 22.86%, #FFFFFF 126.99%)"};
+        ? `linear-gradient(145deg, ${props.$hoverColor} 0%, #FFFFFF 100%)`
+        : "linear-gradient(145deg, #94B4ED 0%, #FFFFFF 100%)"};
     color: #fff;
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
     svg path {
       stroke: ${(props) => (props.$hoverColor === "#94b4ed" ? "#fff" : "")};
       fill: ${(props) => (props.$hoverColor === "#C194ED" ? "#fff" : "")};
@@ -187,8 +197,14 @@ export const Button = styled.button<ButtonProps>`
       fill: ${(props) => (props.$hoverFillPath ? "#fff" : "")};
     }
   }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.8;
+  }
+
   & svg {
     margin-bottom: 12px;
-    transition: fill 0.3s ease, stroke 0.3s ease;
+    transition: all 0.3s ease;
   }
 `;

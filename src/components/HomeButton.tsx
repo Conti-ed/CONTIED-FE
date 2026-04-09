@@ -1,55 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import { motion } from "framer-motion";
 import { LoadingSpinner } from "../styles/LoadingSpinner";
-
-interface ButtonProps {
-  $hoverFillPath?: boolean;
-  $hoverColor?: string;
-  $isHovered: boolean;
-  $isClicked: boolean;
-}
-
-const Button = styled.button<ButtonProps>`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  border: none;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: 300;
-  color: #000;
-  border-radius: 10px;
-  width: 31%;
-  height: 95px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  &:hover {
-    background: ${(props) =>
-      props.$hoverColor
-        ? `linear-gradient(140.12deg, ${props.$hoverColor} 22.86%, #FFFFFF 126.99%)`
-        : "linear-gradient(140.12deg, #94B4ED 22.86%, #FFFFFF 126.99%)"};
-    color: #fff;
-    svg path {
-      stroke: ${(props) => (props.$hoverColor === "#94b4ed" ? "#fff" : "")};
-      fill: ${(props) => (props.$hoverColor === "#C194ED" ? "#fff" : "")};
-    }
-    svg rect,
-    svg path {
-      stroke: ${(props) => (props.$hoverColor === "#ED94AB" ? "#fff" : "")};
-    }
-    svg path.specific-fill {
-      fill: ${(props) => (props.$hoverFillPath ? "#fff" : "")};
-    }
-  }
-  & svg {
-    margin-bottom: 12px;
-    transition: fill 0.3s ease, stroke 0.3s ease;
-  }
-`;
+import { Button } from "../styles/Home.styles";
 
 interface HomeButtonProps {
   buttonInfo: {
@@ -88,6 +40,8 @@ export const HomeButton: React.FC<HomeButtonProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
       disabled={disabled}
+      whileHover={{ scale: 1.05, y: -4 }}
+      whileTap={{ scale: 0.95 }}
     >
       <motion.div
         initial={{ opacity: 1 }}
