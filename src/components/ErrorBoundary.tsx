@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { removeTokens } from "../utils/auth";
-import { router } from "../Router"; // router 인스턴스 가져옴
+import { globalNavigate } from "../utils/navigation"; // 브리지 사용
 import {
   ErrorContainer,
   IllustrationWrapper,
@@ -38,7 +38,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
   handleReset = () => {
     // 세션 이슈일 가능성이 높으므로 토큰 정리 후 시작 페이지로 이동
     removeTokens();
-    router.navigate("/", { replace: true });
+    globalNavigate("/", { replace: true });
     
     // 강제 리셋을 위해 상태 초기화
     this.setState({ hasError: false, error: null });

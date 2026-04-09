@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate, useParams } from "react-router-dom";
+import { setGlobalNavigate } from "./utils/navigation";
 import Root from "./Root";
 import Start from "./Routes/Start";
 import AuthCallback from "./Routes/AuthCallback";
