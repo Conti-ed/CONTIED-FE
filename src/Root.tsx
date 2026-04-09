@@ -2,11 +2,13 @@ import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
-import { Outlet, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 import styled from "styled-components";
 import TabBar from "./components/TabBar";
+import { supabase } from "./utils/supabase";
+import { removeTokens } from "./utils/auth";
 
 const PageWrapper = styled.div`
   position: relative;
@@ -33,7 +35,32 @@ const ContentWrapper = styled(motion.div)`
 function Root() {
   const isDark = useRecoilValue(isDarkAtom);
   const location = useLocation();
-  const { fromTabBar, direction = 0 } = (location.state as any) || {};
+  const navigate = useNavigate();
+  const { direction = 0 } = (location.state as any) || {};
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      const isPublicRoute =
+        location.pathname === "/" ||
+        location.pathname === "/auth/callback" ||
+        location.pathname === "/waiting";
+
+      if (event === "SIGNED_OUT") {
+        removeTokens();
+        if (!isPublicRoute) navigate("/", { replace: true });
+      } else if (!session && !isPublicRoute) {
+        // 세션이 없는데 보호된 라우트에 접근하려 할 때
+        removeTokens();
+        navigate("/", { replace: true });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     const setVh = () => {
