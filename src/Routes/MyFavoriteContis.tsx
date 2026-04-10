@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
+import { ContiSkeletonList } from "../components/Skeleton";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -49,7 +50,7 @@ const MyFavoriteContis: React.FC = () => {
     ["likedContis"],
     async () => {
       const response = await getLikedContis();
-      const validContis = response
+      const validContis = [...response]
         .filter((data: ContiType) => data && data.state !== "DELETED")
         .sort(
           (a: ContiType, b: ContiType) =>
@@ -74,11 +75,9 @@ const MyFavoriteContis: React.FC = () => {
   if (isLoading) {
     return (
       <Container>
-        <EmptyStateContainer>
-          <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
-          <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
-          <EmptyStateText2>잠시만요...</EmptyStateText2>
-        </EmptyStateContainer>
+        <div style={{ marginTop: "20px", width: "100%" }}>
+          <ContiSkeletonList count={5} />
+        </div>
       </Container>
     );
   }

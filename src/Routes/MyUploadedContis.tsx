@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import ContiPlaceholder from "../components/ContiPlaceholder";
+import { ContiSkeletonList } from "../components/Skeleton";
 import {
   formatRelativeTime,
   formatTotalDuration,
@@ -45,7 +46,7 @@ const MyUploadedContis: React.FC = () => {
         getUserNickname(),
       ]);
 
-      const sortedContis = conties.sort(
+      const sortedContis = [...conties].sort(
         (a: ContiType, b: ContiType) =>
           parseLocalDateString(b.updatedAt).getTime() -
           parseLocalDateString(a.updatedAt).getTime()
@@ -73,11 +74,9 @@ const MyUploadedContis: React.FC = () => {
   if (isLoading) {
     return (
       <Container>
-        <EmptyStateContainer>
-          <EmptyStateImage src="/images/WhitePiano.png" alt="Loading..." />
-          <EmptyStateText1>로딩 중입니다...</EmptyStateText1>
-          <EmptyStateText2>잠시만요...</EmptyStateText2>
-        </EmptyStateContainer>
+        <div style={{ marginTop: "20px", width: "100%" }}>
+          <ContiSkeletonList count={5} />
+        </div>
       </Container>
     );
   }

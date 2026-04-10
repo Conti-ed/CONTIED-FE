@@ -60,8 +60,14 @@ const Search: React.FC = () => {
       await queryClient.cancelQueries("recentSearches");
       const previousSearches = queryClient.getQueryData<SearchHistoryItem[]>("recentSearches");
       queryClient.setQueryData<SearchHistoryItem[]>("recentSearches", (old = []) => {
+        const existingItem = old.find(item => item.query === newSearch);
         const filtered = old.filter(item => item.query !== newSearch);
-        return [{ id: Date.now(), query: newSearch, updatedAt: new Date().toISOString() }, ...filtered].slice(0, 20);
+        const newItem = { 
+          id: existingItem ? existingItem.id : Date.now(), 
+          query: newSearch, 
+          updatedAt: new Date().toISOString() 
+        };
+        return [newItem, ...filtered].slice(0, 20);
       });
       return { previousSearches };
     },
