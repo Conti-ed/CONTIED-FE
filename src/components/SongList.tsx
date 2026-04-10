@@ -19,6 +19,7 @@ interface SongListProps {
   isEditMode?: boolean;
   selectedSongs?: Set<number>;
   onSongSelect?: (id: number, selected: boolean) => void;
+  searchQuery?: string;
 }
 
 const SongList: React.FC<SongListProps> = ({
@@ -28,6 +29,7 @@ const SongList: React.FC<SongListProps> = ({
   isEditMode = false,
   selectedSongs = new Set(),
   onSongSelect = () => {},
+  searchQuery = "",
 }) => {
   const [openSongId, setOpenSongId] = useState<number | null>(null);
 
@@ -59,6 +61,9 @@ const SongList: React.FC<SongListProps> = ({
               thumbnail: song.thumbnail || "",
               lyrics: song.lyrics || "가사가 아직 제공되지 않았어요.",
             }}
+            searchQuery={searchQuery}
+            isOpen={song.id === openSongId}
+            onToggle={() => handleToggle(song.id)}
           />
         ) : (
           <SongItem

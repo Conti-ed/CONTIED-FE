@@ -11,14 +11,12 @@ const Container = styled(motion.div)`
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding-top: 20px;
 `;
 
 const SongSection = styled.div`
-  margin: 0px -20px 43px -20px;
+  margin: 0 auto;
+  width: 100%;
 `;
 
 const EmptyStateContainer = styled.div`
@@ -124,7 +122,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
   }, [searchQuery, songsData]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {filteredSongs.length > 0 ? (
         <Container
           initial={{ opacity: 0 }}
@@ -133,7 +131,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
           transition={{ duration: 0.5 }}
         >
           <SongSection>
-            <SongList songs={filteredSongs} showLyricsOnly />
+            <SongList songs={filteredSongs} showLyricsOnly searchQuery={searchQuery} />
           </SongSection>
         </Container>
       ) : (
