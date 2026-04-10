@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Icon from "../components/Icon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
-import { getAccessToken } from "../utils/auth";
 import * as S from "../styles/Start.styles";
 
 const Start: React.FC = () => {
@@ -12,11 +11,18 @@ const Start: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 이미 로그인된 토큰이 있는 경우 홈으로 리다이렉트
-    const token = getAccessToken();
-    if (token) {
-      navigate("/home", { replace: true });
-    }
+    // Supabase 세션으로 실제 유효한 세션인지 확인 (쿠키만 체크하면 핑퐁 루프 발생 가능)
+    const checkExistingSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          navigate("/home", { replace: true });
+        }
+      } catch {
+        // 세션 확인 실패 시 Start 페이지에 머무름 (화이트스크린 방지)
+      }
+    };
+    checkExistingSession();
 
     const searchParams = new URLSearchParams(location.search);
     const errorParam = searchParams.get("error");
@@ -25,7 +31,7 @@ const Start: React.FC = () => {
       setError("인증에 실패했습니다. 다시 시도해 주세요.");
       navigate("/", { replace: true });
     }
-  }, [location, navigate]);
+  }, []); // 초기 마운트 시 1회만 실행 (location 의존 제거로 무한 루프 방지)
 
   const handleLogin = async (provider: "kakao" | "google" | "github") => {
     setIsFading(true);

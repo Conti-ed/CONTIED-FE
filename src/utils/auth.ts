@@ -17,25 +17,36 @@ export const setTokens = (accessToken: string, refreshToken: string): void => {
   cookies.set("refreshToken", refreshToken, { path: "/" });
 };
 
-// Token 제거
+// Token 제거 (방어적으로 각 단계를 try-catch)
 export const removeTokens = (): void => {
-  const cookies = new Cookies();
-  cookies.remove("accessToken", { path: "/" });
-  cookies.remove("refreshToken", { path: "/" });
-  
-  // LocalStorage에 저장된 사용자 정보도 함께 제거
-  localStorage.removeItem("user_info");
-  localStorage.removeItem("user_id");
-  
-  // Supabase 관련 로컬스토리지 항목들도 제거
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith("sb-")) {
-      localStorage.removeItem(key);
-    }
-  });
+  try {
+    const cookies = new Cookies();
+    cookies.remove("accessToken", { path: "/" });
+    cookies.remove("refreshToken", { path: "/" });
+  } catch (e) {
+    console.warn("쿠키 삭제 실패:", e);
+  }
 
-  // QueryClient 캐시 초기화
-  queryClient.clear();
+  try {
+    // LocalStorage에 저장된 사용자 정보도 함께 제거
+    localStorage.removeItem("user_info");
+    localStorage.removeItem("user_id");
+
+    // Supabase 관련 로컬스토리지 항목들도 제거
+    const keysToRemove = Object.keys(localStorage).filter((key) =>
+      key.startsWith("sb-")
+    );
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  } catch (e) {
+    console.warn("로컬스토리지 삭제 실패:", e);
+  }
+
+  try {
+    // QueryClient 캐시 초기화
+    queryClient.clear();
+  } catch (e) {
+    console.warn("QueryClient 캐시 초기화 실패:", e);
+  }
 };
 
 // 로그아웃 처리
@@ -63,22 +74,41 @@ export const logout = async (): Promise<void> => {
 };
 
 // Update Access Token (Supabase 방식)
+// 동시 호출 방지를 위한 lock
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
 export const refreshAccessToken = async (): Promise<string | null> => {
-  try {
-    const { data, error } = await supabase.auth.refreshSession();
-    if (error || !data.session) {
-      console.error("Failed to refresh token:", error?.message);
-      removeTokens();
-      return null;
-    }
-    const { access_token, refresh_token } = data.session;
-    setTokens(access_token, refresh_token);
-    return access_token;
-  } catch (error) {
-    console.error("Refresh token error:", error);
-    removeTokens();
-    return null;
+  // 이미 갱신 중이면 진행 중인 Promise를 재사용 (중복 요청 방지)
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
   }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error || !data.session) {
+        console.error("Failed to refresh token:", error?.message);
+        removeTokens();
+        globalNavigate("/", { replace: true });
+        return null;
+      }
+      const { access_token, refresh_token } = data.session;
+      setTokens(access_token, refresh_token);
+      return access_token;
+    } catch (error) {
+      console.error("Refresh token error:", error);
+      removeTokens();
+      globalNavigate("/", { replace: true });
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 };
 
 // Axios Instance에 token update 로직 추가

@@ -8,7 +8,8 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 import TabBar from "./components/TabBar";
 import { supabase } from "./utils/supabase";
-import { removeTokens } from "./utils/auth";
+import { removeTokens, setTokens } from "./utils/auth";
+import { useRef, useCallback } from "react";
 
 const PageWrapper = styled.div`
   position: relative;
@@ -38,28 +39,44 @@ function Root() {
   const navigate = useNavigate();
   const { direction = 0 } = (location.state as any) || {};
 
+  // 리다이렉트 중복 방지 플래그
+  const isRedirecting = useRef(false);
+
+  const getIsPublicRoute = useCallback(() => {
+    const path = window.location.pathname;
+    return path === "/" || path === "/auth/callback" || path === "/waiting";
+  }, []);
+
   useEffect(() => {
+    isRedirecting.current = false;
+
     const checkAuth = async () => {
+      // 이미 리다이렉트 중이면 무시
+      if (isRedirecting.current) return;
+
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        
-        const isPublicRoute =
-          location.pathname === "/" ||
-          location.pathname === "/auth/callback" ||
-          location.pathname === "/waiting";
 
-        if (!session && !isPublicRoute) {
+        if (session) {
+          // 세션이 살아있으면 쿠키 토큰도 자동 동기화
+          // (Supabase 내부에서 갱신이 이루어져 쿠키와 불일치하는 경우 대비)
+          setTokens(session.access_token, session.refresh_token);
+        } else if (!getIsPublicRoute()) {
+          // 세션 없음 + 보호된 경로 → 로그인 페이지로
           console.log("No session found on protected route, redirecting...");
-          removeTokens(); // 쿠키 및 로컬스토리지 정리
+          isRedirecting.current = true;
+          removeTokens();
           navigate("/", { replace: true });
         }
       } catch (error) {
         console.error("Auth check failed:", error);
-        // 에러 발생 시 화이트 스크린 방지를 위해 일단 세션 없음 처리
-        removeTokens();
-        navigate("/", { replace: true });
+        if (!isRedirecting.current && !getIsPublicRoute()) {
+          isRedirecting.current = true;
+          removeTokens();
+          navigate("/", { replace: true });
+        }
       }
     };
 
@@ -67,28 +84,46 @@ function Root() {
     checkAuth();
 
     // 2. 윈도우 포커스 및 가시성 변경 시 체크 (PWA/WebView 대응)
+    //    디바운스를 적용하여 빠른 연속 호출 방지
+    let visibilityTimeout: ReturnType<typeof setTimeout>;
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        checkAuth();
+        clearTimeout(visibilityTimeout);
+        visibilityTimeout = setTimeout(() => {
+          isRedirecting.current = false; // 복귀 시 플래그 초기화
+          checkAuth();
+        }, 1000); // 1초 디바운스
       }
     };
 
-    window.addEventListener("focus", checkAuth);
+    // focus 이벤트도 디바운스된 핸들러 사용 (visibilitychange와 중복 방지)
+    let focusTimeout: ReturnType<typeof setTimeout>;
+    const handleFocus = () => {
+      clearTimeout(focusTimeout);
+      focusTimeout = setTimeout(() => {
+        isRedirecting.current = false;
+        checkAuth();
+      }, 1000);
+    };
+
+    window.addEventListener("focus", handleFocus);
     window.addEventListener("visibilitychange", handleVisibilityChange);
 
     // 3. 인증 상태 변경 리스너
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      const isPublicRoute =
-        location.pathname === "/" ||
-        location.pathname === "/auth/callback" ||
-        location.pathname === "/waiting";
-
       if (event === "SIGNED_OUT") {
         removeTokens();
-        if (!isPublicRoute) navigate("/", { replace: true });
-      } else if (!session && !isPublicRoute) {
+        if (!getIsPublicRoute()) {
+          isRedirecting.current = true;
+          navigate("/", { replace: true });
+        }
+      } else if (event === "TOKEN_REFRESHED" && session) {
+        // Supabase가 자동으로 토큰을 갱신했을 때 쿠키도 업데이트
+        setTokens(session.access_token, session.refresh_token);
+      } else if (!session && !getIsPublicRoute()) {
+        isRedirecting.current = true;
         removeTokens();
         navigate("/", { replace: true });
       }
@@ -96,10 +131,12 @@ function Root() {
 
     return () => {
       subscription.unsubscribe();
-      window.removeEventListener("focus", checkAuth);
+      window.removeEventListener("focus", handleFocus);
       window.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearTimeout(visibilityTimeout);
+      clearTimeout(focusTimeout);
     };
-  }, [navigate, location.pathname]);
+  }, [navigate, getIsPublicRoute]); // location.pathname 제거! 무한 루프 방지
 
   useEffect(() => {
     const setVh = () => {
