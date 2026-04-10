@@ -10,8 +10,8 @@ const SongItemContainer = styled.li`
   margin-bottom: 14px;
 
   &:first-of-type {
-    border-top: 1px solid #f3f4f6;
-    padding-top: 14px;
+    border-top: none;
+    padding-top: 0;
   }
 `;
 

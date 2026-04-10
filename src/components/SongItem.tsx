@@ -13,7 +13,7 @@ const SongItemContainer = styled.li`
   width: 100%;
 
   &:first-of-type {
-    border-top: 1px solid #f3f4f6;
+    border-top: none;
   }
 `;
 

@@ -32,7 +32,7 @@ const ContiList = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
 `;
 
 const MyUploadedContis: React.FC = () => {

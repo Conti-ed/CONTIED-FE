@@ -23,6 +23,7 @@ const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   padding-top: 5px;
+  padding-bottom: 20px;
 `;
 
 const SongSection = styled.div`

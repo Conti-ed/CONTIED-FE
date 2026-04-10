@@ -22,6 +22,7 @@ const Conties = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   padding-top: 20px;
+  padding-bottom: 20px;
 `;
 
 const ContiItem = styled.div`
