@@ -60,7 +60,7 @@ const MyFavoriteContis: React.FC = () => {
       return validContis;
     },
     {
-      staleTime: 1000 * 60 * 5,
+      staleTime: 0, // 즉시 정렬 반영을 위해 0으로 설정
       enabled: !!getAccessToken(),
     }
   );

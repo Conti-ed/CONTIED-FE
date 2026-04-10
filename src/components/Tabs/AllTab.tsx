@@ -189,7 +189,15 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
       .sort((a, b) => {
         if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
         if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
-        if (a.titleIndex !== -1 && b.titleIndex !== -1) return a.titleIndex - b.titleIndex;
+        if (a.titleIndex !== -1 && b.titleIndex !== -1 && a.titleIndex !== b.titleIndex) {
+          return a.titleIndex - b.titleIndex;
+        }
+        
+        // 검색 매칭 위치가 같거나 둘 다 없는 경우, 최신 수정순으로 정렬
+        const dateA = parseLocalDateString(a.data.updatedAt).getTime();
+        const dateB = parseLocalDateString(b.data.updatedAt).getTime();
+        if (dateA !== dateB) return dateB - dateA;
+
         return b.matchedSongsLength - a.matchedSongsLength;
       })
       .map((item) => item.data)

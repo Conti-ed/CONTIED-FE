@@ -55,7 +55,7 @@ const MyUploadedContis: React.FC = () => {
       return { filteredContis: sortedContis, userNickname };
     },
     {
-      staleTime: 1000 * 60, // 1분 동안 데이터 유지
+      staleTime: 0, // 즉시 정렬 반영을 위해 0으로 설정
       cacheTime: 1000 * 60 * 5,
       enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
     }

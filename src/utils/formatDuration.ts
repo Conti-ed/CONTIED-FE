@@ -30,15 +30,23 @@ export const formatTotalDuration = (duration: number) => {
 export const parseLocalDateString = (dateString: string): Date => {
   if (!dateString) return new Date();
 
-  // Z가 없고 타임존 정보(+/-)도 없는 경우 UTC로 간주하도록 'Z'를 붙여줍니다.
-  const hasTimezone =
-    dateString.includes("Z") ||
-    (dateString.includes("T") &&
-      (dateString.includes("+") ||
-        dateString.lastIndexOf("-") > dateString.indexOf("T")));
+  // 1. 공백을 T로 치환하여 ISO-8601 표준 포맷으로 정규화 (Safari 등 엄격한 브라우저 대응)
+  let normalized = dateString.replace(" ", "T");
 
-  const normalizedString = hasTimezone ? dateString : `${dateString}Z`;
-  return new Date(normalizedString);
+  // 2. 타임존 정보 유무 확인
+  const hasTimezone =
+    normalized.includes("Z") ||
+    normalized.includes("+") ||
+    (normalized.includes("T") &&
+      normalized.lastIndexOf("-") > normalized.indexOf("T"));
+
+  // 3. 타임존이 없으면 UTC(Z) 추가
+  const finalString = hasTimezone ? normalized : `${normalized}Z`;
+  
+  const date = new Date(finalString);
+  
+  // 4. 만약 정규화된 문자열로 파싱이 실패할 경우, 원본 문자열로 최후 시도
+  return isNaN(date.getTime()) ? new Date(dateString) : date;
 };
 
 // Utility function to format time
