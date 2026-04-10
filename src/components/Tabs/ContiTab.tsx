@@ -137,20 +137,72 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
 
   const filteredTitles = React.useMemo(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    return sortedContiData.filter((data) => {
-      return (
-        data.title.toLowerCase().includes(lowerCaseQuery) ||
-        (Array.isArray(data.songs) &&
-          data.songs.some(
-            (song: { title: string; artist: string; lyrics: string }) =>
-              (song.title && song.title.toLowerCase().includes(lowerCaseQuery)) ||
-              (song.artist &&
-                song.artist.toLowerCase().includes(lowerCaseQuery)) ||
-              (song.lyrics && song.lyrics.toLowerCase().includes(lowerCaseQuery))
-          ))
-      );
-    });
+    if (!Array.isArray(sortedContiData)) return [];
+
+    return sortedContiData
+      .map((data) => {
+        // 1. 콘티 제목 검색
+        const titleIndex = data.title
+          ? data.title.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
+
+        // 2. 콘티 설명 검색
+        const descriptionIndex = data.description
+          ? data.description.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
+
+        // 3. 수록곡 정보 검색 (ContiToSong 구조 반영)
+        const matchedSongs = Array.isArray(data.ContiToSong)
+          ? data.ContiToSong.filter((cts: any) => {
+              const song = cts.song;
+              if (!song) return false;
+
+              const songTitleIndex = song.title
+                ? song.title.toLowerCase().indexOf(lowerCaseQuery)
+                : -1;
+              const songArtistIndex = song.artist
+                ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
+                : -1;
+              const songLyricsIndex = song.lyrics
+                ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
+                : -1;
+
+              return (
+                songTitleIndex !== -1 ||
+                songArtistIndex !== -1 ||
+                songLyricsIndex !== -1
+              );
+            })
+          : [];
+
+        // 매칭 결과가 없으면 null
+        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) {
+          return null;
+        }
+
+        return {
+          data,
+          titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex,
+          matchedSongsLength: matchedSongs.length,
+        };
+      })
+      .filter((item): item is { data: ContiType; titleIndex: number; matchedSongsLength: number } => item !== null)
+      .sort((a, b) => {
+        if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
+        if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
+        if (a.titleIndex !== -1 && b.titleIndex !== -1) {
+          return a.titleIndex - b.titleIndex;
+        }
+        return b.matchedSongsLength - a.matchedSongsLength;
+      })
+      .map((item) => item.data)
+      .slice(0, 10); // 결과 제한
   }, [searchQuery, sortedContiData]);
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = "/images/WhitePiano.png";
+    e.currentTarget.style.height = "52px";
+  };
 
   const handleContiClick = (id: number) => {
     navigate(`/conti/${id}`);
@@ -172,11 +224,13 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
                 <ContiImage
                   src={data.thumbnail || "/images/WhitePiano.png"}
                   alt="Album Image"
+                  loading="lazy"
+                  onError={handleImgError}
                   style={{
                     height:
                       data.thumbnail === null ||
                       data.thumbnail === "/images/WhitePiano.png"
-                        ? "62px"
+                        ? "52px"
                         : "100px",
                   }}
                 />

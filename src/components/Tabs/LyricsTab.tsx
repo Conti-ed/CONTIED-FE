@@ -64,7 +64,7 @@ const LyricsTab: React.FC<LyricsTabProps> = ({ searchQuery }) => {
   const { data: response } = useQuery("allSongs", () => getAllSongs(), {
     staleTime: 1000 * 60 * 5,
   });
-  const songsData = response?.songData || [];
+  const songsData = Array.isArray(response) ? response : [];
 
   const filteredSongs = React.useMemo(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();

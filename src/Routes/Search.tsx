@@ -190,7 +190,7 @@ const Search: React.FC = () => {
         navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
           state: { query: searchQuery, contiId: contiId },
         }); // 결과 페이지로 이동
-      }, 1000); // 1초 후에 로딩 종료
+      }, 500); // 0.5초 후에 로딩 종료 (사용자 요청 반영)
     }
   };
 
@@ -205,10 +205,21 @@ const Search: React.FC = () => {
   };
 
   const handleRecentSearchClick = (search: string) => {
-    setSearchQuery(search);
-    navigate(`/result?query=${encodeURIComponent(search)}`, {
-      state: { query: search },
-    });
+    if (search.trim() !== "") {
+      setSearchQuery(search); // 검색창 텍스트 업데이트
+      setIsFocused(false);
+      setIsLoading(true);
+      
+      // 서버에 검색 기록 저장 (목록 최상단으로 올리기 위함)
+      addMutation.mutate(search);
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate(`/result?query=${encodeURIComponent(search)}`, {
+          state: { query: search, contiId: contiId },
+        });
+      }, 500); // 0.5초 후에 로딩 종료 (사용자 요청 반영)
+    }
   };
 
   const handleRemoveRecentSearch = (id: number) => {
@@ -245,7 +256,7 @@ const Search: React.FC = () => {
     "lyricsSuggestions",
     async () => {
       const response = await getAllSongs();
-      const songArray = response.songData;
+      const songArray = Array.isArray(response) ? response : [];
       if (Array.isArray(songArray)) {
         const allLyrics = songArray.flatMap(
           (song: { lyrics: string }) => song.lyrics
@@ -309,7 +320,7 @@ const Search: React.FC = () => {
           </SearchInputWrapper>
           <SearchBar />
         </SearchInputContainer>
-        <Content>
+        <Content $centerContent={!isLoading && !isFocused}>
           {isLoading ? (
             <Loading />
           ) : isFocused && recentSearches.length > 0 ? (

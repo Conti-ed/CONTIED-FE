@@ -105,8 +105,14 @@ const Result: React.FC = () => {
   const handleSearch = () => {
     if (query.trim() !== "") {
       setIsFocused(false);
+      setIsLoading(true); // 로딩 시작
+      
       saveRecentSearch(query);
-      setSearchQuery(query);
+      
+      setTimeout(() => {
+        setIsLoading(false); // 로딩 종료
+        setSearchQuery(query);
+      }, 500); // 0.5초 로딩 (사용자 요청 반영)
     }
   };
 

@@ -152,7 +152,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   const { data: songsDataRaw } = useQuery("allSongs", () => getAllSongs(), {
     staleTime: 1000 * 60 * 5, // 5분 캐시
   });
-  const songsData = songsDataRaw?.songData || [];
+  const songsData = Array.isArray(songsDataRaw) ? songsDataRaw : [];
 
   const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
     staleTime: 1000 * 60 * 5, // 5분 캐시
@@ -232,12 +232,22 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
 
     return sortedContiData
       .map((data): FilteredTitleItem | null => {
+        // 1. 콘티 제목 검색
         const titleIndex = data.title
           ? data.title.toLowerCase().indexOf(lowerCaseQuery)
           : -1;
 
-        const matchedSongs = Array.isArray(data.songs)
-          ? data.songs.filter((song: SongType) => {
+        // 2. 콘티 설명 검색
+        const descriptionIndex = data.description
+          ? data.description.toLowerCase().indexOf(lowerCaseQuery)
+          : -1;
+
+        // 3. 수록곡 정보 검색 (ContiToSong 구조 반영)
+        const matchedSongs = Array.isArray(data.ContiToSong)
+          ? data.ContiToSong.filter((cts: any) => {
+              const song = cts.song;
+              if (!song) return false;
+
               const songTitleIndex = song.title
                 ? song.title.toLowerCase().indexOf(lowerCaseQuery)
                 : -1;
@@ -256,13 +266,14 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
             })
           : [];
 
-        if (titleIndex === -1 && matchedSongs.length === 0) {
+        // 제목, 설명, 또는 수록곡 중 하나라도 매칭되면 포함
+        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) {
           return null;
         }
 
         return {
           data,
-          titleIndex,
+          titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex, // 정렬을 위해 인덱스 활용
           matchedSongsLength: matchedSongs.length,
         };
       })
@@ -276,8 +287,14 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
 
         return b.matchedSongsLength - a.matchedSongsLength;
       })
-      .map((item) => item.data);
+      .map((item) => item.data)
+      .slice(0, 10); // 결과 개수 제한
   }, [lowerCaseQuery, sortedContiData]);
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = "/images/WhitePiano.png";
+    e.currentTarget.style.height = "52px"; // 에러 발생 시 크기 조정
+  };
 
 
 
@@ -310,11 +327,13 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
                     <Image
                       src={data.thumbnail || "/images/WhitePiano.png"}
                       alt="Album Image"
+                      loading="lazy"
+                      onError={handleImgError}
                       style={{
                         height:
                           data.thumbnail === null ||
                           data.thumbnail === "/images/WhitePiano.png"
-                            ? "62px"
+                            ? "52px"
                             : "100px",
                       }}
                     />

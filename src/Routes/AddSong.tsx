@@ -173,7 +173,7 @@ const SearchAddSong: React.FC = () => {
     "lyricsSuggestions",
     async () => {
       const response = await getAllSongs();
-      const songArray = response.songData;
+      const songArray = Array.isArray(response) ? response : [];
       if (Array.isArray(songArray)) {
         const allLyrics = songArray.flatMap((song: any) => song.lyrics);
         const allWords = allLyrics.flatMap((lyrics: string) => extractWordsFromLyrics(lyrics));
@@ -198,7 +198,7 @@ const SearchAddSong: React.FC = () => {
         navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
           state: { query: searchQuery, contiId: contiId },
         });
-      }, 1000);
+      }, 500); // 0.5초 로딩 (사용자 요청 반영)
     }
   };
 
@@ -208,10 +208,21 @@ const SearchAddSong: React.FC = () => {
   };
 
   const handleRecentSearchClick = (query: string) => {
-    setSearchQuery(query);
-    navigate(`/result?query=${encodeURIComponent(query)}`, {
-      state: { query: query, contiId: contiId },
-    });
+    if (query.trim() !== "") {
+      setSearchQuery(query);
+      setIsFocused(false);
+      setIsLoading(true);
+      
+      // 서버에 검색 기록 저장
+      addRecentSearch(query);
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate(`/result?query=${encodeURIComponent(query)}`, {
+          state: { query: query, contiId: contiId },
+        });
+      }, 500); // 0.5초 로딩 (사용자 요청 반영)
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {

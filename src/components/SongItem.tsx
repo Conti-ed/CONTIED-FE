@@ -403,6 +403,12 @@ const SongItem: React.FC<SongItemProps> = ({
     onSelect(song.id, e.target.checked);
   };
 
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = "/images/WhitePiano.png";
+    e.currentTarget.style.height = "16px"; // 크기를 20px에서 16px로 줄임
+    e.currentTarget.style.width = "auto";
+  };
+
   return (
     <SongItemContainer>
       <SongInfo $isEditMode={isEditMode}>
@@ -418,7 +424,12 @@ const SongItem: React.FC<SongItemProps> = ({
         <div>
           <SongImageWrapper>
             {song.thumbnail ? (
-              <SongImage src={song.thumbnail} alt="Image" />
+              <SongImage 
+                src={song.thumbnail} 
+                alt="Image" 
+                loading="lazy"
+                onError={handleImgError}
+              />
             ) : (
               <SongPlaceholder />
             )}

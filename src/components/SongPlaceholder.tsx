@@ -17,7 +17,7 @@ function SongPlaceholder() {
       <img
         src="/images/WhitePiano.png"
         alt="Logo"
-        style={{ width: "20px", height: "auto" }}
+        style={{ width: "16px", height: "auto" }}
       />
     </Container>
   );

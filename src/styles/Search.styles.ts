@@ -99,12 +99,13 @@ export const SearchBar = styled.div`
   border-bottom: 2px solid #171a1f;
 `;
 
-export const Content = styled.div`
+export const Content = styled.div<{ $centerContent?: boolean }>`
   flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: ${(props) => (props.$centerContent ? "center" : "flex-start")};
   overflow: hidden;
   margin-bottom: 53px; /* TabBar height */
   position: relative;

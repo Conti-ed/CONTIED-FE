@@ -1,40 +1,49 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SuggestionsWrapper = styled.div`
-  padding: 20px;
+  width: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const Title = styled.div`
-  color: #000;
-  font-size: 16px;
+const Title = styled(motion.div)`
+  color: #171A1F;
+  font-size: 15px;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   text-align: center;
+  opacity: 0.8;
+  letter-spacing: -0.02em;
 `;
 
-const SuggestionsContainer = styled.div`
+const SuggestionsContainer = styled(motion.div)`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
+  max-width: 320px;
 `;
 
-const Suggestion = styled.div`
+const SuggestionChip = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 15px;
-  background-color: #94b4ed;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 300;
-  color: #ffffff;
+  padding: 8px 16px;
+  background-color: ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.08)" : "rgba(255, 255, 255, 0.05)"};
+  border: 1px solid ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.12)" : "rgba(255, 255, 255, 0.1)"};
+  border-radius: 24px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: ${(props) => props.theme.textColor === "#4B53BC" ? "#4B53BC" : "whitesmoke"};
   cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #94b4ed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  
+  &:active {
+    background-color: ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.15)" : "rgba(255, 255, 255, 0.15)"};
   }
 `;
 
@@ -58,18 +67,53 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       }
       return shuffled.slice(0, count);
     };
-    setRandomSuggestions(getRandomSuggestions(suggestions, 14));
+    if (suggestions && suggestions.length > 0) {
+      setRandomSuggestions(getRandomSuggestions(suggestions, 14));
+    }
   }, [suggestions]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.04,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 10, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
 
   return (
     <SuggestionsWrapper>
-      <Title>추천 검색어</Title>
-      <SuggestionsContainer>
-        {randomSuggestions.map((suggestion, index) => (
-          <Suggestion key={index} onClick={() => onSuggestionClick(suggestion)}>
-            {suggestion}
-          </Suggestion>
-        ))}
+      <Title
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 0.8, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        추천 검색어
+      </Title>
+      <SuggestionsContainer
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <AnimatePresence mode="popLayout">
+          {randomSuggestions.map((suggestion, index) => (
+            <SuggestionChip
+              key={`suggestion-${suggestion}-${index}`}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onSuggestionClick(suggestion)}
+            >
+              {suggestion}
+            </SuggestionChip>
+          ))}
+        </AnimatePresence>
       </SuggestionsContainer>
     </SuggestionsWrapper>
   );

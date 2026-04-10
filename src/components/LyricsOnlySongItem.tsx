@@ -92,13 +92,24 @@ const LyricsOnlySongItem = ({
 }: {
   song: { title: string; artist: string; thumbnail: string; lyrics: string };
 }) => {
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = "/images/WhitePiano.png";
+    e.currentTarget.style.height = "16px";
+    e.currentTarget.style.width = "auto";
+  };
+
   return (
     <SongItemContainer>
       <SongInfo>
         <div>
           <SongImageWrapper>
             {song.thumbnail ? (
-              <SongImage src={song.thumbnail} alt="Image" />
+              <SongImage 
+                src={song.thumbnail} 
+                alt="Image" 
+                loading="lazy"
+                onError={handleImgError}
+              />
             ) : (
               <SongPlaceholder />
             )}
