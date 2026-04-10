@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
@@ -10,7 +10,9 @@ import {
 } from "../../utils/formatDuration";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "react-query";
+import { ContiSkeletonList } from "../Skeleton";
 import { ContiType } from "../../types";
+import EmptyState from "../EmptyState";
 
 const Conties = styled(motion.div)`
   flex: 1;
@@ -51,8 +53,6 @@ const ContiImage = styled.img`
   height: 100px;
   border-radius: 20px;
   width: auto;
-  align-items: center;
-  justify-content: center;
 `;
 
 const InfoText = styled.div`
@@ -83,33 +83,6 @@ const SongInfo = styled.div`
   color: rgba(23, 26, 31, 0.5);
 `;
 
-const EmptyStateContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 50px; /* Offset for visual balance */
-`;
-
-const EmptyStateImage = styled.img`
-  margin-bottom: 8px;
-`;
-
-const EmptyStateText1 = styled.div`
-  font-size: 15px;
-  font-weight: 300;
-  color: #171a1f;
-  text-align: center;
-  margin-bottom: 9px;
-`;
-
-const EmptyStateText2 = styled.div`
-  font-size: 12px;
-  font-weight: 300;
-  color: #828282;
-  text-align: center;
-`;
 interface ContiTabProps {
   searchQuery: string;
 }
@@ -117,22 +90,13 @@ interface ContiTabProps {
 const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   const navigate = useNavigate();
 
-  const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
+  const { data: contiesResponse, isLoading: isContiesLoading } = useQuery("allConties", () => getConties(), {
     staleTime: 1000 * 60 * 5,
   });
 
-  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
-    staleTime: 1000 * 60 * 30,
-  });
-  const userNickname = userProfile?.nickname;
-
   const sortedContiData = React.useMemo(() => {
     if (!contiesResponse || !Array.isArray(contiesResponse)) return [];
-
-    return [...contiesResponse].sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    return [...contiesResponse].sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [contiesResponse]);
 
   const filteredTitles = React.useMemo(() => {
@@ -141,62 +105,29 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
 
     return sortedContiData
       .map((data) => {
-        // 1. 콘티 제목 검색
-        const titleIndex = data.title
-          ? data.title.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-
-        // 2. 콘티 설명 검색
-        const descriptionIndex = data.description
-          ? data.description.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-
-        // 3. 수록곡 정보 검색 (ContiToSong 구조 반영)
+        const titleIndex = data.title ? data.title.toLowerCase().indexOf(lowerCaseQuery) : -1;
+        const descriptionIndex = data.description ? data.description.toLowerCase().indexOf(lowerCaseQuery) : -1;
         const matchedSongs = Array.isArray(data.ContiToSong)
           ? data.ContiToSong.filter((cts: any) => {
               const song = cts.song;
               if (!song) return false;
-
-              const songTitleIndex = song.title
-                ? song.title.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-              const songArtistIndex = song.artist
-                ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-              const songLyricsIndex = song.lyrics
-                ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-
-              return (
-                songTitleIndex !== -1 ||
-                songArtistIndex !== -1 ||
-                songLyricsIndex !== -1
-              );
+              const songTitleIndex = song.title ? song.title.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              const songArtistIndex = song.artist ? song.artist.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              const songLyricsIndex = song.lyrics ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              return songTitleIndex !== -1 || songArtistIndex !== -1 || songLyricsIndex !== -1;
             })
           : [];
-
-        // 매칭 결과가 없으면 null
-        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) {
-          return null;
-        }
-
-        return {
-          data,
-          titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex,
-          matchedSongsLength: matchedSongs.length,
-        };
+        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) return null;
+        return { data, titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex, matchedSongsLength: matchedSongs.length };
       })
       .filter((item): item is { data: ContiType; titleIndex: number; matchedSongsLength: number } => item !== null)
       .sort((a, b) => {
         if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
         if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
-        if (a.titleIndex !== -1 && b.titleIndex !== -1) {
-          return a.titleIndex - b.titleIndex;
-        }
+        if (a.titleIndex !== -1 && b.titleIndex !== -1) return a.titleIndex - b.titleIndex;
         return b.matchedSongsLength - a.matchedSongsLength;
       })
-      .map((item) => item.data)
-      .slice(0, 10); // 결과 제한
+      .map((item) => item.data);
   }, [searchQuery, sortedContiData]);
 
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -207,6 +138,14 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
   const handleContiClick = (id: number) => {
     navigate(`/conti/${id}`);
   };
+
+  if (isContiesLoading) {
+    return (
+      <Conties>
+        <ContiSkeletonList count={5} />
+      </Conties>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -249,11 +188,7 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
           ))}
         </Conties>
       ) : (
-        <EmptyStateContainer>
-          <EmptyStateImage src="images/WhitePiano.png" alt="Empty state" />
-          <EmptyStateText1>앗!</EmptyStateText1>
-          <EmptyStateText2>콘티 검색 결과가 없어요.</EmptyStateText2>
-        </EmptyStateContainer>
+        <EmptyState message="콘티 검색 결과가 없어요." />
       )}
     </AnimatePresence>
   );

@@ -2,16 +2,28 @@ import React from "react";
 import styled from "styled-components";
 
 interface EmptyStateContainerProps {
-  $top: string;
+  $top?: string;
 }
 
 const EmptyStateContainer = styled.div<EmptyStateContainerProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: absolute;
-  top: ${(props) => props.$top};
-  transform: translateY(-50%);
+  justify-content: center;
+  width: 100%;
+  
+  ${(props) =>
+    props.$top
+      ? `
+    position: absolute;
+    top: ${props.$top};
+    left: 50%;
+    transform: translate(-50%, -50%);
+  `
+      : `
+    flex: 1;
+    padding-bottom: 50px;
+  `}
 `;
 
 const EmptyStateImage = styled.img`
@@ -35,13 +47,13 @@ const EmptyStateText2 = styled.div`
 
 interface EmptyStateProps {
   message: string;
-  top: string;
+  top?: string;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ message, top }) => {
   return (
     <EmptyStateContainer $top={top}>
-      <EmptyStateImage src="images/WhitePiano.png" alt="Empty state" />
+      <EmptyStateImage src="/images/WhitePiano.png" alt="Empty state" />
       <EmptyStateText1>앗!</EmptyStateText1>
       <EmptyStateText2>{message}</EmptyStateText2>
     </EmptyStateContainer>

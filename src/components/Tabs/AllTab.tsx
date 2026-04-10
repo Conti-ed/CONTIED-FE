@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import ContiPlaceholder from "../ContiPlaceholder";
@@ -12,6 +12,8 @@ import SongList from "../SongList";
 import { AnimatePresence, motion } from "framer-motion";
 import { ContiType, SongType } from "../../types";
 import { useQuery } from "react-query";
+import { SongSkeletonList, ContiSkeletonList } from "../Skeleton";
+import EmptyState from "../EmptyState";
 
 const Container = styled(motion.div)`
   flex: 1;
@@ -29,7 +31,7 @@ const SongSection = styled.div`
 `;
 
 const ContiSection = styled.div`
-  width: calc(100% - 40px); // 좌우 20px씩 여백
+  width: calc(100% - 40px);
   margin: 0 auto;
 `;
 
@@ -45,7 +47,7 @@ const Item = styled.div`
   align-items: center;
   padding: 10px;
   width: 90vw;
-  margin-bottom: 15px;
+  margin: 0 auto 15px auto;
   border: 2px solid #9dbbe9;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -69,8 +71,6 @@ const Image = styled.img`
   height: 100px;
   border-radius: 20px;
   width: auto;
-  align-items: center;
-  justify-content: center;
 `;
 
 const InfoText = styled.div`
@@ -101,34 +101,6 @@ const SongInfo = styled.div`
   color: rgba(23, 26, 31, 0.5);
 `;
 
-const EmptyStateContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 50px;
-`;
-
-const EmptyStateImage = styled.img`
-  margin-bottom: 8px;
-`;
-
-const EmptyStateText1 = styled.div`
-  font-size: 15px;
-  font-weight: 300;
-  color: #171a1f;
-  text-align: center;
-  margin-bottom: 9px;
-`;
-
-const EmptyStateText2 = styled.div`
-  font-size: 12px;
-  font-weight: 300;
-  color: #828282;
-  text-align: center;
-`;
-
 interface AllTabProps {
   searchQuery: string;
 }
@@ -149,158 +121,95 @@ interface FilteredTitleItem {
 const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
   const navigate = useNavigate();
 
-  const { data: songsDataRaw } = useQuery("allSongs", () => getAllSongs(), {
-    staleTime: 1000 * 60 * 5, // 5분 캐시
+  const { data: songsDataRaw, isLoading: isSongsLoading } = useQuery("allSongs", () => getAllSongs(), {
+    staleTime: 1000 * 60 * 5,
   });
   const songsData = Array.isArray(songsDataRaw) ? songsDataRaw : [];
 
-  const { data: contiesResponse } = useQuery("allConties", () => getConties(), {
-    staleTime: 1000 * 60 * 5, // 5분 캐시
+  const { data: contiesResponse, isLoading: isContiesLoading } = useQuery("allConties", () => getConties(), {
+    staleTime: 1000 * 60 * 5,
   });
-
-  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
-    staleTime: 1000 * 60 * 30, // 30분 캐시
-  });
-  const userNickname = userProfile?.nickname;
 
   const sortedContiData = React.useMemo(() => {
     if (!contiesResponse || !Array.isArray(contiesResponse)) return [];
-
-    return [...contiesResponse].sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    return [...contiesResponse].sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [contiesResponse]);
 
   const lowerCaseQuery = searchQuery.toLowerCase();
 
   const filteredSongs = React.useMemo(() => {
     if (!Array.isArray(songsData)) return [];
-
-    const filtered = songsData
+    return songsData
       .map((song): FilteredSongItem | null => {
-        const titleIndex = song.title
-          ? song.title.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-        const artistIndex = song.artist
-          ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-        const lyricsIndex = song.lyrics
-          ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-
-        if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) {
-          return null;
-        }
-
-        return {
-          song,
-          titleIndex,
-          artistIndex,
-          lyricsIndex,
-        };
+        const titleIndex = song.title ? song.title.toLowerCase().indexOf(lowerCaseQuery) : -1;
+        const artistIndex = song.artist ? song.artist.toLowerCase().indexOf(lowerCaseQuery) : -1;
+        const lyricsIndex = song.lyrics ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery) : -1;
+        if (titleIndex === -1 && artistIndex === -1 && lyricsIndex === -1) return null;
+        return { song, titleIndex, artistIndex, lyricsIndex };
       })
       .filter((item): item is FilteredSongItem => item !== null)
       .sort((a, b) => {
         if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
         if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
-        if (a.titleIndex !== -1 && b.titleIndex !== -1) {
-          return a.titleIndex - b.titleIndex;
-        }
-
+        if (a.titleIndex !== -1 && b.titleIndex !== -1) return a.titleIndex - b.titleIndex;
         if (a.artistIndex !== -1 && b.artistIndex === -1) return -1;
         if (a.artistIndex === -1 && b.artistIndex !== -1) return 1;
-        if (a.artistIndex !== -1 && b.artistIndex !== -1) {
-          return a.artistIndex - b.artistIndex;
-        }
-
-        if (a.lyricsIndex !== -1 && b.lyricsIndex === -1) return -1;
-        if (a.lyricsIndex === -1 && b.lyricsIndex !== -1) return 1;
-        if (a.lyricsIndex !== -1 && b.lyricsIndex !== -1) {
-          return a.lyricsIndex - b.lyricsIndex;
-        }
-
+        if (a.artistIndex !== -1 && b.artistIndex !== -1) return a.artistIndex - b.artistIndex;
         return 0;
       })
-      .map((item) => item.song);
-
-    return filtered.slice(0, 5);
+      .map((item) => item.song)
+      .slice(0, 5);
   }, [lowerCaseQuery, songsData]);
 
   const filteredTitles = React.useMemo(() => {
     if (!Array.isArray(sortedContiData)) return [];
-
     return sortedContiData
       .map((data): FilteredTitleItem | null => {
-        // 1. 콘티 제목 검색
-        const titleIndex = data.title
-          ? data.title.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-
-        // 2. 콘티 설명 검색
-        const descriptionIndex = data.description
-          ? data.description.toLowerCase().indexOf(lowerCaseQuery)
-          : -1;
-
-        // 3. 수록곡 정보 검색 (ContiToSong 구조 반영)
+        const titleIndex = data.title ? data.title.toLowerCase().indexOf(lowerCaseQuery) : -1;
+        const descriptionIndex = data.description ? data.description.toLowerCase().indexOf(lowerCaseQuery) : -1;
         const matchedSongs = Array.isArray(data.ContiToSong)
           ? data.ContiToSong.filter((cts: any) => {
               const song = cts.song;
               if (!song) return false;
-
-              const songTitleIndex = song.title
-                ? song.title.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-              const songArtistIndex = song.artist
-                ? song.artist.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-              const songLyricsIndex = song.lyrics
-                ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery)
-                : -1;
-
-              return (
-                songTitleIndex !== -1 ||
-                songArtistIndex !== -1 ||
-                songLyricsIndex !== -1
-              );
+              const songTitleIndex = song.title ? song.title.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              const songArtistIndex = song.artist ? song.artist.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              const songLyricsIndex = song.lyrics ? song.lyrics.toLowerCase().indexOf(lowerCaseQuery) : -1;
+              return songTitleIndex !== -1 || songArtistIndex !== -1 || songLyricsIndex !== -1;
             })
           : [];
-
-        // 제목, 설명, 또는 수록곡 중 하나라도 매칭되면 포함
-        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) {
-          return null;
-        }
-
-        return {
-          data,
-          titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex, // 정렬을 위해 인덱스 활용
-          matchedSongsLength: matchedSongs.length,
-        };
+        if (titleIndex === -1 && descriptionIndex === -1 && matchedSongs.length === 0) return null;
+        return { data, titleIndex: titleIndex !== -1 ? titleIndex : descriptionIndex, matchedSongsLength: matchedSongs.length };
       })
       .filter((item): item is FilteredTitleItem => item !== null)
       .sort((a, b) => {
         if (a.titleIndex !== -1 && b.titleIndex === -1) return -1;
         if (a.titleIndex === -1 && b.titleIndex !== -1) return 1;
-        if (a.titleIndex !== -1 && b.titleIndex !== -1) {
-          return a.titleIndex - b.titleIndex;
-        }
-
+        if (a.titleIndex !== -1 && b.titleIndex !== -1) return a.titleIndex - b.titleIndex;
         return b.matchedSongsLength - a.matchedSongsLength;
       })
       .map((item) => item.data)
-      .slice(0, 10); // 결과 개수 제한
+      .slice(0, 10);
   }, [lowerCaseQuery, sortedContiData]);
 
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = "/images/WhitePiano.png";
-    e.currentTarget.style.height = "52px"; // 에러 발생 시 크기 조정
+    e.currentTarget.style.height = "52px";
   };
-
-
 
   const handleContiClick = (id: number) => {
     navigate(`/conti/${id}`);
   };
+
+  if (isSongsLoading || isContiesLoading) {
+    return (
+      <Container>
+        <SectionTitle>곡</SectionTitle>
+        <SongSkeletonList count={3} />
+        <SectionTitle>콘티</SectionTitle>
+        <ContiSkeletonList count={3} />
+      </Container>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -340,9 +249,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
                   </ImageWrapper>
                   <InfoText>
                     <Title>{data.title}</Title>
-                    <Subtitle>
-                      {data.User?.nickname || "사용자"}
-                    </Subtitle>
+                    <Subtitle>{data.User?.nickname || "사용자"}</Subtitle>
                     <SongInfo>{`${formatRelativeTime(
                       parseLocalDateString(data.updatedAt)
                     )} • ${formatTotalDuration(
@@ -356,11 +263,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
           )}
         </Container>
       ) : (
-        <EmptyStateContainer>
-          <EmptyStateImage src="images/WhitePiano.png" alt="Empty state" />
-          <EmptyStateText1>앗!</EmptyStateText1>
-          <EmptyStateText2>검색 결과가 없어요.</EmptyStateText2>
-        </EmptyStateContainer>
+        <EmptyState message="검색 결과가 없어요." />
       )}
     </AnimatePresence>
   );

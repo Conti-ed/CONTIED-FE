@@ -12,9 +12,8 @@ import {
   SearchBar,
   Content,
 } from "../styles/Search.styles";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import Loading from "../components/Loading";
 import SectionTabs from "../components/SectionTabs";
 import EmptyState from "../components/EmptyState";
 import ContiTab from "../components/Tabs/ContiTab";
@@ -23,18 +22,9 @@ import SongsTab from "../components/Tabs/SongsTab";
 import LyricsTab from "../components/Tabs/LyricsTab";
 import Icon from "../components/Icon";
 import { 
-  getRecentSearches, 
-  postRecentSearch, 
-  deleteRecentSearch, 
-  clearAllRecentSearches 
+  postRecentSearch
 } from "../utils/axios";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-
-interface SearchHistoryItem {
-  id: number;
-  query: string;
-  updatedAt: string;
-}
+import { useMutation, useQueryClient } from "react-query";
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -43,7 +33,6 @@ const Result: React.FC = () => {
   const initialQuery = location.state?.query || "";
   const [query, setQuery] = useState(initialQuery);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState("전체");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,7 +46,6 @@ const Result: React.FC = () => {
     addMutation.mutate(searchQuery);
   };
 
-  // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
   const inputId = useMemo(() => `search-input-result-${Math.random().toString(36).substr(2, 9)}`, []);
   const inputName = useMemo(() => `search-query-result-${Math.random().toString(36).substr(2, 9)}`, []);
 
@@ -105,14 +93,8 @@ const Result: React.FC = () => {
   const handleSearch = () => {
     if (query.trim() !== "") {
       setIsFocused(false);
-      setIsLoading(true); // 로딩 시작
-      
       saveRecentSearch(query);
-      
-      setTimeout(() => {
-        setIsLoading(false); // 로딩 종료
-        setSearchQuery(query);
-      }, 500); // 0.5초 로딩 (사용자 요청 반영)
+      setSearchQuery(query);
     }
   };
 
@@ -164,7 +146,7 @@ const Result: React.FC = () => {
             onKeyDown={handleKeyDown}
             onFocus={() => setIsFocused(true)}
           />
-          {!isLoading && query && (
+          {query && (
             <ClearIcon
               width="18"
               height="18"
@@ -188,18 +170,16 @@ const Result: React.FC = () => {
       </SearchInputContainer>
       <SectionTabs selectedTab={selectedTab} onSelectTab={setSelectedTab} />
       <Content>
-        {isLoading ? (
-          <Loading />
-        ) : searchQuery.trim() === "" ? (
+        {searchQuery.trim() === "" ? (
           renderEmptyState()
         ) : selectedTab === "전체" ? (
-          <AllTab searchQuery={searchQuery} />
+          <AllTab key={`all-${searchQuery}`} searchQuery={searchQuery} />
         ) : selectedTab === "곡" ? (
-          <SongsTab searchQuery={searchQuery} />
+          <SongsTab key={`songs-${searchQuery}`} searchQuery={searchQuery} />
         ) : selectedTab === "콘티" ? (
-          <ContiTab searchQuery={searchQuery} />
+          <ContiTab key={`conti-${searchQuery}`} searchQuery={searchQuery} />
         ) : selectedTab === "가사" ? (
-          <LyricsTab searchQuery={searchQuery} />
+          <LyricsTab key={`lyrics-${searchQuery}`} searchQuery={searchQuery} />
         ) : (
           renderEmptyState()
         )}
