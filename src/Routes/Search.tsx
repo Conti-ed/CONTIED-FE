@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useQuery } from "react-query";
-import { useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import Loading from "../components/Loading";
 import SearchSuggestions from "../components/SearchSuggestions";
 import {
@@ -20,6 +20,7 @@ import {
   RecentSearchesHeader,
   ClearAllButton,
   RecentSearchItem,
+  FlexSpacer,
 } from "../styles/Search.styles";
 import { getRandomSuggestions } from "../utils/randomUtils";
 import EmptyState from "../components/EmptyState";
@@ -32,7 +33,6 @@ import {
   clearAllRecentSearches 
 } from "../utils/axios";
 import Icon from "../components/Icon";
-import { useMutation, useQueryClient } from "react-query";
 
 interface SearchHistoryItem {
   id: number;
@@ -43,7 +43,6 @@ interface SearchHistoryItem {
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   // 1. 최근 검색어 조회 (React Query)
@@ -179,18 +178,11 @@ const Search: React.FC = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim() !== "") {
-      setIsFocused(false); // 포커스 해제
-      setIsLoading(true); // 로딩 시작
-      
-      // 서버에 검색 기록 저장
       addMutation.mutate(searchQuery);
       
-      setTimeout(() => {
-        setIsLoading(false); // 로딩 종료
-        navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
-          state: { query: searchQuery, contiId: contiId },
-        }); // 결과 페이지로 이동
-      }, 500); // 0.5초 후에 로딩 종료 (사용자 요청 반영)
+      navigate(`/result?query=${encodeURIComponent(searchQuery)}`, {
+        state: { query: searchQuery, contiId: contiId },
+      });
     }
   };
 
@@ -206,19 +198,12 @@ const Search: React.FC = () => {
 
   const handleRecentSearchClick = (search: string) => {
     if (search.trim() !== "") {
-      setSearchQuery(search); // 검색창 텍스트 업데이트
-      setIsFocused(false);
-      setIsLoading(true);
-      
       // 서버에 검색 기록 저장 (목록 최상단으로 올리기 위함)
       addMutation.mutate(search);
       
-      setTimeout(() => {
-        setIsLoading(false);
-        navigate(`/result?query=${encodeURIComponent(search)}`, {
-          state: { query: search, contiId: contiId },
-        });
-      }, 500); // 0.5초 후에 로딩 종료 (사용자 요청 반영)
+      navigate(`/result?query=${encodeURIComponent(search)}`, {
+        state: { query: search, contiId: contiId },
+      });
     }
   };
 
@@ -231,24 +216,52 @@ const Search: React.FC = () => {
     handleRecentSearchClick(suggestion);
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: -5 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
+
   const renderRecentSearches = () => (
-    <RecentSearchContainer ref={recentSearchesRef}>
+    <RecentSearchContainer
+      ref={recentSearchesRef}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <RecentSearchesHeader>
         <span>최근 검색어</span>
         <ClearAllButton onClick={handleClearAll}>전체삭제</ClearAllButton>
       </RecentSearchesHeader>
-      {recentSearches.map((item) => (
-        <RecentSearchItem key={item.id}>
-          <span onClick={() => handleRecentSearchClick(item.query)}>{item.query}</span>
-          <svg
-            onClick={() => handleRemoveRecentSearch(item.id)}
-            width="18"
-            viewBox="0 0 18 18"
+      <AnimatePresence>
+        {recentSearches.map((item) => (
+          <RecentSearchItem
+            key={item.id}
+            variants={itemVariants}
+            exit={{ opacity: 0, scale: 0.95 }}
           >
-            <Icon id="remove-search" width="18" height="18" />
-          </svg>
-        </RecentSearchItem>
-      ))}
+            <span onClick={() => handleRecentSearchClick(item.query)}>
+              {item.query}
+            </span>
+            <svg
+              onClick={() => handleRemoveRecentSearch(item.id)}
+              width="18"
+              viewBox="0 0 18 18"
+            >
+              <Icon id="remove-search" width="18" height="18" />
+            </svg>
+          </RecentSearchItem>
+        ))}
+      </AnimatePresence>
     </RecentSearchContainer>
   );
 
@@ -282,18 +295,20 @@ const Search: React.FC = () => {
       transition={{ duration: 0.5 }}
     >
         <Header>
-          {isFocused && (
-            <BackIcon
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 21 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              viewBox="0 0 9 16"
-              onClick={() => setIsFocused(false)}
-            >
-              <Icon id="back-upload" width="9" height="16" />
-            </BackIcon>
-          )}
+          <AnimatePresence>
+            {isFocused && (
+              <BackIcon
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 21 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                viewBox="0 0 9 16"
+                onClick={() => setIsFocused(false)}
+              >
+                <Icon id="back-upload" width="9" height="16" />
+              </BackIcon>
+            )}
+          </AnimatePresence>
           <Title>검색</Title>
           <div style={{ width: "9px", height: "16px" }} />
         </Header>
@@ -320,20 +335,64 @@ const Search: React.FC = () => {
           </SearchInputWrapper>
           <SearchBar />
         </SearchInputContainer>
-        <Content $centerContent={!isLoading && !isFocused}>
-          {isLoading ? (
-            <Loading />
-          ) : isFocused && recentSearches.length > 0 ? (
-            renderRecentSearches()
-          ) : isFocused ? (
-            <EmptyState message={"최근 검색한 기록이 없어요."} top="50%" />
-          ) : (
-            <SearchSuggestions
-              suggestions={lyricsSuggestions}
-              onSuggestionClick={handleSuggestionClick}
-              loading={isSuggestionsLoading}
-            />
-          )}
+        <Content>
+          <FlexSpacer
+            animate={{
+              flexGrow: isFocused ? 0 : 1,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+          />
+          <AnimatePresence mode="popLayout">
+            {isFocused && recentSearches.length > 0 ? (
+              <motion.div
+                key="recent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ width: "100%", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}
+              >
+                {renderRecentSearches()}
+              </motion.div>
+            ) : isFocused ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ width: "100%" }}
+              >
+                <EmptyState message={"최근 검색한 기록이 없어요."} top="50%" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="suggestions"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ width: "100%" }}
+              >
+                <SearchSuggestions
+                  suggestions={lyricsSuggestions}
+                  onSuggestionClick={handleSuggestionClick}
+                  loading={isSuggestionsLoading}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <FlexSpacer
+            animate={{
+              flexGrow: 1,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+          />
         </Content>
     </Container>
   );

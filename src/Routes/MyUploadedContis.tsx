@@ -45,7 +45,13 @@ const MyUploadedContis: React.FC = () => {
         getUserNickname(),
       ]);
 
-      return { filteredContis: conties, userNickname };
+      const sortedContis = conties.sort(
+        (a: ContiType, b: ContiType) =>
+          parseLocalDateString(b.updatedAt).getTime() -
+          parseLocalDateString(a.updatedAt).getTime()
+      );
+
+      return { filteredContis: sortedContis, userNickname };
     },
     {
       staleTime: 1000 * 60, // 1분 동안 데이터 유지

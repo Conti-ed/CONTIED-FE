@@ -97,7 +97,11 @@ const ContiTab: React.FC<ContiTabProps> = ({ searchQuery }) => {
 
   const sortedContiData = React.useMemo(() => {
     if (!contiesResponse || !Array.isArray(contiesResponse)) return [];
-    return [...contiesResponse].sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    return [...contiesResponse].sort(
+      (a: any, b: any) =>
+        parseLocalDateString(b.updatedAt).getTime() -
+        parseLocalDateString(a.updatedAt).getTime()
+    );
   }, [contiesResponse]);
 
   const filteredTitles = React.useMemo(() => {

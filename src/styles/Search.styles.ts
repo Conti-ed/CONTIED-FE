@@ -99,16 +99,16 @@ export const SearchBar = styled.div`
   border-bottom: 2px solid #171a1f;
 `;
 
-export const Content = styled.div<{ $centerContent?: boolean }>`
+export const Content = styled.div`
   flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: ${(props) => (props.$centerContent ? "center" : "flex-start")};
+  justify-content: flex-start;
   overflow: hidden;
   margin-bottom: 53px; /* TabBar height */
-  position: relative;
+  position: relative; /* popLayout을 위해 필수 */
 `;
 
 export const SearchPageText = styled.h2`
@@ -129,13 +129,20 @@ export const TabBarWrapper = styled.div<{ $isFocused: boolean }>`
   transition: bottom 0.3s ease;
 `;
 
-export const RecentSearchContainer = styled.div`
+export const RecentSearchContainer = styled(motion.div)`
   width: 90%;
   margin-top: 20px;
-  max-height: 80%;
+  flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+
+  /* 스크롤바 숨기기 (선택사항, 깔끔한 UI를 위해) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 export const RecentSearchesHeader = styled.div`
@@ -162,7 +169,7 @@ export const ClearAllButton = styled.button`
   cursor: pointer;
 `;
 
-export const RecentSearchItem = styled.div`
+export const RecentSearchItem = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -182,4 +189,8 @@ export const RecentSearchItem = styled.div`
     cursor: pointer;
     color: #545f71;
   }
+`;
+
+export const FlexSpacer = styled(motion.div)`
+  width: 100%;
 `;

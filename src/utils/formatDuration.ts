@@ -28,8 +28,17 @@ export const formatTotalDuration = (duration: number) => {
 
 // Adjust Date by Region upon Registration
 export const parseLocalDateString = (dateString: string): Date => {
-  const utcDate = new Date(dateString);
-  return utcDate;
+  if (!dateString) return new Date();
+
+  // Z가 없고 타임존 정보(+/-)도 없는 경우 UTC로 간주하도록 'Z'를 붙여줍니다.
+  const hasTimezone =
+    dateString.includes("Z") ||
+    (dateString.includes("T") &&
+      (dateString.includes("+") ||
+        dateString.lastIndexOf("-") > dateString.indexOf("T")));
+
+  const normalizedString = hasTimezone ? dateString : `${dateString}Z`;
+  return new Date(normalizedString);
 };
 
 // Utility function to format time

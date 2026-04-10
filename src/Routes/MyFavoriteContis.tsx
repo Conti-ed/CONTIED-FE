@@ -53,7 +53,8 @@ const MyFavoriteContis: React.FC = () => {
         .filter((data: ContiType) => data && data.state !== "DELETED")
         .sort(
           (a: ContiType, b: ContiType) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+            parseLocalDateString(b.updatedAt).getTime() -
+            parseLocalDateString(a.updatedAt).getTime()
         );
       return validContis;
     },

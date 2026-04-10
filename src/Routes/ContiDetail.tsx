@@ -286,6 +286,9 @@ const ContiDetail: React.FC = () => {
     try {
       await patchConti(Number(contiId), dto);
       queryClient.invalidateQueries(["cid", contiId]);
+      queryClient.invalidateQueries(["myContis"]);
+      queryClient.invalidateQueries("allConties");
+      queryClient.invalidateQueries("likedContis");
 
       const updatedContiData = await getConti(Number(contiId));
       localStorage.setItem(
@@ -360,6 +363,11 @@ const ContiDetail: React.FC = () => {
       );
 
       queryClient.setQueryData(["cid", contiId], updatedContiData);
+
+      // 캐시 무효화: updatedAt 갱신 반영
+      queryClient.invalidateQueries(["myContis"]);
+      queryClient.invalidateQueries("allConties");
+      queryClient.invalidateQueries("likedContis");
 
       setSelectedSongs(new Set());
 

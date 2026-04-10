@@ -22,6 +22,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { ContiType } from "../../types";
 import Notification from "../Notification";
+import { useQuery, useQueryClient } from "react-query";
 
 const ContiList = styled.ul`
   list-style: none;
@@ -122,6 +123,7 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
   onClose,
   songId,
 }) => {
+  const queryClient = useQueryClient();
   const [contis, setContis] = useState<ContiType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -197,6 +199,13 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         };
 
         await patchConti(selectedContiId, dto);
+
+        // 캐시 무효화: updatedAt 갱신 반영
+        queryClient.invalidateQueries(["myContis"]);
+        queryClient.invalidateQueries("allConties");
+        queryClient.invalidateQueries(["cid", String(selectedContiId)]);
+        queryClient.invalidateQueries("likedContis");
+
         const truncatedTitle =
           selectedConti.title.length > 10
             ? `${selectedConti.title.slice(0, 10)}...`
