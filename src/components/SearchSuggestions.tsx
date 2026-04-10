@@ -32,18 +32,21 @@ const SuggestionChip = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  background-color: ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.08)" : "rgba(255, 255, 255, 0.05)"};
-  border: 1px solid ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.12)" : "rgba(255, 255, 255, 0.1)"};
+  padding: 8px 18px;
+  background-color: ${(props) => props.theme.brandColor};
+  border: none;
   border-radius: 24px;
   font-size: 13.5px;
   font-weight: 500;
-  color: ${(props) => props.theme.textColor === "#4B53BC" ? "#4B53BC" : "whitesmoke"};
+  color: ${(props) => 
+    props.theme.bgColor === "#F0F0F0" ? "white" : props.theme.mainTextColor
+  };
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 12px rgba(148, 180, 237, 0.3);
   
   &:active {
-    background-color: ${(props) => props.theme.bgColor === "#F0F0F0" ? "rgba(75, 83, 188, 0.15)" : "rgba(255, 255, 255, 0.15)"};
+    scale: 0.96;
+    opacity: 0.9;
   }
 `;
 
