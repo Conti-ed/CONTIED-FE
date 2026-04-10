@@ -386,7 +386,7 @@ const Result: React.FC = () => {
               style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}
             >
               <SectionTabs selectedTab={selectedTab} onSelectTab={setSelectedTab} />
-              <div style={{ flex: 1, width: "100%", overflowY: "auto" }}>
+              <div style={{ flex: 1, width: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 {searchQuery.trim() === "" ? (
                   renderEmptyState()
                 ) : selectedTab === "전체" ? (
