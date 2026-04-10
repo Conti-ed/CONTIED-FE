@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { supabase } from "../utils/supabase";
-import { setTokens } from "../utils/auth"; // auth.ts에서 setTokens 가져옴
+import { setTokens } from "../utils/auth";
+import * as S from "../styles/AuthCallback.styles";
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -33,11 +34,18 @@ const AuthCallback: React.FC = () => {
     };
     handleAuth();
   }, [navigate, queryClient]);
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#92b5f0', color: 'white' }}>
-      잠시만 기다려 주세요...
-    </div>
+    <S.Container>
+      <S.BackgroundCircle />
+      <S.BackgroundCircleBottom />
+      <S.LogoContainer>
+        <S.Logo src="/images/StartLogov2.png" alt="Contied Logo" />
+        <S.LoadingText>로그인 정보를 확인 중입니다</S.LoadingText>
+      </S.LogoContainer>
+    </S.Container>
   );
 };
 
 export default AuthCallback;
+
