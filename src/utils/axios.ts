@@ -290,4 +290,42 @@ export async function deleteContiById(contiId: number) {
   }
 }
 
+// 최근 검색어 관련 API
+export async function getRecentSearches() {
+  try {
+    const response = await api.get("/search/recent");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch recent searches:", error);
+    throw error;
+  }
+}
+
+export async function postRecentSearch(query: string) {
+  try {
+    await api.post(`/search/recent?query=${encodeURIComponent(query)}`);
+  } catch (error) {
+    console.error("Failed to save recent search:", error);
+    throw error;
+  }
+}
+
+export async function deleteRecentSearch(id: number) {
+  try {
+    await api.delete(`/search/recent/${id}`);
+  } catch (error) {
+    console.error(`Failed to delete recent search with id ${id}:`, error);
+    throw error;
+  }
+}
+
+export async function clearAllRecentSearches() {
+  try {
+    await api.delete("/search/recent/all");
+  } catch (error) {
+    console.error("Failed to clear all recent searches:", error);
+    throw error;
+  }
+}
+
 export default api;

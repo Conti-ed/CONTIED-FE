@@ -24,21 +24,48 @@ import {
 import { getRandomSuggestions } from "../utils/randomUtils";
 import EmptyState from "../components/EmptyState";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
-import { getAllSongs } from "../utils/axios";
+import { 
+  getAllSongs, 
+  getRecentSearches, 
+  postRecentSearch, 
+  deleteRecentSearch, 
+  clearAllRecentSearches 
+} from "../utils/axios";
 import Icon from "../components/Icon";
+import { useMutation, useQueryClient } from "react-query";
+
+interface SearchHistoryItem {
+  id: number;
+  query: string;
+  updatedAt: string;
+}
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    try {
-      const storedSearches = localStorage.getItem("recentSearches");
-      return storedSearches ? JSON.parse(storedSearches) : [];
-    } catch (e) {
-      console.error("Failed to load recent searches", e);
-      return [];
+  const queryClient = useQueryClient();
+
+  // 1. 최근 검색어 조회 (React Query)
+  const { data: recentSearches = [] } = useQuery<SearchHistoryItem[]>(
+    "recentSearches",
+    getRecentSearches,
+    {
+      staleTime: 1000 * 60 * 5, // 5분 캐시
     }
+  );
+
+  // 2. 검색 기록 관련 Mutations
+  const addMutation = useMutation(postRecentSearch, {
+    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+  });
+
+  const deleteMutation = useMutation(deleteRecentSearch, {
+    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+  });
+
+  const clearAllMutation = useMutation(clearAllRecentSearches, {
+    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
   });
 
   // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
@@ -110,12 +137,9 @@ const Search: React.FC = () => {
     if (searchQuery.trim() !== "") {
       setIsFocused(false); // 포커스 해제
       setIsLoading(true); // 로딩 시작
-      const updatedSearches = [
-        searchQuery,
-        ...recentSearches.filter((item) => item !== searchQuery),
-      ];
-      setRecentSearches(updatedSearches); // 검색어 저장 및 중복 제거
-      localStorage.setItem("recentSearches", JSON.stringify(updatedSearches)); // 검색어 저장 즉시 실행
+      
+      // 서버에 검색 기록 저장
+      addMutation.mutate(searchQuery);
       
       setTimeout(() => {
         setIsLoading(false); // 로딩 종료
@@ -133,8 +157,7 @@ const Search: React.FC = () => {
   };
 
   const handleClearAll = () => {
-    setRecentSearches([]);
-    localStorage.setItem("recentSearches", JSON.stringify([]));
+    clearAllMutation.mutate();
   };
 
   const handleRecentSearchClick = (search: string) => {
@@ -144,10 +167,8 @@ const Search: React.FC = () => {
     });
   };
 
-  const handleRemoveRecentSearch = (search: string) => {
-    const updated = recentSearches.filter((item) => item !== search);
-    setRecentSearches(updated);
-    localStorage.setItem("recentSearches", JSON.stringify(updated));
+  const handleRemoveRecentSearch = (id: number) => {
+    deleteMutation.mutate(id);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -161,11 +182,11 @@ const Search: React.FC = () => {
         <span>최근 검색어</span>
         <ClearAllButton onClick={handleClearAll}>전체삭제</ClearAllButton>
       </RecentSearchesHeader>
-      {recentSearches.map((search) => (
-        <RecentSearchItem key={search}>
-          <span onClick={() => handleRecentSearchClick(search)}>{search}</span>
+      {recentSearches.map((item) => (
+        <RecentSearchItem key={item.id}>
+          <span onClick={() => handleRecentSearchClick(item.query)}>{item.query}</span>
           <svg
-            onClick={() => handleRemoveRecentSearch(search)}
+            onClick={() => handleRemoveRecentSearch(item.id)}
             width="18"
             viewBox="0 0 18 18"
           >

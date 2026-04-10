@@ -22,6 +22,19 @@ import AllTab from "../components/Tabs/AllTab";
 import SongsTab from "../components/Tabs/SongsTab";
 import LyricsTab from "../components/Tabs/LyricsTab";
 import Icon from "../components/Icon";
+import { 
+  getRecentSearches, 
+  postRecentSearch, 
+  deleteRecentSearch, 
+  clearAllRecentSearches 
+} from "../utils/axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+
+interface SearchHistoryItem {
+  id: number;
+  query: string;
+  updatedAt: string;
+}
 
 const Result: React.FC = () => {
   const location = useLocation();
@@ -34,6 +47,15 @@ const Result: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedTab, setSelectedTab] = useState("전체");
   const inputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+
+  const addMutation = useMutation(postRecentSearch, {
+    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+  });
+
+  const saveRecentSearch = (searchQuery: string) => {
+    addMutation.mutate(searchQuery);
+  };
 
   // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
   const inputId = useMemo(() => `search-input-result-${Math.random().toString(36).substr(2, 9)}`, []);
@@ -92,16 +114,6 @@ const Result: React.FC = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  };
-
-  const saveRecentSearch = (searchQuery: string) => {
-    const storedSearches = localStorage.getItem("recentSearches");
-    let recentSearches = storedSearches ? JSON.parse(storedSearches) : [];
-    recentSearches = [
-      searchQuery,
-      ...recentSearches.filter((item: string) => item !== searchQuery),
-    ];
-    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
   };
 
   const renderEmptyState = () => {
