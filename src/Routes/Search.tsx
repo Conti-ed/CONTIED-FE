@@ -57,15 +57,59 @@ const Search: React.FC = () => {
 
   // 2. 검색 기록 관련 Mutations
   const addMutation = useMutation(postRecentSearch, {
-    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+    onMutate: async (newSearch) => {
+      await queryClient.cancelQueries("recentSearches");
+      const previousSearches = queryClient.getQueryData<SearchHistoryItem[]>("recentSearches");
+      queryClient.setQueryData<SearchHistoryItem[]>("recentSearches", (old = []) => {
+        const filtered = old.filter(item => item.query !== newSearch);
+        return [{ id: Date.now(), query: newSearch, updatedAt: new Date().toISOString() }, ...filtered].slice(0, 20);
+      });
+      return { previousSearches };
+    },
+    onError: (err, newSearch, context) => {
+      if (context?.previousSearches) {
+        queryClient.setQueryData("recentSearches", context.previousSearches);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("recentSearches");
+    },
   });
 
   const deleteMutation = useMutation(deleteRecentSearch, {
-    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries("recentSearches");
+      const previousSearches = queryClient.getQueryData<SearchHistoryItem[]>("recentSearches");
+      queryClient.setQueryData<SearchHistoryItem[]>("recentSearches", (old = []) => 
+        old.filter(item => item.id !== id)
+      );
+      return { previousSearches };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousSearches) {
+        queryClient.setQueryData("recentSearches", context.previousSearches);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("recentSearches");
+    },
   });
 
   const clearAllMutation = useMutation(clearAllRecentSearches, {
-    onSuccess: () => queryClient.invalidateQueries("recentSearches"),
+    onMutate: async () => {
+      await queryClient.cancelQueries("recentSearches");
+      const previousSearches = queryClient.getQueryData<SearchHistoryItem[]>("recentSearches");
+      queryClient.setQueryData("recentSearches", []);
+      return { previousSearches };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousSearches) {
+        queryClient.setQueryData("recentSearches", context.previousSearches);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("recentSearches");
+    },
   });
 
   // 컴포넌트 인스턴스별로 고유한 ID 생성하여 전환 시 충돌 방지 및 브라우저 경고 해결
