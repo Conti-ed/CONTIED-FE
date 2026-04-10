@@ -19,7 +19,7 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
     }
   }, []);
 
-  const { data } = useQuery(
+  const { data, isLoading: isContiLoading } = useQuery(
     ["myContis"],
     async () => {
       const [conties, userNickname] = await Promise.all([
@@ -73,6 +73,7 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
 
   return {
     contiList,
+    isContiLoading,
     selectedConti,
     hoveredButton,
     isButtonClicked,

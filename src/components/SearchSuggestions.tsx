@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
+import { SuggestionSkeletonList } from "./Skeleton";
 
 const SuggestionsWrapper = styled.div`
   width: 100%;
@@ -53,11 +54,13 @@ const SuggestionChip = styled(motion.div)`
 interface SearchSuggestionsProps {
   suggestions: string[];
   onSuggestionClick: (suggestion: string) => void;
+  loading?: boolean;
 }
 
 const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   suggestions,
   onSuggestionClick,
+  loading = false,
 }) => {
   const [randomSuggestions, setRandomSuggestions] = useState<string[]>([]);
 
@@ -99,25 +102,30 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       >
         추천 검색어
       </Title>
-      <SuggestionsContainer
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <AnimatePresence mode="popLayout">
-          {randomSuggestions.map((suggestion, index) => (
-            <SuggestionChip
-              key={`suggestion-${suggestion}-${index}`}
-              variants={itemVariants}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onSuggestionClick(suggestion)}
-            >
-              {suggestion}
-            </SuggestionChip>
-          ))}
-        </AnimatePresence>
-      </SuggestionsContainer>
+      
+      {loading || (suggestions.length === 0 && randomSuggestions.length === 0) ? (
+        <SuggestionSkeletonList count={14} />
+      ) : (
+        <SuggestionsContainer
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <AnimatePresence mode="popLayout">
+            {randomSuggestions.map((suggestion, index) => (
+              <SuggestionChip
+                key={`suggestion-${suggestion}-${index}`}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => onSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </SuggestionChip>
+            ))}
+          </AnimatePresence>
+        </SuggestionsContainer>
+      )}
     </SuggestionsWrapper>
   );
 };

@@ -331,6 +331,7 @@ const Search: React.FC = () => {
             <SearchSuggestions
               suggestions={lyricsSuggestions}
               onSuggestionClick={handleSuggestionClick}
+              loading={isSuggestionsLoading}
             />
           )}
         </Content>

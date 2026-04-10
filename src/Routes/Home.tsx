@@ -35,6 +35,12 @@ import {
   RecentSubtitle,
   RecentSongInfo,
 } from "../styles/Home.styles";
+import {
+  HomeWelcomeSkeleton,
+  HomeAlbumSkeleton,
+  HomeButtonSkeleton,
+  ContiSkeletonList,
+} from "../components/Skeleton";
 import { useHomeLogic } from "../hooks/useHomeLogic";
 import { BUTTONS } from "../constants/homeConstants";
 import { HomeButton } from "../components/HomeButton";
@@ -73,13 +79,14 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: userProfile } = useQuery("userProfile", getUserProfile, {
+  const { data: userProfile, isLoading: isProfileLoading } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 30, // 30분 캐시
   });
   const userName = userProfile?.nickname;
 
   const {
     contiList,
+    isContiLoading,
     selectedConti,
     hoveredButton,
     isButtonClicked,
@@ -92,7 +99,7 @@ const Home: React.FC = () => {
 
   const defaultImageUrl = "/images/WhitePiano.png";
   const albumThumbnail = selectedConti?.thumbnail || defaultImageUrl;
-  const { textColor, isLoading } = useAdaptiveTextColor(albumThumbnail);
+  const { textColor, isLoading: isColorLoading } = useAdaptiveTextColor(albumThumbnail);
 
   const albumTitle = selectedConti?.title || "콘티를 등록해볼까요?";
   const albumId = selectedConti?.id;
@@ -106,6 +113,8 @@ const Home: React.FC = () => {
       .slice(0, 3);
   }, [contiList]);
 
+  const isInitialLoading = isProfileLoading || isContiLoading;
+
   return (
     <Container
       initial={{ opacity: 0 }}
@@ -117,87 +126,104 @@ const Home: React.FC = () => {
           <Header>
             <Logo src="/images/HeaderLogo.png" alt="Contied Logo" />
           </Header>
-          <WelcomeSection>
-            <UserName>
-              {getGreetingMessage()}, <span>{userName || "사용자"}</span>님!
-            </UserName>
-            <StatsText>
-              지금까지 <CountUp value={contiList.length} /> 개의 콘티를 만드셨네요!
-            </StatsText>
-          </WelcomeSection>
-          <AlbumContainer
-            onClick={albumId ? () => handleAlbumClick(albumId) : undefined}
-          >
-            <ShuffleButton
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9, rotate: 180 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                refreshSelectedConti();
-              }}
+          
+          {isInitialLoading ? (
+            <HomeWelcomeSkeleton />
+          ) : (
+            <WelcomeSection>
+              <UserName>
+                {getGreetingMessage()}, <span>{userName || "사용자"}</span>님!
+              </UserName>
+              <StatsText>
+                지금까지 <CountUp value={contiList.length} /> 개의 콘티를 만드셨네요!
+              </StatsText>
+            </WelcomeSection>
+          )}
+
+          {isInitialLoading ? (
+            <HomeAlbumSkeleton />
+          ) : (
+            <AlbumContainer
+              onClick={albumId ? () => handleAlbumClick(albumId) : undefined}
             >
-              <HiRefresh size={22} />
-            </ShuffleButton>
-            {albumThumbnail !== defaultImageUrl ? (
-              <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
-            ) : (
-              <ContiPlaceholder size={360} />
-            )}
-            <Mask />
-            <RoundLogo>
-              <RoundLogoImage src={defaultImageUrl} alt="Round Logo" />
-            </RoundLogo>
-            <TransitionTitle
-              style={{ color: textColor }}
-              $isLoading={isLoading}
-            >
-              {selectedConti ? albumTitle : "콘티를 등록해볼까요?"}
-            </TransitionTitle>
-            {selectedConti && (
-              <BadgeContainer style={{ color: textColor }}>
-                <BadgePill>
-                  <FiMusic size={12} />
-                  {selectedConti.ContiToSong?.length || 0}곡
-                </BadgePill>
-                <BadgePill>
-                  <FiClock size={12} />
-                  {formatTotalDuration(selectedConti.duration || 0)}
-                </BadgePill>
-                <BadgePill>
-                  <FiCalendar size={12} />
-                  {formatRelativeTime(parseLocalDateString(selectedConti.updatedAt))}
-                </BadgePill>
-              </BadgeContainer>
-            )}
-          </AlbumContainer>
+              <ShuffleButton
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9, rotate: 180 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  refreshSelectedConti();
+                }}
+              >
+                <HiRefresh size={22} />
+              </ShuffleButton>
+              {albumThumbnail !== defaultImageUrl ? (
+                <AlbumThumbnail src={albumThumbnail} alt="Album Image" />
+              ) : (
+                <ContiPlaceholder size={360} />
+              )}
+              <Mask />
+              <RoundLogo>
+                <RoundLogoImage src={defaultImageUrl} alt="Round Logo" />
+              </RoundLogo>
+              <TransitionTitle
+                style={{ color: textColor }}
+                $isLoading={isColorLoading}
+              >
+                {selectedConti ? albumTitle : "콘티를 등록해볼까요?"}
+              </TransitionTitle>
+              {selectedConti && (
+                <BadgeContainer style={{ color: textColor }}>
+                  <BadgePill>
+                    <FiMusic size={12} />
+                    {selectedConti.ContiToSong?.length || 0}곡
+                  </BadgePill>
+                  <BadgePill>
+                    <FiClock size={12} />
+                    {formatTotalDuration(selectedConti.duration || 0)}
+                  </BadgePill>
+                  <BadgePill>
+                    <FiCalendar size={12} />
+                    {formatRelativeTime(parseLocalDateString(selectedConti.updatedAt))}
+                  </BadgePill>
+                </BadgeContainer>
+              )}
+            </AlbumContainer>
+          )}
 
           <SectionTitle>
             <Icon id="note-home" width="18" height="18" />
             &nbsp;간편하게&nbsp;<span>콘티</span>&nbsp;만들기
           </SectionTitle>
-          <ButtonGroup>
-            {BUTTONS.map((button) => (
-              <HomeButton
-                key={button.name}
-                buttonInfo={button}
-                isHovered={hoveredButton === button.name}
-                isClicked={isButtonClicked === button.name}
-                onMouseEnter={() => handleMouseEnter(button.name)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleButtonClick(button.name)}
-                disabled={isButtonClicked !== null && isButtonClicked !== button.name}
-              />
-            ))}
-          </ButtonGroup>
+          
+          {isInitialLoading ? (
+            <HomeButtonSkeleton />
+          ) : (
+            <ButtonGroup>
+              {BUTTONS.map((button) => (
+                <HomeButton
+                  key={button.name}
+                  buttonInfo={button}
+                  isHovered={hoveredButton === button.name}
+                  isClicked={isButtonClicked === button.name}
+                  onMouseEnter={() => handleMouseEnter(button.name)}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() => handleButtonClick(button.name)}
+                  disabled={isButtonClicked !== null && isButtonClicked !== button.name}
+                />
+              ))}
+            </ButtonGroup>
+          )}
 
-          {recentContis.length > 0 && (
-            <RecentSection>
-              <RecentHeader>
-                <RecentTitle>
-                  <Icon id="note-home" width="18" height="18" />
-                  &nbsp;최근 작업한&nbsp;<span>콘티</span>
-                </RecentTitle>
-              </RecentHeader>
+          <RecentSection>
+            <RecentHeader>
+              <RecentTitle>
+                <Icon id="note-home" width="18" height="18" />
+                &nbsp;최근 작업한&nbsp;<span>콘티</span>
+              </RecentTitle>
+            </RecentHeader>
+            {isInitialLoading ? (
+              <ContiSkeletonList count={3} />
+            ) : recentContis.length > 0 ? (
               <RecentList>
                 {recentContis.map((conti, index) => (
                   <RecentItem
@@ -233,8 +259,12 @@ const Home: React.FC = () => {
                   </RecentItem>
                 ))}
               </RecentList>
-            </RecentSection>
-          )}
+            ) : (
+              <div style={{ opacity: 0.5, fontSize: '14px', marginTop: '20px' }}>
+                아직 생성된 콘티가 없어요.
+              </div>
+            )}
+          </RecentSection>
       </Content>
     </Container>
   );

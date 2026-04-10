@@ -122,6 +122,81 @@ export const ContiSkeleton: React.FC = () => (
   </ContiSkeletonContainer>
 );
 
+// Home Component Skeletons
+const HomeWelcomeSkeletonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  margin-left: 10px;
+  margin-bottom: 24px;
+`;
+
+const UserNameSkeleton = styled(SkeletonBase)`
+  width: 200px;
+  height: 22px;
+  margin-bottom: 8px;
+`;
+
+const StatsTextSkeleton = styled(SkeletonBase)`
+  width: 150px;
+  height: 15px;
+`;
+
+export const HomeWelcomeSkeleton: React.FC = () => (
+  <HomeWelcomeSkeletonContainer>
+    <UserNameSkeleton />
+    <StatsTextSkeleton />
+  </HomeWelcomeSkeletonContainer>
+);
+
+export const HomeAlbumSkeleton = styled(SkeletonBase)`
+  width: 360px;
+  height: 360px;
+  border-radius: 20px;
+  margin-bottom: 29px;
+  flex-shrink: 0;
+`;
+
+const ButtonGroupSkeleton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 29px;
+`;
+
+const ButtonSkeleton = styled(SkeletonBase)`
+  width: 31%;
+  height: 95px;
+  border-radius: 16px;
+`;
+
+export const HomeButtonSkeleton: React.FC = () => (
+  <ButtonGroupSkeleton>
+    <ButtonSkeleton />
+    <ButtonSkeleton />
+    <ButtonSkeleton />
+  </ButtonGroupSkeleton>
+);
+
+// Search Suggestion Skeleton
+export const SuggestionSkeleton = styled(SkeletonBase)`
+  display: inline-block;
+  padding: 8px 18px;
+  height: 35px;
+  width: ${() => Math.floor(Math.random() * (100 - 60 + 1) + 60)}px;
+  border-radius: 24px;
+  margin: 5px;
+`;
+
+export const SuggestionSkeletonList: React.FC<{ count?: number }> = ({ count = 10 }) => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '320px' }}>
+    {Array.from({ length: count }).map((_, i) => (
+      <SuggestionSkeleton key={i} />
+    ))}
+  </div>
+);
+
 // Grouping components
 const Stack = styled.div`
   display: flex;
