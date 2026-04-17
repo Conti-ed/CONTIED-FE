@@ -201,7 +201,7 @@ const AllTab: React.FC<AllTabProps> = ({ searchQuery }) => {
         return b.matchedSongsLength - a.matchedSongsLength;
       })
       .map((item) => item.data)
-      .slice(0, 10);
+      .slice(0, 5);
   }, [lowerCaseQuery, sortedContiData]);
 
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {

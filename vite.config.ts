@@ -11,5 +11,16 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-ui": ["framer-motion", "styled-components", "react-transition-group"],
+          "vendor-query": ["react-query"],
+          "vendor-supabase": ["@supabase/supabase-js"],
+          "vendor-mui": ["@mui/material", "@mui/icons-material", "@mui/joy", "@mui/x-date-pickers"],
+        },
+      },
+    },
   },
 });

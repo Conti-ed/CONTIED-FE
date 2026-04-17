@@ -3,10 +3,11 @@ import { lightTheme, darkTheme } from "./Theme";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "./atoms";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import TabBar from "./components/TabBar";
+import Loading from "./components/Loading";
 import { supabase } from "./utils/supabase";
 import { removeTokens, setTokens } from "./utils/auth";
 import { useRef, useCallback } from "react";
@@ -165,7 +166,9 @@ function Root() {
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
         <PageWrapper>
-          <Outlet />
+          <Suspense fallback={<Loading />}>
+            <Outlet />
+          </Suspense>
           {showTabBar && <TabBar />}
         </PageWrapper>
       </ThemeProvider>

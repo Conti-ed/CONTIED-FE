@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, memo } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import {
@@ -63,7 +63,7 @@ const getGreetingMessage = () => {
   return `오늘 하루 고생 많으셨어요`;
 };
 
-const CountUp: React.FC<{ value: number }> = ({ value }) => {
+const CountUp = memo(({ value }: { value: number }) => {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => Math.round(latest));
 
@@ -73,7 +73,7 @@ const CountUp: React.FC<{ value: number }> = ({ value }) => {
   }, [value, count]);
 
   return <HighlightCount>{rounded}</HighlightCount>;
-};
+});
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -108,7 +108,8 @@ const Home: React.FC = () => {
     return [...contiList]
       .sort(
         (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          parseLocalDateString(b.updatedAt).getTime() -
+          parseLocalDateString(a.updatedAt).getTime()
       )
       .slice(0, 3);
   }, [contiList]);

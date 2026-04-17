@@ -1,19 +1,20 @@
 import { createBrowserRouter, Navigate, useParams } from "react-router-dom";
-import { setGlobalNavigate } from "./utils/navigation";
+import { lazy } from "react";
 import Root from "./Root";
-import Start from "./Routes/Start";
-import AuthCallback from "./Routes/AuthCallback";
-import Wait from "./Routes/Wait";
-import Home from "./Routes/Home";
-import Search from "./Routes/Search";
-import Result from "./Routes/Result";
-import Upload from "./Routes/Upload";
-import ContiDetail from "./Routes/ContiDetail";
-import MyPage from "./Routes/MyPage";
-import MyUploadedContis from "./Routes/MyUploadedContis";
-import MyFavoriteContis from "./Routes/MyFavoriteContis";
-import Select from "./Routes/Select";
-import SearchAddSong from "./Routes/AddSong";
+
+const Start = lazy(() => import("./Routes/Start"));
+const AuthCallback = lazy(() => import("./Routes/AuthCallback"));
+const Wait = lazy(() => import("./Routes/Wait"));
+const Home = lazy(() => import("./Routes/Home"));
+const Search = lazy(() => import("./Routes/Search"));
+const Result = lazy(() => import("./Routes/Result"));
+const Upload = lazy(() => import("./Routes/Upload"));
+const ContiDetail = lazy(() => import("./Routes/ContiDetail"));
+const MyPage = lazy(() => import("./Routes/MyPage"));
+const MyUploadedContis = lazy(() => import("./Routes/MyUploadedContis"));
+const MyFavoriteContis = lazy(() => import("./Routes/MyFavoriteContis"));
+const Select = lazy(() => import("./Routes/Select"));
+const SearchAddSong = lazy(() => import("./Routes/AddSong"));
 
 // conti-detail/:contiId 경로를 /conti/:contiId로 리다이렉트하기 위한 컴포넌트
 const ContiDetailRedirect = () => {

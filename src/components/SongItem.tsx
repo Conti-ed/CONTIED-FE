@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import SongPlaceholder from "./SongPlaceholder";
@@ -574,4 +574,4 @@ const SongItem: React.FC<SongItemProps> = ({
   );
 };
 
-export default SongItem;
+export default memo(SongItem);

@@ -23,6 +23,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ContiType } from "../../types";
 import Notification from "../Notification";
 import { useQuery, useQueryClient } from "react-query";
+import { getAccessToken } from "../../utils/auth";
 
 const ContiList = styled.ul`
   list-style: none;
@@ -124,37 +125,40 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
   songId,
 }) => {
   const queryClient = useQueryClient();
-  const [contis, setContis] = useState<ContiType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selectedContiId, setSelectedContiId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     message: string;
     type?: "success" | "error" | "info";
   } | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      const fetchAllConties = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-          const conties = await getAllMyConties();
-          setContis(conties);
-        } catch (error: any) {
-          console.error("콘티 목록 가져오기 실패:", error);
-          setError(
-            error.response?.data?.message ||
-              "콘티 목록을 가져오는 데 실패했습니다."
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchAllConties();
+  const {
+    data: contis = [],
+    isLoading,
+    isError,
+  } = useQuery(
+    ["myContis"],
+    async () => {
+      const [conties, userNickname] = await Promise.all([
+        getAllMyConties(),
+        getUserNickname(),
+      ]);
+      const sortedConties = [...conties].sort(
+        (a: ContiType, b: ContiType) =>
+          parseLocalDateString(b.updatedAt).getTime() -
+          parseLocalDateString(a.updatedAt).getTime()
+      );
+      return { filteredContis: sortedConties, userNickname };
+    },
+    {
+      select: (data) => data.filteredContis,
+      staleTime: 0,
+      enabled: isOpen && !!getAccessToken(),
     }
-  }, [isOpen]);
+  );
+
+  const error = isError ? "콘티 목록을 가져오는 데 실패했습니다." : null;
 
   useEffect(() => {
     if (!isOpen) {
@@ -219,7 +223,7 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
         onClose();
       } catch (error: any) {
         console.error("콘티에 곡 추가 실패:", error);
-        setError(
+        setAddError(
           error.response?.data?.message ||
             "콘티에 곡을 추가하는 데 실패했습니다."
         );
@@ -285,6 +289,7 @@ const AddSongToConti: React.FC<AddSongToContiProps> = ({
               ) : (
                 <div>생성된 콘티가 없어요...</div>
               )}
+              {addError && <ErrorMessage>{addError}</ErrorMessage>}
               <ModalActions>
                 {selectedContiId !== null && (
                   <AddButton

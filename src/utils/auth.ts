@@ -1,7 +1,17 @@
 import { supabase } from "./supabase";
 import { Cookies } from "react-cookie";
+import {
+  AxiosInstance,
+  AxiosResponse,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { globalNavigate } from "./navigation"; // 브리지 사용
 import { queryClient } from "./queryClient"; // standalone queryClient 사용
+
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const cookies = new Cookies();
 
@@ -112,21 +122,21 @@ export const refreshAccessToken = async (): Promise<string | null> => {
 };
 
 // Axios Instance에 token update 로직 추가
-export const setupTokenRefresh = (api: any): void => {
+export const setupTokenRefresh = (api: AxiosInstance): void => {
   api.interceptors.response.use(
-    (response: any) => response,
-    async (error: any) => {
-      const originalRequest = error.config;
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+      const originalRequest = error.config as RetryableRequestConfig;
       const status = error.response?.status;
-      const url = originalRequest.url;
+      const url = originalRequest?.url;
 
       // 401 Unauthorized 또는 403 Forbidden 에러 처리
-      if ((status === 401 || status === 403) && !originalRequest._retry) {
+      if ((status === 401 || status === 403) && originalRequest && !originalRequest._retry) {
         originalRequest._retry = true;
 
         console.warn(`Auth Error (${status}) on ${url}. Attempting to refresh token...`);
         const newAccessToken = await refreshAccessToken();
-        
+
         if (newAccessToken) {
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);

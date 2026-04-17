@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./Router"; // Named import

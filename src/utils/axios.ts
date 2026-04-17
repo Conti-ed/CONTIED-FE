@@ -146,7 +146,7 @@ export async function getMyConties(
       params: { cursor, take },
     });
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to fetch user's conties:", error);
     throw error;
   }
@@ -181,13 +181,10 @@ export async function postContiByAi(
     payload.bible_verse_range = bibleVerseRange;
   }
 
-  console.log("Payload to be sent:", payload); // 추가된 디버그 로그
-
   try {
     const response = await api.post("/conti/myconti/ai", payload, {
       timeout: 120000, // AI 생성은 Gemini API 호출이 여러 번 들어가므로 120초로 넉넉하게
     });
-    console.log("Response data:", response.data); // 응답 데이터 확인용 로그
     return response.data;
   } catch (error) {
     console.error("Failed to create AI-based conti:", error);
@@ -206,7 +203,7 @@ export async function patchConti(contiId: number, dto: PatchContiDto) {
   try {
     const response = await api.patch(`/conti/myconti/${contiId}`, dto);
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Failed to patch conti with id ${contiId}:`, error);
     throw error;
   }

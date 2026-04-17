@@ -3,6 +3,7 @@ import { NavigateFunction } from "react-router-dom";
 import { useQuery } from "react-query";
 import { getAllMyConties, getUserNickname } from "../utils/axios";
 import { getAccessToken } from "../utils/auth";
+import { parseLocalDateString } from "../utils/formatDuration";
 import { ContiType } from "../types";
 
 export const useHomeLogic = (navigate: NavigateFunction) => {
@@ -27,10 +28,15 @@ export const useHomeLogic = (navigate: NavigateFunction) => {
         getUserNickname(),
       ]);
 
-      return { filteredContis: conties, userNickname };
+      const sortedConties = [...conties].sort(
+        (a: ContiType, b: ContiType) =>
+          parseLocalDateString(b.updatedAt).getTime() -
+          parseLocalDateString(a.updatedAt).getTime()
+      );
+      return { filteredContis: sortedConties, userNickname };
     },
     {
-      staleTime: 1000 * 60,
+      staleTime: 0,
       cacheTime: 1000 * 60 * 5,
       enabled: !!getAccessToken(),
     }
