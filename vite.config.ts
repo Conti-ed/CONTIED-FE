@@ -18,7 +18,7 @@ export default defineConfig({
           "vendor-ui": ["framer-motion", "styled-components", "react-transition-group"],
           "vendor-query": ["react-query"],
           "vendor-supabase": ["@supabase/supabase-js"],
-          "vendor-mui": ["@mui/material", "@mui/icons-material", "@mui/joy", "@mui/x-date-pickers"],
+          "vendor-mui": ["@emotion/react", "@emotion/styled", "@mui/material", "@mui/icons-material", "@mui/joy", "@mui/x-date-pickers"],
         },
       },
     },
