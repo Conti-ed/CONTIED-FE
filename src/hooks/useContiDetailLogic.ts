@@ -43,10 +43,6 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
     {
       staleTime: 1000 * 60 * 5,
       retry: false,
-      onSuccess: (data) => {
-        setEditedTitle(data.title);
-        setEditedDescription(data.description || "");
-      },
       onError: (error) => {
         console.error("Failed to fetch conti data:", error);
       },
@@ -73,6 +69,7 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
 
   const { data: likedContis } = useQuery<ContiType[]>("likedContis", getLikedContis, {
     staleTime: 1000 * 60 * 5,
+    enabled: !!getAccessToken(),
   });
 
   useEffect(() => {
@@ -80,6 +77,14 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
       setIsFavorite(likedContis.some((c) => c.id === Number(contiId)));
     }
   }, [contiId, likedContis]);
+
+  // 편집 진입 시점에 최신 contiData 로 입력값 채우기 (race condition 방지)
+  useEffect(() => {
+    if (isEditMode && contiData) {
+      setEditedTitle(contiData.title ?? "");
+      setEditedDescription(contiData.description ?? "");
+    }
+  }, [isEditMode, contiData]);
 
   const totalDuration = useMemo(() => {
     if (!contiData || !contiData.ContiToSong) return 0;
@@ -89,63 +94,76 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
   }, [contiData]);
 
   const handleHeartClick = async () => {
-    if (!contiId) return;
+    if (!contiId || !contiData) return;
 
-    const newIsFavorite = !isFavorite;
+    const prevIsFavorite = isFavorite;
+    const newIsFavorite = !prevIsFavorite;
+    const numericId = Number(contiId);
+
+    await queryClient.cancelQueries("likedContis");
+    const prevLiked = queryClient.getQueryData<ContiType[]>("likedContis");
+
     setIsFavorite(newIsFavorite);
-
-    queryClient.setQueryData<ContiType[] | undefined>("likedContis", (old) => {
-      if (!old || !contiData) return old;
+    queryClient.setQueryData<ContiType[]>("likedContis", (old = []) => {
       if (newIsFavorite) {
-        return [...old, contiData];
-      } else {
-        return old.filter((c) => c.id !== Number(contiId));
+        if (old.some((c) => c.id === numericId)) return old;
+        return [contiData, ...old];
       }
+      return old.filter((c) => c.id !== numericId);
     });
 
     try {
       if (newIsFavorite) {
-        await likeConti(Number(contiId));
+        await likeConti(numericId);
       } else {
-        await unlikeConti(Number(contiId));
+        await unlikeConti(numericId);
       }
-      queryClient.invalidateQueries("likedContis");
     } catch (error) {
       console.error("Failed to toggle like:", error);
-      setIsFavorite(!newIsFavorite);
-      queryClient.invalidateQueries("likedContis");
+      setIsFavorite(prevIsFavorite);
+      if (prevLiked !== undefined) {
+        queryClient.setQueryData("likedContis", prevLiked);
+      }
+      setNotification({
+        message: "좋아요 반영에 실패했어요. 다시 시도해주세요.",
+        type: "error",
+      });
     }
   };
 
   const handleEditConti = () => {
+    if (contiData) {
+      setEditedTitle(contiData.title ?? "");
+      setEditedDescription(contiData.description ?? "");
+    }
     setIsEditMode(true);
   };
 
   const handleDeleteConti = async () => {
-    if (contiId) {
-      try {
-        await deleteContiById(Number(contiId));
+    if (!contiId) return;
 
-        const allContis = JSON.parse(localStorage.getItem("allContis") || "[]");
-        const updatedContis = allContis.filter(
-          (conti: ContiType) => conti.id !== Number(contiId)
-        );
-        localStorage.setItem("allContis", JSON.stringify(updatedContis));
-        localStorage.removeItem(`conti_${contiId}`);
+    const numericId = Number(contiId);
+    const prevLiked = queryClient.getQueryData<ContiType[]>("likedContis");
 
-        const favoriteContis = JSON.parse(localStorage.getItem("favoriteContis") || "{}");
-        delete favoriteContis[contiId];
-        localStorage.setItem("favoriteContis", JSON.stringify(favoriteContis));
+    // 낙관적: 캐시에서 제거 후 이동
+    queryClient.setQueryData<ContiType[]>("likedContis", (old = []) =>
+      old.filter((c) => c.id !== numericId)
+    );
+    queryClient.removeQueries(["cid", contiId]);
 
-        queryClient.removeQueries(["cid", contiId]);
-        queryClient.invalidateQueries(["myContis"]);
-        queryClient.invalidateQueries("likedContis");
-
-        navigate(-1);
-      } catch (error) {
-        console.error("Failed to delete conti:", error);
-        alert("콘티 삭제에 실패했습니다. 다시 시도해 주세요.");
+    try {
+      await deleteContiById(numericId);
+      queryClient.invalidateQueries(["myContis"]);
+      navigate(-1);
+    } catch (error) {
+      console.error("Failed to delete conti:", error);
+      if (prevLiked !== undefined) {
+        queryClient.setQueryData("likedContis", prevLiked);
       }
+      setNotification({
+        message: "콘티 삭제에 실패했습니다. 다시 시도해 주세요.",
+        type: "error",
+      });
     }
   };
 
@@ -171,8 +189,21 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
     setIsDescriptionOpen(false);
   };
 
+  const applyOptimisticPatch = (patch: Partial<ContiType>) => {
+    queryClient.setQueryData<ContiType | undefined>(["cid", contiId], (old) =>
+      old ? { ...old, ...patch, updatedAt: new Date().toISOString() } : old
+    );
+    // 좋아요 목록에도 제목/설명 변경 반영
+    queryClient.setQueryData<ContiType[] | undefined>("likedContis", (old) => {
+      if (!old) return old;
+      return old.map((c) =>
+        c.id === Number(contiId) ? { ...c, ...patch } : c
+      );
+    });
+  };
+
   const handleSaveEdit = async () => {
-    if (!contiId) return;
+    if (!contiId || !contiData) return;
 
     if (!editedTitle.trim()) {
       setEditError("제목은 필수입니다!");
@@ -181,36 +212,47 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
 
     setEditError(null);
 
+    const trimmedTitle = editedTitle.trim();
+    const trimmedDesc = editedDescription.trim();
+    const prevConti = contiData;
+
     const dto: PatchContiDto = {
-      title: editedTitle.trim(),
-      description: editedDescription.trim(),
-      songs: contiData?.ContiToSong.map((cts) => cts.songId) || [],
+      title: trimmedTitle,
+      description: trimmedDesc,
+      songs: contiData.ContiToSong.map((cts) => cts.songId),
     };
 
+    // 1) 낙관적 반영 + 즉시 뷰 모드 전환
+    applyOptimisticPatch({ title: trimmedTitle, description: trimmedDesc });
+    setIsEditMode(false);
+    setNotification({ message: "콘티가 업데이트되었어요!", type: "success" });
+
     try {
-      await patchConti(Number(contiId), dto);
-      queryClient.invalidateQueries(["cid", contiId]);
+      const saved = await patchConti(Number(contiId), dto);
+      if (saved) {
+        queryClient.setQueryData(["cid", contiId], saved);
+      }
+      // 목록 갱신은 백그라운드로만
       queryClient.invalidateQueries(["myContis"]);
-      queryClient.invalidateQueries("allConties");
-      queryClient.invalidateQueries("likedContis");
-
-      const updatedContiData = await getConti(Number(contiId));
-      localStorage.setItem(`conti_${contiId}`, JSON.stringify(updatedContiData));
-
-      setNotification({ message: "콘티가 업데이트되었어요!", type: "success" });
-      setIsEditMode(false);
     } catch (error) {
       const axiosError = error as { response?: { data?: { message?: string } } };
       console.error("콘티 수정 실패:", error);
+
+      // 롤백
+      queryClient.setQueryData(["cid", contiId], prevConti);
+      setIsEditMode(true);
       setEditError(axiosError.response?.data?.message || "콘티 수정에 실패했습니다.");
-      setNotification({ message: "콘티 수정에 실패했어요...", type: "error" });
+      setNotification({
+        message: "콘티 수정에 실패했어요...",
+        type: "error",
+      });
     }
   };
 
   const handleCancelEdit = () => {
     if (contiData) {
-      setEditedTitle(contiData.title);
-      setEditedDescription(contiData.description || "");
+      setEditedTitle(contiData.title ?? "");
+      setEditedDescription(contiData.description ?? "");
     }
     setEditError(null);
     setIsEditMode(false);
@@ -235,38 +277,44 @@ const useContiDetailLogic = ({ contiId, navigate, isFromUpload }: Params) => {
   };
 
   const confirmDeleteSelectedSongs = async () => {
-    if (!contiData) {
-      alert("콘티 데이터를 불러오는 중입니다.");
+    if (!contiData || !contiId) {
       return;
     }
 
+    const prevConti = contiData;
+    const keptContiToSong = contiData.ContiToSong.filter(
+      (item) => !selectedSongs.has(item.song.id)
+    );
+    const updatedSongIds = keptContiToSong.map((item) => item.song.id);
+
+    const dto: PatchContiDto = {
+      title: contiData.title,
+      description: contiData.description,
+      songs: updatedSongIds,
+    };
+
+    // 1) 낙관적: ContiToSong 배열 즉시 갱신
+    applyOptimisticPatch({ ContiToSong: keptContiToSong });
+    setSelectedSongs(new Set());
+    setIsDeleteModalOpen(false);
+    setNotification({
+      message: "선택한 곡들이 삭제되었습니다.",
+      type: "success",
+    });
+
     try {
-      const updatedSongIds = contiData.ContiToSong.filter(
-        (item) => !selectedSongs.has(item.song.id)
-      ).map((item) => item.song.id);
-
-      const dto: PatchContiDto = {
-        title: contiData.title,
-        description: contiData.description,
-        songs: updatedSongIds,
-      };
-      await patchConti(Number(contiId), dto);
-
-      const updatedContiData = await getConti(Number(contiId));
-      localStorage.setItem(`conti_${contiId}`, JSON.stringify(updatedContiData));
-
-      queryClient.setQueryData(["cid", contiId], updatedContiData);
+      const saved = await patchConti(Number(contiId), dto);
+      if (saved) {
+        queryClient.setQueryData(["cid", contiId], saved);
+      }
       queryClient.invalidateQueries(["myContis"]);
-      queryClient.invalidateQueries("allConties");
-      queryClient.invalidateQueries("likedContis");
-
-      setSelectedSongs(new Set());
-      setNotification({ message: "선택한 곡들이 삭제되었습니다.", type: "success" });
     } catch (error) {
       console.error("삭제 과정에서 오류가 있나봐요...", error);
-      setNotification({ message: "곡 삭제에 실패했습니다. 다시 시도해 주세요.", type: "error" });
-    } finally {
-      setIsDeleteModalOpen(false);
+      queryClient.setQueryData(["cid", contiId], prevConti);
+      setNotification({
+        message: "곡 삭제에 실패했습니다. 다시 시도해 주세요.",
+        type: "error",
+      });
     }
   };
 

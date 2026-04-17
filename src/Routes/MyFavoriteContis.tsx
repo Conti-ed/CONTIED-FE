@@ -60,7 +60,8 @@ const MyFavoriteContis: React.FC = () => {
       return validContis;
     },
     {
-      staleTime: 0, // 즉시 정렬 반영을 위해 0으로 설정
+      // 낙관적 UI 캐시를 존중하기 위해 5분으로 통일. 정렬은 클라이언트에서 수행.
+      staleTime: 1000 * 60 * 5,
       enabled: !!getAccessToken(),
     }
   );
