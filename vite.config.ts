@@ -14,7 +14,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-react": ["react", "react-dom", "react-router-dom", "recoil"],
+          "vendor-lottie": ["@lottiefiles/react-lottie-player"],
           "vendor-ui": ["framer-motion", "styled-components", "react-transition-group"],
           "vendor-query": ["react-query"],
           "vendor-supabase": ["@supabase/supabase-js"],

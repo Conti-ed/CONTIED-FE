@@ -7,7 +7,7 @@ import { Suspense, useEffect } from "react";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import TabBar from "./components/TabBar";
-import Loading from "./components/Loading";
+import SuspenseFallback from "./components/SuspenseFallback";
 import { supabase } from "./utils/supabase";
 import { removeTokens, setTokens } from "./utils/auth";
 import { useRef, useCallback } from "react";
@@ -166,7 +166,7 @@ function Root() {
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
         <PageWrapper>
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={<SuspenseFallback />}>
             <Outlet />
           </Suspense>
           {showTabBar && <TabBar />}
