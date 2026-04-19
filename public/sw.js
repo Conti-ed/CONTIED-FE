@@ -1,4 +1,4 @@
-const CACHE_NAME = "contied-v2";
+const CACHE_NAME = "contied-v3";
 const urlsToCache = ["/", "/index.html", "/favicon.ico", "/logo192.png"];
 
 self.addEventListener("install", (event) => {
@@ -16,9 +16,21 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   // 1. 서비스 워커가 무시해야 할 요청들 (Exclusion Rules)
+  //    - GET 이외의 메서드는 Cache API 가 put 을 지원하지 않으므로 SW 개입 불가
+  //    - API 백엔드 (api.contied.cloud, /api/ 경로) 는 react-query 가 캐시 관리하므로 SW 가 손대지 않음
+  const isApiRequest =
+    url.hostname.includes("api.contied.cloud") ||
+    url.pathname.startsWith("/api/");
+
   const shouldSkip =
+    request.method !== "GET" ||
+    isApiRequest ||
     url.protocol === "chrome-extension:" ||
-    url.hostname === "localhost" && (url.port === "8080" || url.pathname.includes("@react-refresh") || url.pathname.includes("@vite") || url.pathname.includes("__vite_ping")) ||
+    (url.hostname === "localhost" &&
+      (url.port === "8080" ||
+        url.pathname.includes("@react-refresh") ||
+        url.pathname.includes("@vite") ||
+        url.pathname.includes("__vite_ping"))) ||
     url.hostname.includes("supabase.co") ||
     url.pathname.includes("node_modules");
 
@@ -55,11 +67,13 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        // 성공한 응답을 캐시에 저장
-        if (response.ok) {
+        // 성공한 응답을 캐시에 저장 (GET 만, 불투명/부분응답 제외)
+        if (response.ok && response.type === "basic") {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
+            cache.put(request, responseClone).catch(() => {
+              // 캐시 실패는 조용히 무시 (용량 초과 등)
+            });
           });
         }
         return response;
