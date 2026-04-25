@@ -190,39 +190,83 @@ export const RecentKeywordSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 6px;
+  margin-bottom: 2px;
+
+  @media (max-width: 430px) {
+    padding: 0 4px;
+  }
+`;
+
+export const RecentKeywordHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
 `;
 
 export const RecentKeywordLabel = styled.span`
   font-size: 11px;
-  font-weight: 300;
-  color: #8c8c8c;
-`;
-
-export const RecentKeywordChipList = styled.div`
+  font-weight: 400;
+  color: #5a78b8;
+  letter-spacing: 0.02em;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-`;
-
-export const RecentKeywordChip = styled.button<{ $added: boolean }>`
-  display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1.5px solid ${({ $added }) => ($added ? "rgba(148, 180, 237, 0.35)" : "#94b4ed")};
-  background-color: ${({ $added }) =>
-    $added ? "rgba(148, 180, 237, 0.08)" : "rgba(148, 180, 237, 0.12)"};
-  color: ${({ $added }) => ($added ? "rgba(148, 180, 237, 0.5)" : "#4f8eec")};
-  font-size: 12px;
+`;
+
+export const RecentKeywordHint = styled.span`
+  font-size: 10px;
   font-weight: 300;
+  color: #aab0bc;
+  margin-left: auto;
+`;
+
+export const RecentKeywordChipList = styled(motion.ul)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (max-width: 430px) {
+    gap: 6px;
+  }
+`;
+
+export const RecentKeywordChip = styled(motion.button)<{ $added: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid ${({ $added }) => ($added ? "transparent" : "#94b4ed")};
+  background-color: ${({ $added }) => ($added ? "#94b4ed" : "#ffffff")};
+  color: ${({ $added }) => ($added ? "#ffffff" : "#4f7ce0")};
+  font-size: 13px;
+  font-weight: 400;
   font-family: inherit;
   cursor: ${({ $added }) => ($added ? "default" : "pointer")};
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   white-space: nowrap;
+  opacity: ${({ $added }) => ($added ? 0.9 : 1)};
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease, opacity 0.15s ease;
 
-  &:focus {
+  &:hover:not(:disabled) {
+    background-color: ${({ $added }) => ($added ? "#94b4ed" : "#eef3fc")};
+    transform: ${({ $added }) => ($added ? "none" : "translateY(-1px)")};
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f7ce0;
+    outline-offset: 2px;
+  }
+
+  &:focus:not(:focus-visible) {
     outline: none;
   }
 `;

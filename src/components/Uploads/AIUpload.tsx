@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Icon from "../Icon";
 import BibleVerseSelector from "../BibleVerseSelector";
+import RecentKeywordChips from "../RecentKeywordChips";
 import {
   Container,
   AnimatedTitle,
@@ -17,10 +18,6 @@ import {
   Select,
   VisibilityInputWrapper,
   KeywordErrorMessage,
-  RecentKeywordSection,
-  RecentKeywordLabel,
-  RecentKeywordChipList,
-  RecentKeywordChip,
 } from "../../styles/Upload.styles";
 import { postContiByAi, getRecentSearches, postRecentSearch } from "../../utils/axios";
 import { useQuery, useQueryClient } from "react-query";
@@ -61,7 +58,7 @@ const AIUpload = () => {
     }
   );
 
-  const recentChips = recentSearches.slice(0, 5);
+  const recentChips = recentSearches.slice(0, 8);
 
   const handleChipClick = (chipQuery: string) => {
     if (addedChips.has(chipQuery)) return;
@@ -352,42 +349,14 @@ const AIUpload = () => {
                 {keywordError}
               </KeywordErrorMessage>
             )}
-            <AnimatePresence>
-              {step === 1 && recentChips.length > 0 && (
-                <RecentKeywordSection
-                  key="recent-chips"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <RecentKeywordLabel>최근 검색에서 추가</RecentKeywordLabel>
-                  <RecentKeywordChipList>
-                    {recentChips.map((item) => (
-                      <RecentKeywordChip
-                        key={item.id}
-                        $added={addedChips.has(item.query)}
-                        onClick={() => handleChipClick(item.query)}
-                        type="button"
-                      >
-                        {addedChips.has(item.query) && (
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                            <path
-                              d="M1.5 5L4 7.5L8.5 2.5"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                        {item.query}
-                      </RecentKeywordChip>
-                    ))}
-                  </RecentKeywordChipList>
-                </RecentKeywordSection>
-              )}
-            </AnimatePresence>
+            {step === 1 && (
+              <RecentKeywordChips
+                chips={recentChips}
+                addedChips={addedChips}
+                contiKeyword={contiKeyword}
+                onChipClick={handleChipClick}
+              />
+            )}
           </motion.div>
 
           <AnimatePresence>
