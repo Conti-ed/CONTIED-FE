@@ -91,9 +91,7 @@ const RecentKeywordChips: React.FC<RecentKeywordChipsProps> = ({
                     type="button"
                     $added={added}
                     onClick={() => onChipClick(item.query)}
-                    disabled={added}
                     aria-pressed={added}
-                    aria-disabled={added}
                     layout
                   >
                     {added && (

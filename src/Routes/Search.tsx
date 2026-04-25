@@ -25,13 +25,17 @@ import {
 import { getRandomSuggestions } from "../utils/randomUtils";
 import EmptyState from "../components/EmptyState";
 import { extractWordsFromLyrics } from "../utils/lyricsUtils";
-import { 
-  getAllSongs, 
-  getRecentSearches, 
-  postRecentSearch, 
-  deleteRecentSearch, 
-  clearAllRecentSearches 
+import {
+  getAllSongs,
+  getRecentSearches,
+  postRecentSearch,
+  deleteRecentSearch,
+  clearAllRecentSearches,
+  getLikedContis,
+  getAllMyConties,
 } from "../utils/axios";
+import { getAccessToken } from "../utils/auth";
+import { ContiType, ContiToSongType } from "../types";
 import Icon from "../components/Icon";
 
 interface SearchHistoryItem {
@@ -288,10 +292,62 @@ const Search: React.FC = () => {
       return [];
     },
     {
-      staleTime: 1000 * 60 * 60 * 24, // 24 hours cache since suggestions are random anyway and songs grow slowly
+      staleTime: 1000 * 60 * 60 * 24, // 24시간 캐시 (추천어는 느리게 변함)
       refetchOnWindowFocus: false,
     }
   );
+
+  const { data: personalSuggestions = [] } = useQuery(
+    "personalSuggestions",
+    async () => {
+      const [liked, mine, recent] = await Promise.all([
+        getLikedContis().catch(() => []),
+        getAllMyConties().catch(() => []),
+        getRecentSearches().catch(() => []),
+      ]);
+
+      // 사용자 콘티들의 모든 곡 가사 수집
+      const allContis: ContiType[] = [
+        ...(Array.isArray(liked) ? liked : []),
+        ...(Array.isArray(mine) ? mine : []),
+      ];
+      const allLyrics: string[] = [];
+      allContis.forEach((c: ContiType) => {
+        const songs: ContiToSongType[] = c?.ContiToSong || [];
+        songs.forEach((cts: ContiToSongType) => {
+          const lyric = cts?.song?.lyrics;
+          if (lyric && lyric !== "가사 정보를 입력해주세요.") allLyrics.push(lyric);
+        });
+      });
+
+      // 단어 빈도 계산
+      const freq = new Map<string, number>();
+      allLyrics.forEach((text) => {
+        extractWordsFromLyrics(text).forEach((w) => {
+          if (w.length >= 2) freq.set(w, (freq.get(w) || 0) + 1);
+        });
+      });
+
+      // 최근 검색 키워드 가중치 (+3)
+      (Array.isArray(recent) ? recent : []).forEach((r: SearchHistoryItem) => {
+        const q = (r?.query || "").trim();
+        if (q.length >= 2) freq.set(q, (freq.get(q) || 0) + 3);
+      });
+
+      // 빈도 상위 14개 반환
+      return Array.from(freq.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 14)
+        .map(([word]) => word);
+    },
+    {
+      staleTime: 1000 * 60 * 30, // 30분
+      enabled: !!getAccessToken(),
+    }
+  );
+
+  // 개인화 추천어가 있으면 우선 사용, 없으면 기본 추천어 fallback
+  const finalSuggestions = personalSuggestions.length > 0 ? personalSuggestions : lyricsSuggestions;
 
   return (
     <Container
@@ -359,7 +415,16 @@ const Search: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                style={{ width: "100%", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  flex: 1,
+                  minHeight: 0,
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
               >
                 {renderRecentSearches()}
               </motion.div>
@@ -382,7 +447,7 @@ const Search: React.FC = () => {
                 style={{ width: "100%" }}
               >
                 <SearchSuggestions
-                  suggestions={lyricsSuggestions}
+                  suggestions={finalSuggestions}
                   onSuggestionClick={handleSuggestionClick}
                   loading={isSuggestionsLoading}
                 />
@@ -391,7 +456,7 @@ const Search: React.FC = () => {
           </AnimatePresence>
           <FlexSpacer
             animate={{
-              flexGrow: 1,
+              flexGrow: isFocused && recentSearches.length > 0 ? 0 : 1,
             }}
             transition={{
               type: "spring",

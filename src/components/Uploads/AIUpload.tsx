@@ -60,17 +60,34 @@ const AIUpload = () => {
 
   const recentChips = recentSearches.slice(0, 8);
 
-  const handleChipClick = (chipQuery: string) => {
-    if (addedChips.has(chipQuery)) return;
+  function removeKeyword(keywords: string, target: string): string {
+    return keywords
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s !== "" && s !== target)
+      .join(", ");
+  }
 
-    setContiKeyword((prev) => {
-      const trimmed = prev.trim();
-      if (trimmed === "") return chipQuery;
-      const existing = trimmed.split(",").map((w) => w.trim());
-      if (existing.includes(chipQuery)) return prev;
-      return `${trimmed}, ${chipQuery}`;
-    });
-    setAddedChips((prev) => new Set(prev).add(chipQuery));
+  const handleChipClick = (chipQuery: string) => {
+    if (addedChips.has(chipQuery)) {
+      // 이미 추가된 단어 → 제거 (토글 off)
+      setContiKeyword((prev) => removeKeyword(prev, chipQuery));
+      setAddedChips((prev) => {
+        const next = new Set(prev);
+        next.delete(chipQuery);
+        return next;
+      });
+    } else {
+      // 아직 없는 단어 → 추가 (토글 on)
+      setContiKeyword((prev) => {
+        const trimmed = prev.trim();
+        if (trimmed === "") return chipQuery;
+        const existing = trimmed.split(",").map((w) => w.trim());
+        if (existing.includes(chipQuery)) return prev;
+        return `${trimmed}, ${chipQuery}`;
+      });
+      setAddedChips((prev) => new Set(prev).add(chipQuery));
+    }
     keywordRef.current?.focus();
   };
 
