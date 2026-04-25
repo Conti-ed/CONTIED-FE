@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import { ensureKakaoInit, shareToKakao } from "../utils/kakao";
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -149,18 +148,6 @@ const LinkIcon = () => (
   </svg>
 );
 
-const TwitterIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.628L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
-  </svg>
-);
-
-const FacebookIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-  </svg>
-);
-
 const EmailIcon = () => (
   <svg
     width="20"
@@ -196,12 +183,6 @@ const NativeShareIcon = () => (
   </svg>
 );
 
-const KakaoIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">
-    <path d="M12 3C6.477 3 2 6.582 2 11c0 2.861 1.733 5.376 4.352 6.917L5.29 21.5a.5.5 0 0 0 .71.548l4.565-2.617C10.84 19.477 11.415 19.5 12 19.5c5.523 0 10-3.582 10-8s-4.477-8.5-10-8.5z" />
-  </svg>
-);
-
 // ─── Props & 타입 ─────────────────────────────────────────────────────────────
 
 interface ShareMenuProps {
@@ -229,16 +210,7 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
   onCopied,
 }) => {
   const url = `${window.location.origin}/conti/${contiId}`;
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(`예배 콘티 "${title}"`);
-  const [kakaoAvailable, setKakaoAvailable] = useState(false);
-
-  useEffect(() => {
-    // 카카오 SDK는 defer 로드되므로 메뉴가 열릴 때마다 초기화 여부를 확인합니다.
-    // 외부 시스템(window.Kakao) 상태를 React state에 동기화하는 용도입니다.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setKakaoAvailable(ensureKakaoInit());
-  }, [isOpen]);
+  const shareText = `안녕하세요 여러분 !! "${title}" 를 공유합니다 :)\n꼭 들어봐주세요 🍀`;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -278,26 +250,10 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
     onClose();
   };
 
-  const handleTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
-    onClose();
-  };
-
-  const handleFacebook = () => {
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
-    onClose();
-  };
-
   const handleEmail = () => {
-    window.location.href = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
+    const subject = encodeURIComponent(`"${title}" 콘티를 공유합니다`);
+    const body = encodeURIComponent(`${shareText}\n\n${url}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
     onClose();
   };
 
@@ -305,7 +261,7 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
     try {
       await navigator.share({
         title,
-        text: `예배 콘티 "${title}"를 공유합니다`,
+        text: shareText,
         url,
       });
     } catch {
@@ -314,47 +270,16 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
     onClose();
   };
 
-  const handleKakao = () => {
-    shareToKakao({
-      title: `예배 콘티 "${title}"`,
-      description: "CONTIED에서 만든 AI 예배 콘티를 확인해보세요.",
-      linkUrl: url,
-    });
-    onClose();
-  };
-
   const handleOverlayClick = (e: React.MouseEvent<Element>) => {
     if (e.target === e.currentTarget) onClose();
   };
 
   const menuItems: MenuItemConfig[] = [
-    ...(kakaoAvailable
-      ? [
-          {
-            icon: <KakaoIcon />,
-            iconBg: "#FEE500",
-            label: "카카오톡으로 공유",
-            onClick: handleKakao,
-          } as MenuItemConfig,
-        ]
-      : []),
     {
       icon: <LinkIcon />,
       iconBg: "#eef4ff",
       label: "링크 복사",
       onClick: handleCopyLink,
-    },
-    {
-      icon: <TwitterIcon />,
-      iconBg: "#f0f0f0",
-      label: "X(Twitter)에서 공유",
-      onClick: handleTwitter,
-    },
-    {
-      icon: <FacebookIcon />,
-      iconBg: "#e8f0fe",
-      label: "Facebook에서 공유",
-      onClick: handleFacebook,
     },
     {
       icon: <EmailIcon />,
