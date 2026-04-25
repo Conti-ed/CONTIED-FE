@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import ShareMenu from "./ShareMenu";
 
 interface ShareButtonProps {
   contiId: number;
@@ -52,44 +53,21 @@ const ToastContainer = styled.div<{ $visible: boolean }>`
 `;
 
 const ShareButton: React.FC<ShareButtonProps> = ({ contiId, title }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
 
-  const handleShare = async () => {
-    const url = `${window.location.origin}/conti/${contiId}`;
+  const handleButtonClick = () => {
+    setMenuOpen(true);
+  };
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          text: `예배 콘티 "${title}"를 공유합니다`,
-          url,
-        });
-      } catch {
-        // 사용자가 공유 취소 시 무시
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-      } catch {
-        // clipboard API 실패 시 fallback
-        const el = document.createElement("textarea");
-        el.value = url;
-        el.style.position = "fixed";
-        el.style.opacity = "0";
-        document.body.appendChild(el);
-        el.focus();
-        el.select();
-        document.execCommand("copy");
-        document.body.removeChild(el);
-      }
-      setToastVisible(true);
-      setTimeout(() => setToastVisible(false), 1800);
-    }
+  const handleCopied = () => {
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 1800);
   };
 
   return (
     <>
-      <Button type="button" onClick={handleShare} aria-label="콘티 공유">
+      <Button type="button" onClick={handleButtonClick} aria-label="콘티 공유">
         <ShareIcon
           xmlns="http://www.w3.org/2000/svg"
           width="14"
@@ -109,6 +87,15 @@ const ShareButton: React.FC<ShareButtonProps> = ({ contiId, title }) => {
         </ShareIcon>
         공유
       </Button>
+
+      <ShareMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        contiId={contiId}
+        title={title}
+        onCopied={handleCopied}
+      />
+
       <ToastContainer $visible={toastVisible}>링크가 복사되었어요</ToastContainer>
     </>
   );

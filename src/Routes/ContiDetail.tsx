@@ -26,7 +26,6 @@ import {
   DEImage,
   ToggleButton,
   ToggleDescriptionContainer,
-  DescriptionText,
   EmptyStateContainer,
   EmptyStateImage,
   EmptyStateText1,
@@ -56,6 +55,7 @@ import styled from "styled-components";
 import useContiDetailLogic from "../hooks/useContiDetailLogic";
 import RegenerateButton from "../components/RegenerateButton";
 import ShareButton from "../components/ShareButton";
+import ContiDescription from "../components/ContiDescription";
 
 const OptionIconWrapper = styled.div`
   display: flex;
@@ -248,9 +248,10 @@ const ContiDetail: React.FC = () => {
                       aria-label="콘티 설명"
                     />
                   ) : (
-                    <DescriptionText>
-                      {contiData.description.slice(0, 60)}
-                    </DescriptionText>
+                    <ContiDescription
+                      description={contiData.description}
+                      previewMode
+                    />
                   )}
                 </DescriptionTextWrapper>
                 {!isEditMode && (
@@ -304,8 +305,12 @@ const ContiDetail: React.FC = () => {
             onClose={handleCloseModal}
             thumbnail={contiData.thumbnail}
             title={contiData.title}
-            userNickname={(("by " + (contiData.User?.nickname || "사용자")) as string) || "사용자"}
+            userNickname={
+              (("by " + (contiData.User?.nickname || "사용자")) as string) ||
+              "사용자"
+            }
             description={contiData.description}
+            songTitles={contiData.ContiToSong.map((item) => item.song.title)}
           />
           {isAddSongLoading && (
             <LoadingOverlay>

@@ -3,6 +3,7 @@ import { OverlayModal } from "../../styles/Modal.styles";
 import styled from "styled-components";
 import ContiPlaceholder from "../ContiPlaceholder";
 import { motion } from "framer-motion";
+import ContiDescription from "../ContiDescription";
 
 const ModalContainer = styled(motion.div)`
   display: flex;
@@ -23,6 +24,7 @@ interface DescriptionModalProps {
   title: string;
   userNickname: string;
   description: string;
+  songTitles?: string[];
 }
 
 const ModalHeader = styled.div`
@@ -137,6 +139,7 @@ const DescriptionModal: React.FC<DescriptionModalProps> = ({
   title,
   userNickname,
   description,
+  songTitles = [],
 }) => {
   if (!isOpen) return null;
 
@@ -170,7 +173,14 @@ const DescriptionModal: React.FC<DescriptionModalProps> = ({
         <ContentContainer>
           <DescriptionContent>
             <DescriptionTitle>이 콘티는...</DescriptionTitle>
-            <p>{description || "아직 설명이 없어요..."}</p>
+            {description ? (
+              <ContiDescription
+                description={description}
+                songTitles={songTitles}
+              />
+            ) : (
+              <p>아직 설명이 없어요...</p>
+            )}
           </DescriptionContent>
         </ContentContainer>
         <Footer>
