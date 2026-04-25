@@ -271,6 +271,93 @@ const NoInfo = styled.p`
   font-size: 12px;
 `;
 
+const KeyChip = styled.span`
+  display: inline-flex;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 400;
+  color: #4f8eec;
+  background-color: #eef4ff;
+  border: 1px solid #c5d9f8;
+  border-radius: 8px;
+  padding: 1px 5px;
+  margin-left: 5px;
+  line-height: 1.4;
+  white-space: nowrap;
+`;
+
+const TransposeRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+`;
+
+const TransposeBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #4f8eec;
+  background-color: transparent;
+  color: #4f8eec;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #eef4ff;
+  }
+
+  &:active {
+    background-color: #d7e4ff;
+  }
+`;
+
+const TransposeKeyDisplay = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  color: #323743;
+  min-width: 40px;
+  text-align: center;
+`;
+
+const TransposeDelta = styled.span`
+  font-size: 11px;
+  color: #9095a1;
+`;
+
+const ResetBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #9095a1;
+  background-color: transparent;
+  color: #9095a1;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &:active {
+    background-color: #e0e0e0;
+  }
+`;
+
 const CheckboxWrapper = styled.div`
   height: 40px;
   display: none;
@@ -339,6 +426,25 @@ interface SongItemProps {
   onSelect?: (id: number, selected: boolean) => void;
 }
 
+const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function normalizeKey(key: string): string {
+  return key
+    .replace("Bb", "A#")
+    .replace("Eb", "D#")
+    .replace("Ab", "G#")
+    .replace("Db", "C#")
+    .replace("Gb", "F#");
+}
+
+function transposeKey(key: string, semitones: number): string {
+  const normalized = normalizeKey(key);
+  const idx = NOTES.indexOf(normalized);
+  if (idx < 0) return key;
+  const newIdx = ((idx + semitones) % 12 + 12) % 12;
+  return NOTES[newIdx];
+}
+
 const Checkbox = ({
   checked,
   onChange,
@@ -369,11 +475,13 @@ const SongItem: React.FC<SongItemProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [transposeDelta, setTransposeDelta] = useState(0);
 
   useEffect(() => {
     if (!isOpen) {
       setShowLyrics(false);
       setShowInfo(false);
+      setTransposeDelta(0);
     }
   }, [isOpen]);
 
@@ -443,6 +551,13 @@ const SongItem: React.FC<SongItemProps> = ({
               {formatDuration(song.duration) === "0:00"
                 ? ""
                 : " • " + formatDuration(song.duration)}
+              {song.keyScale && (
+                <KeyChip>
+                  Key: {transposeDelta !== 0
+                    ? transposeKey(song.keyScale, transposeDelta)
+                    : normalizeKey(song.keyScale)}
+                </KeyChip>
+              )}
             </SongArtistName>
           </SongSummary>
         </div>
@@ -526,6 +641,42 @@ const SongItem: React.FC<SongItemProps> = ({
             <GradientOverlay className="top" />
             <LyricsContent>
               <LyricsTitle>{song.title}</LyricsTitle>
+              {song.keyScale && (
+                <TransposeRow>
+                  <TransposeBtn
+                    type="button"
+                    aria-label="반음 내리기"
+                    onClick={() => setTransposeDelta((d) => d - 1)}
+                  >
+                    −
+                  </TransposeBtn>
+                  <TransposeKeyDisplay>
+                    {transposeKey(song.keyScale, transposeDelta)}
+                    {transposeDelta !== 0 && (
+                      <TransposeDelta>
+                        {" "}
+                        {transposeDelta > 0 ? `+${transposeDelta}` : transposeDelta}
+                      </TransposeDelta>
+                    )}
+                  </TransposeKeyDisplay>
+                  <TransposeBtn
+                    type="button"
+                    aria-label="반음 올리기"
+                    onClick={() => setTransposeDelta((d) => d + 1)}
+                  >
+                    +
+                  </TransposeBtn>
+                  {transposeDelta !== 0 && (
+                    <ResetBtn
+                      type="button"
+                      aria-label="원곡 키로 되돌리기"
+                      onClick={() => setTransposeDelta(0)}
+                    >
+                      ↻
+                    </ResetBtn>
+                  )}
+                </TransposeRow>
+              )}
               {song.lyrics && song.lyrics !== "가사 정보를 입력해주세요." ? (
                 <LyricsText>{song.lyrics}</LyricsText>
               ) : (

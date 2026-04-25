@@ -55,6 +55,7 @@ import ConfirmModal from "../components/Modals/ConfirmModal";
 import styled from "styled-components";
 import useContiDetailLogic from "../hooks/useContiDetailLogic";
 import RegenerateButton from "../components/RegenerateButton";
+import ShareButton from "../components/ShareButton";
 
 const OptionIconWrapper = styled.div`
   display: flex;
@@ -68,6 +69,8 @@ const OptionIconWrapper = styled.div`
 const RegenerateButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
   padding: 0 23px 16px;
 `;
 
@@ -270,6 +273,7 @@ const ContiDetail: React.FC = () => {
               )}
               {!isEditMode && contiId && (
                 <RegenerateButtonWrapper>
+                  <ShareButton contiId={contiData.id} title={contiData.title} />
                   <RegenerateButton contiId={contiId} isOwner={isOwner} />
                 </RegenerateButtonWrapper>
               )}
