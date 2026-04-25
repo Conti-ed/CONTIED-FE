@@ -150,6 +150,14 @@ const AIUpload = () => {
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+      localStorage.setItem(
+        `conti_ai_params_${data.id}`,
+        JSON.stringify({
+          keywords: keywordsArray,
+          bibleVerseRange: bibleVerseRange,
+          createdAt: Date.now(),
+        })
+      );
 
       // AI 응답에 ContiToSong 배열이 포함된 경우에만 캐시에 즉시 주입 (재fetch 방지)
       if (data && Array.isArray(data.ContiToSong)) {

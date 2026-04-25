@@ -54,6 +54,7 @@ import Notification from "../components/Notification";
 import ConfirmModal from "../components/Modals/ConfirmModal";
 import styled from "styled-components";
 import useContiDetailLogic from "../hooks/useContiDetailLogic";
+import RegenerateButton from "../components/RegenerateButton";
 
 const OptionIconWrapper = styled.div`
   display: flex;
@@ -62,6 +63,12 @@ const OptionIconWrapper = styled.div`
   cursor: pointer;
   width: 20px; /* HeartIcon과 동일한 너비 */
   height: 20px; /* 정렬을 위한 높이 설정 */
+`;
+
+const RegenerateButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 23px 16px;
 `;
 
 const ContiDetail: React.FC = () => {
@@ -260,6 +267,11 @@ const ContiDetail: React.FC = () => {
                 >
                   {editError}
                 </span>
+              )}
+              {!isEditMode && contiId && (
+                <RegenerateButtonWrapper>
+                  <RegenerateButton contiId={contiId} isOwner={isOwner} />
+                </RegenerateButtonWrapper>
               )}
             </AlbumDetailContainer>
             {contiData.ContiToSong.length === 0 ? (
