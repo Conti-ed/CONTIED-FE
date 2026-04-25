@@ -47,6 +47,7 @@ import {
 import AlbumPlaceholder from "../components/AlbumPlaceholder";
 import Icon from "../components/Icon";
 import Loading from "../components/Loading";
+import ContiDetailSkeleton from "../components/ContiDetailSkeleton";
 import DetailOptions from "../components/DetailOptions";
 import DescriptionModal from "../components/Modals/DescriptionModal";
 import Notification from "../components/Notification";
@@ -113,8 +114,8 @@ const ContiDetail: React.FC = () => {
     </EmptyStateContainer>
   );
 
-  if (isContiLoading) {
-    return <Loading />;
+  if (isContiLoading && !contiData) {
+    return <ContiDetailSkeleton songCount={5} />;
   }
 
   if (!contiId || !contiData) {
