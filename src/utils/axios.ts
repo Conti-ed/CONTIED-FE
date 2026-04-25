@@ -171,14 +171,19 @@ export async function getAllMyConties(): Promise<ContiType[]> {
 
 export async function postContiByAi(
   keywordsArray: string[],
-  bibleVerseRange: string | null
+  bibleVerseRange: string | null,
+  seed?: number
 ) {
-  const payload: { keywords: string[]; bible_verse_range?: string } = {
+  const payload: { keywords: string[]; bible_verse_range?: string; seed?: number } = {
     keywords: keywordsArray,
   };
 
   if (bibleVerseRange) {
     payload.bible_verse_range = bibleVerseRange;
+  }
+
+  if (typeof seed === "number") {
+    payload.seed = seed;
   }
 
   try {

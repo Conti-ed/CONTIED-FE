@@ -17,11 +17,21 @@ import {
   Select,
   VisibilityInputWrapper,
   KeywordErrorMessage,
+  RecentKeywordSection,
+  RecentKeywordLabel,
+  RecentKeywordChipList,
+  RecentKeywordChip,
 } from "../../styles/Upload.styles";
-import { postContiByAi } from "../../utils/axios";
-import { useQueryClient } from "react-query";
+import { postContiByAi, getRecentSearches, postRecentSearch } from "../../utils/axios";
+import { useQuery, useQueryClient } from "react-query";
 import AiContiGenerating from "../AiContiGenerating";
 import { ContiType } from "../../types";
+
+interface SearchHistoryItem {
+  id: number;
+  query: string;
+  updatedAt: string;
+}
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
@@ -34,9 +44,38 @@ const AIUpload = () => {
   const [step, setStep] = useState(1);
   const [expandedFrom, setExpandedFrom] = useState(false);
   const [expandedTo, setExpandedTo] = useState(false);
+  const [addedChips, setAddedChips] = useState<Set<string>>(new Set());
   const keywordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: recentSearches = [] } = useQuery<SearchHistoryItem[]>(
+    "recentSearches",
+    getRecentSearches,
+    {
+      staleTime: 1000 * 60 * 5,
+      retry: false,
+      onError: () => {
+        // 비로그인 또는 네트워크 오류 시 조용히 숨김
+      },
+    }
+  );
+
+  const recentChips = recentSearches.slice(0, 5);
+
+  const handleChipClick = (chipQuery: string) => {
+    if (addedChips.has(chipQuery)) return;
+
+    setContiKeyword((prev) => {
+      const trimmed = prev.trim();
+      if (trimmed === "") return chipQuery;
+      const existing = trimmed.split(",").map((w) => w.trim());
+      if (existing.includes(chipQuery)) return prev;
+      return `${trimmed}, ${chipQuery}`;
+    });
+    setAddedChips((prev) => new Set(prev).add(chipQuery));
+    keywordRef.current?.focus();
+  };
 
   const handleClearSearch = (
     field: "keyword" | "bibleVerseFrom" | "bibleVerseTo"
@@ -150,6 +189,14 @@ const AIUpload = () => {
         thumbnail: data.thumbnail || "/images/WhitePiano.png",
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
+      localStorage.setItem(
+        `conti_ai_params_${data.id}`,
+        JSON.stringify({
+          keywords: keywordsArray,
+          bibleVerseRange: bibleVerseRange,
+          createdAt: Date.now(),
+        })
+      );
 
       // AI 응답에 ContiToSong 배열이 포함된 경우에만 캐시에 즉시 주입 (재fetch 방지)
       if (data && Array.isArray(data.ContiToSong)) {
@@ -157,6 +204,11 @@ const AIUpload = () => {
       }
 
       queryClient.invalidateQueries(["myContis"]);
+
+      // 검색 이력에 키워드 저장 (fire-and-forget, 실패 무시)
+      keywordsArray.forEach((kw) => {
+        postRecentSearch(kw).catch(() => undefined);
+      });
 
       navigate(`/conti/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {
@@ -300,6 +352,42 @@ const AIUpload = () => {
                 {keywordError}
               </KeywordErrorMessage>
             )}
+            <AnimatePresence>
+              {step === 1 && recentChips.length > 0 && (
+                <RecentKeywordSection
+                  key="recent-chips"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RecentKeywordLabel>최근 검색에서 추가</RecentKeywordLabel>
+                  <RecentKeywordChipList>
+                    {recentChips.map((item) => (
+                      <RecentKeywordChip
+                        key={item.id}
+                        $added={addedChips.has(item.query)}
+                        onClick={() => handleChipClick(item.query)}
+                        type="button"
+                      >
+                        {addedChips.has(item.query) && (
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path
+                              d="M1.5 5L4 7.5L8.5 2.5"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        {item.query}
+                      </RecentKeywordChip>
+                    ))}
+                  </RecentKeywordChipList>
+                </RecentKeywordSection>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <AnimatePresence>

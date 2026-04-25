@@ -184,3 +184,45 @@ export const ToggleButton = styled.button`
     text-decoration: underline;
   }
 `;
+
+export const RecentKeywordSection = styled(motion.div)`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+`;
+
+export const RecentKeywordLabel = styled.span`
+  font-size: 11px;
+  font-weight: 300;
+  color: #8c8c8c;
+`;
+
+export const RecentKeywordChipList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`;
+
+export const RecentKeywordChip = styled.button<{ $added: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid ${({ $added }) => ($added ? "rgba(148, 180, 237, 0.35)" : "#94b4ed")};
+  background-color: ${({ $added }) =>
+    $added ? "rgba(148, 180, 237, 0.08)" : "rgba(148, 180, 237, 0.12)"};
+  color: ${({ $added }) => ($added ? "rgba(148, 180, 237, 0.5)" : "#4f8eec")};
+  font-size: 12px;
+  font-weight: 300;
+  font-family: inherit;
+  cursor: ${({ $added }) => ($added ? "default" : "pointer")};
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+
+  &:focus {
+    outline: none;
+  }
+`;
