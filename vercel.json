@@ -1,5 +1,16 @@
 {
   "rewrites": [
+    {
+      "source": "/conti/:id",
+      "destination": "/api/og/conti?id=:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|kakaotalk-scrap|Slackbot|LinkedInBot|TelegramBot).*"
+        }
+      ]
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

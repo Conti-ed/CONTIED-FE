@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
@@ -55,6 +55,7 @@ import styled from "styled-components";
 import useContiDetailLogic from "../hooks/useContiDetailLogic";
 import RegenerateButton from "../components/RegenerateButton";
 import ShareButton from "../components/ShareButton";
+import ExportButton from "../components/ExportButton";
 import ContiDescription from "../components/ContiDescription";
 
 const OptionIconWrapper = styled.div`
@@ -79,6 +80,7 @@ const ContiDetail: React.FC = () => {
   const location = useLocation();
   const isFromUpload = location.state?.fromUpload || false;
   const { contiId } = useParams<{ contiId: string }>();
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const {
     contiData,
@@ -188,7 +190,7 @@ const ContiDetail: React.FC = () => {
               )}
             </IconContainer>
           </Header>
-          <Content>
+          <Content ref={exportRef}>
             <AlbumDetailContainer>
               <AlbumInfo>
                 <AlbumImageWrapper>
@@ -273,7 +275,11 @@ const ContiDetail: React.FC = () => {
                 </span>
               )}
               {!isEditMode && contiId && (
-                <RegenerateButtonWrapper>
+                <RegenerateButtonWrapper data-export-hide="true">
+                  <ExportButton
+                    exportRef={exportRef}
+                    fileName={`conti-${contiData.title}`}
+                  />
                   <ShareButton contiId={contiData.id} title={contiData.title} />
                   <RegenerateButton contiId={contiId} isOwner={isOwner} />
                 </RegenerateButtonWrapper>
