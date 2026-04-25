@@ -42,6 +42,10 @@ const Button = styled.button`
   }
 `;
 
+const RegenerateIcon = styled.svg`
+  flex-shrink: 0;
+`;
+
 const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   contiId,
   isOwner,
@@ -134,8 +138,24 @@ const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   }
 
   return (
-    <Button type="button" onClick={handleRegenerate}>
-      🔄 다시 만들기
+    <Button type="button" onClick={handleRegenerate} aria-label="콘티 다시 만들기">
+      <RegenerateIcon
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#4f8eec"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+        <path d="M16 16h5v5" />
+      </RegenerateIcon>
+      다시 만들기
     </Button>
   );
 };
