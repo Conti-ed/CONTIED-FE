@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ContiPlaceholder from "../components/ContiPlaceholder";
@@ -24,8 +24,8 @@ import {
 } from "./MyPage";
 
 import { styled } from "styled-components";
-import { useQuery } from "react-query";
-import { getConti, getUserProfile, getLikedContis } from "../utils/axios";
+import { useQuery, useQueryClient } from "react-query";
+import { getUserProfile, getLikedContis } from "../utils/axios";
 import { getAccessToken } from "../utils/auth";
 import { ContiType } from "../types";
 
@@ -39,9 +39,18 @@ const ContiList = styled(motion.div)`
 
 const MyFavoriteContis: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // 마운트 직후 토큰 도착 race condition 해소: 100ms 지연 후 invalidate
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (getAccessToken()) queryClient.invalidateQueries(["likedContis"]);
+    }, 100);
+    return () => clearTimeout(t);
+  }, [queryClient]);
 
   const { data: userProfile } = useQuery("userProfile", getUserProfile, {
-    staleTime: 1000 * 60 * 30, // 30 mins
+    staleTime: 1000 * 60 * 30, // 30분
     enabled: !!getAccessToken(),
   });
   const nickname = userProfile?.nickname;
@@ -60,8 +69,11 @@ const MyFavoriteContis: React.FC = () => {
       return validContis;
     },
     {
-      // 낙관적 UI 캐시를 존중하기 위해 5분으로 통일. 정렬은 클라이언트에서 수행.
       staleTime: 1000 * 60 * 5,
+      retry: 2,
+      retryDelay: 800,
+      refetchOnWindowFocus: true,
+      refetchOnMount: "always",
       enabled: !!getAccessToken(),
     }
   );

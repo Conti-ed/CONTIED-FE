@@ -1,8 +1,8 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import styled from "styled-components";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import ContiPlaceholder from "../components/ContiPlaceholder";
 import { ContiSkeletonList } from "../components/Skeleton";
 import {
@@ -38,6 +38,16 @@ const ContiList = styled(motion.div)`
 
 const MyUploadedContis: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // 마운트 직후 토큰 도착 race condition 해소: 100ms 지연 후 invalidate
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (getAccessToken()) queryClient.invalidateQueries(["myContis"]);
+    }, 100);
+    return () => clearTimeout(t);
+  }, [queryClient]);
+
   const { data, isLoading, isError } = useQuery(
     ["myContis"],
     async () => {
@@ -55,9 +65,13 @@ const MyUploadedContis: React.FC = () => {
       return { filteredContis: sortedContis, userNickname };
     },
     {
-      staleTime: 0, // 즉시 정렬 반영을 위해 0으로 설정
+      staleTime: 1000 * 30, // 30초 (빈 깜빡임 완화)
       cacheTime: 1000 * 60 * 5,
-      enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
+      retry: 2,
+      retryDelay: 800,
+      refetchOnWindowFocus: true,
+      refetchOnMount: "always",
+      enabled: !!getAccessToken(),
     }
   );
 

@@ -274,13 +274,13 @@ const NoInfo = styled.p`
 const KeyChip = styled.span`
   display: inline-flex;
   align-items: center;
-  font-size: 8px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
   color: #4f8eec;
   background-color: #eef4ff;
   border: 1px solid #c5d9f8;
   border-radius: 8px;
-  padding: 1px 5px;
+  padding: 2px 7px;
   margin-left: 5px;
   line-height: 1.4;
   white-space: nowrap;
@@ -711,6 +711,43 @@ const SongItem: React.FC<SongItemProps> = ({
                       연주되고 있어요!
                     </p>
                   </InfoText>
+                  <TransposeRow>
+                    <TransposeBtn
+                      type="button"
+                      aria-label="반음 내리기"
+                      onClick={() => setTransposeDelta((d) => d - 1)}
+                    >
+                      −
+                    </TransposeBtn>
+                    <TransposeKeyDisplay>
+                      {transposeKey(song.keyScale, transposeDelta)}
+                      {transposeDelta !== 0 && (
+                        <TransposeDelta>
+                          {" "}
+                          {transposeDelta > 0 ? `+${transposeDelta}` : transposeDelta}
+                        </TransposeDelta>
+                      )}
+                    </TransposeKeyDisplay>
+                    <TransposeBtn
+                      type="button"
+                      aria-label="반음 올리기"
+                      onClick={() => setTransposeDelta((d) => d + 1)}
+                    >
+                      +
+                    </TransposeBtn>
+                    {transposeDelta !== 0 && (
+                      <ResetBtn
+                        type="button"
+                        aria-label="원곡 키로 되돌리기"
+                        onClick={() => setTransposeDelta(0)}
+                      >
+                        ↻
+                      </ResetBtn>
+                    )}
+                  </TransposeRow>
+                  <small style={{ fontSize: "10px", color: "#9095a1", marginTop: "4px", display: "block" }}>
+                    키를 바꿔서 연습할 수 있어요
+                  </small>
                 </>
               ) : (
                 <NoInfo>곡 정보가 아직 제공되지 않았어요.</NoInfo>
