@@ -29,7 +29,7 @@ export default async function handler(
 
   let title = "CONTIED — 예배 콘티";
   let description = "키워드와 말씀으로 만드는 AI 예배 콘티";
-  let image = `${origin}/images/og-default.png`;
+  const ogImageUrl = `${origin}/api/og/image?id=${id}`;
 
   try {
     const r = await fetch(`${baseUrl}/api/v1/conti/${id}`);
@@ -37,13 +37,10 @@ export default async function handler(
       const data = (await r.json()) as {
         title?: string;
         description?: string;
-        thumbnail?: string;
       };
       if (data.title) title = `${data.title} — CONTIED`;
       if (data.description)
         description = data.description.replace(/\s+/g, " ").slice(0, 200);
-      if (data.thumbnail && data.thumbnail !== "/images/WhitePiano.png")
-        image = data.thumbnail;
     }
   } catch {
     // 백엔드 fetch 실패 시 기본값 사용
@@ -64,7 +61,7 @@ export default async function handler(
 <title>${escape(title)}</title>
 <meta property="og:title" content="${escape(title)}" />
 <meta property="og:description" content="${escape(description)}" />
-<meta property="og:image" content="${escape(image)}" />
+<meta property="og:image" content="${escape(ogImageUrl)}" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="${origin}/conti/${id}" />
 <meta name="twitter:card" content="summary_large_image" />

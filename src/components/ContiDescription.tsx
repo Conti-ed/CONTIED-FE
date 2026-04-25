@@ -3,6 +3,10 @@ import styled from "styled-components";
 
 // ─── 헬퍼 ──────────────────────────────────────────────────────────────────
 
+function stripContiPrefix(text: string): string {
+  return text.replace(/^이\s*콘티는\s+/, "");
+}
+
 function highlightSongTitles(text: string, titles: string[]): React.ReactNode[] {
   if (!titles.length) return [text];
   const sorted = [...titles].sort((a, b) => b.length - a.length);
@@ -96,7 +100,7 @@ const ContiDescription: React.FC<ContiDescriptionProps> = ({
   }
 
   const rawParagraphs = description.split(/\n\n+/);
-  const firstParagraph = rawParagraphs[0] ?? "";
+  const firstParagraph = stripContiPrefix(rawParagraphs[0] ?? "");
   const restParagraphs = rawParagraphs.slice(1).join("\n\n");
 
   const needsToggle = !previewMode && description.length >= CLAMP_THRESHOLD;
