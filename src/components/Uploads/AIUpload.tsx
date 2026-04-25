@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Oval } from "react-loader-spinner";
+import axios from "axios";
 import Icon from "../Icon";
 import BibleVerseSelector from "../BibleVerseSelector";
 import {
@@ -20,6 +20,8 @@ import {
 } from "../../styles/Upload.styles";
 import { postContiByAi } from "../../utils/axios";
 import { useQueryClient } from "react-query";
+import AiContiGenerating from "../AiContiGenerating";
+import { ContiType } from "../../types";
 
 const AIUpload = () => {
   const [contiKeyword, setContiKeyword] = useState("");
@@ -137,7 +139,6 @@ const AIUpload = () => {
     setIsLoading(true);
     try {
       const data = await postContiByAi(keywordsArray, bibleVerseRange);
-      console.log(data);
 
       const contiData = {
         id: data.id,
@@ -150,12 +151,32 @@ const AIUpload = () => {
       };
       localStorage.setItem(`conti_${contiData.id}`, JSON.stringify(contiData));
 
+      // AI 응답에 ContiToSong 배열이 포함된 경우에만 캐시에 즉시 주입 (재fetch 방지)
+      if (data && Array.isArray(data.ContiToSong)) {
+        queryClient.setQueryData<ContiType>(["cid", String(data.id)], data as ContiType);
+      }
+
       queryClient.invalidateQueries(["myContis"]);
 
       navigate(`/conti/${data.id}`, { state: { fromUpload: true } });
     } catch (error) {
-      console.error("Failed to create conti:", error);
-      alert("콘티를 생성할 수 없습니다. 다시 시도해주세요.");
+      console.error("Failed to create AI-based conti:", error);
+      let message = "서버 오류가 발생했어요. 잠시 후 다시 시도해주세요.";
+      if (axios.isAxiosError(error)) {
+        if (error.code === "ECONNABORTED") {
+          message = "생성이 너무 오래 걸렸어요. 다시 시도해주세요.";
+        } else if (error.response?.status === 429) {
+          message = "요청이 많아요. 잠시 뒤에 다시 시도해주세요.";
+        } else if (error.response?.status === 400) {
+          message = "키워드나 성경 구절을 다시 확인해주세요.";
+        } else if (
+          error.response?.status === 401 ||
+          error.response?.status === 403
+        ) {
+          message = "로그인이 만료되었어요. 다시 로그인해주세요.";
+        }
+      }
+      alert(message);
     } finally {
       setIsLoading(false);
     }
@@ -172,6 +193,10 @@ const AIUpload = () => {
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
   };
+
+  if (isLoading) {
+    return <AiContiGenerating />;
+  }
 
   return (
     <Container>
@@ -365,18 +390,7 @@ const AIUpload = () => {
               transition={{ duration: 0.3 }}
               onClick={handleComplete}
             >
-              {isLoading ? (
-                <Oval
-                  height={15}
-                  width={15}
-                  color="#ffffff"
-                  secondaryColor="#94b4ed"
-                  strokeWidth={5}
-                  strokeWidthSecondary={5}
-                />
-              ) : (
-                "완료!"
-              )}
+              완료!
             </CompleteButton>
           )}
         </AnimatePresence>
