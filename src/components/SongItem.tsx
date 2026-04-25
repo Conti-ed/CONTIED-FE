@@ -274,13 +274,13 @@ const NoInfo = styled.p`
 const KeyChip = styled.span`
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: #4f8eec;
   background-color: #eef4ff;
   border: 1px solid #c5d9f8;
   border-radius: 8px;
-  padding: 2px 7px;
+  padding: 2px 6px;
   margin-left: 5px;
   line-height: 1.4;
   white-space: nowrap;
@@ -553,9 +553,9 @@ const SongItem: React.FC<SongItemProps> = ({
                 : " • " + formatDuration(song.duration)}
               {song.keyScale && (
                 <KeyChip>
-                  Key: {transposeDelta !== 0
+                  {transposeDelta !== 0
                     ? transposeKey(song.keyScale, transposeDelta)
-                    : normalizeKey(song.keyScale)}
+                    : normalizeKey(song.keyScale)}{" "}Key
                 </KeyChip>
               )}
             </SongArtistName>
