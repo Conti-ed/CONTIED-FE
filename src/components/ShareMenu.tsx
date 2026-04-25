@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
+import { ensureKakaoInit, shareToKakao } from "../utils/kakao";
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -195,6 +196,12 @@ const NativeShareIcon = () => (
   </svg>
 );
 
+const KakaoIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="#3A1D1D">
+    <path d="M12 3C6.477 3 2 6.582 2 11c0 2.861 1.733 5.376 4.352 6.917L5.29 21.5a.5.5 0 0 0 .71.548l4.565-2.617C10.84 19.477 11.415 19.5 12 19.5c5.523 0 10-3.582 10-8s-4.477-8.5-10-8.5z" />
+  </svg>
+);
+
 // ─── Props & 타입 ─────────────────────────────────────────────────────────────
 
 interface ShareMenuProps {
@@ -224,6 +231,14 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
   const url = `${window.location.origin}/conti/${contiId}`;
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(`예배 콘티 "${title}"`);
+  const [kakaoAvailable, setKakaoAvailable] = useState(false);
+
+  useEffect(() => {
+    // 카카오 SDK는 defer 로드되므로 메뉴가 열릴 때마다 초기화 여부를 확인합니다.
+    // 외부 시스템(window.Kakao) 상태를 React state에 동기화하는 용도입니다.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setKakaoAvailable(ensureKakaoInit());
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -299,11 +314,30 @@ const ShareMenu: React.FC<ShareMenuProps> = ({
     onClose();
   };
 
+  const handleKakao = () => {
+    shareToKakao({
+      title: `예배 콘티 "${title}"`,
+      description: "CONTIED에서 만든 AI 예배 콘티를 확인해보세요.",
+      linkUrl: url,
+    });
+    onClose();
+  };
+
   const handleOverlayClick = (e: React.MouseEvent<Element>) => {
     if (e.target === e.currentTarget) onClose();
   };
 
   const menuItems: MenuItemConfig[] = [
+    ...(kakaoAvailable
+      ? [
+          {
+            icon: <KakaoIcon />,
+            iconBg: "#FEE500",
+            label: "카카오톡으로 공유",
+            onClick: handleKakao,
+          } as MenuItemConfig,
+        ]
+      : []),
     {
       icon: <LinkIcon />,
       iconBg: "#eef4ff",
