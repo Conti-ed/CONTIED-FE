@@ -42,6 +42,7 @@ export const router = createBrowserRouter([
         path: "mypage",
         element: <MyPage />,
         children: [
+          { index: true, element: <Navigate to="uploaded" replace /> },
           { path: "uploaded", element: <MyUploadedContis /> },
           { path: "favorites", element: <MyFavoriteContis /> },
         ],

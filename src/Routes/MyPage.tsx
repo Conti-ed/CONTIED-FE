@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate, Outlet, Navigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "react-query";
 import { getUserProfile } from "../utils/axios";
@@ -210,6 +210,7 @@ export const EmptyStateText2 = styled.div`
 `;
 
 const MyPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const { data: userProfile } = useQuery("userProfile", getUserProfile, {
     staleTime: 1000 * 60 * 5, // 캐시 시간을 5분으로 단축
     enabled: !!getAccessToken(), // 토큰이 있을 때만 실행
@@ -220,7 +221,15 @@ const MyPage: React.FC = () => {
   );
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (getAccessToken()) queryClient.invalidateQueries(["userProfile"]);
+    }, 100);
+    return () => clearTimeout(t);
+    // queryClient는 useQueryClient()의 안정 참조이므로 의존성 배열에서 제외
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTabClick = (tab: "uploaded" | "favorites") => {
     setActiveTab(tab);
@@ -281,9 +290,6 @@ const MyPage: React.FC = () => {
           <Outlet />
         </ScrollableContainer>
       </Content>
-      {window.location.pathname === "/mypage" && (
-        <Navigate to="/mypage/uploaded" replace />
-      )}
       {showLogoutModal && (
         <ConfirmModal
           title="정말 로그아웃 하시겠습니까?"
