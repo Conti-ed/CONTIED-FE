@@ -13,6 +13,7 @@ const STEPS = [
 
 // 각 단계가 끝나는 시각(ms): 5초, 10초, 20초, 이후는 3번 인덱스 유지
 const STEP_THRESHOLDS = [5000, 10000, 20000];
+const LONG_WAIT_THRESHOLD = 60000;
 
 const FullScreenWrapper = styled.div`
   position: fixed;
@@ -79,8 +80,35 @@ const ProgressDot = styled.div<{ $active: boolean }>`
   transition: background-color 0.4s ease;
 `;
 
+const LongWaitBox = styled(motion.div)`
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: #f0f5ff;
+  border: 1px solid #c5d8f8;
+  border-radius: 12px;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+`;
+
+const LongWaitTitle = styled.p`
+  font-size: 14px;
+  font-weight: 500;
+  color: #323743;
+  margin: 0 0 6px;
+`;
+
+const LongWaitSubtitle = styled.p`
+  font-size: 12px;
+  font-weight: 300;
+  color: #9095a1;
+  margin: 0;
+  line-height: 1.5;
+`;
+
 const AiContiGenerating: React.FC = () => {
   const [stepIndex, setStepIndex] = useState(0);
+  const [showLongWait, setShowLongWait] = useState(false);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = STEP_THRESHOLDS.map(
@@ -90,8 +118,13 @@ const AiContiGenerating: React.FC = () => {
         }, threshold)
     );
 
+    const longWaitTimer = setTimeout(() => {
+      setShowLongWait(true);
+    }, LONG_WAIT_THRESHOLD);
+
     return () => {
       timers.forEach(clearTimeout);
+      clearTimeout(longWaitTimer);
     };
   }, []);
 
@@ -128,6 +161,20 @@ const AiContiGenerating: React.FC = () => {
         <HintText>
           AI가 콘티를 만들고 있어요.{"\n"}약 30초 정도 걸려요.
         </HintText>
+
+        <AnimatePresence>
+          {showLongWait && (
+            <LongWaitBox
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.5 }}
+            >
+              <LongWaitTitle>조금 더 시간이 걸리고 있어요. 잠시만 기다려주세요 🙏</LongWaitTitle>
+              <LongWaitSubtitle>AI가 정성껏 콘티를 만드는 중이에요.</LongWaitSubtitle>
+            </LongWaitBox>
+          )}
+        </AnimatePresence>
       </InnerContent>
     </FullScreenWrapper>
   );
